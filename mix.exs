@@ -1,40 +1,47 @@
 defmodule JSON.LD.Mixfile do
   use Mix.Project
 
+  @version "0.0.1"
+
   def project do
-    [app: :json_ld,
-     version: "0.1.0",
-     build_path: "../../_build",
-     config_path: "../../config/config.exs",
-     deps_path: "../../deps",
-     lockfile: "../../mix.lock",
-     elixir: "~> 1.3",
-     build_embedded: Mix.env == :prod,
-     start_permanent: Mix.env == :prod,
-     deps: deps]
+    [
+      app: :json_ld,
+      version: @version,
+      description: "An implementation of the JSON-LD standard",
+      build_path: "../../_build",
+      config_path: "../../config/config.exs",
+      deps_path: "../../deps",
+      lockfile: "../../mix.lock",
+      elixir: "~> 1.3",
+      build_embedded: Mix.env == :prod,
+      start_permanent: Mix.env == :prod,
+      package: package,
+      deps: deps
+    ]
   end
 
-  # Configuration for the OTP application
-  #
-  # Type "mix help compile.app" for more information
+  defp package do
+    [
+      name: :json_ld,
+      maintainers: ["Marcel Otto"],
+      licenses: ["MIT"],
+      links: %{"GitHub" => "https://github.com/rdfex/json_ld",
+               "Docs" => "http://rdfex.github.io/json_ld)/"},
+      files: ["lib", "priv", "mix.exs", "README*", "readme*", "LICENSE*", "license*"]
+    ]
+  end
+
   def application do
     [applications: [:logger]]
   end
 
-  # Dependencies can be Hex packages:
-  #
-  #   {:mydep, "~> 0.3.0"}
-  #
-  # Or git/path repositories:
-  #
-  #   {:mydep, git: "https://github.com/elixir-lang/mydep.git", tag: "0.1.0"}
-  #
-  # To depend on another app inside the umbrella:
-  #
-  #   {:myapp, in_umbrella: true}
-  #
-  # Type "mix help deps" for more examples and options
   defp deps do
-    []
+    [
+      {:rdf_core, in_umbrella: true},
+      {:dialyxir, "~> 0.4", only: [:dev, :test]},
+      {:credo, "~> 0.5", only: [:dev, :test]},
+      {:ex_doc, "~> 0.14", only: :dev},
+      {:mix_test_watch, "~> 0.2", only: :dev},
+    ]
   end
 end
