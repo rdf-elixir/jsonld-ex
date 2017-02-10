@@ -38,6 +38,7 @@ defmodule JSON.LD.Mixfile do
   defp deps do
     [
       {:rdf_core, in_umbrella: true},
+      {:poison, "~> 3.0"},
       {:dialyxir, "~> 0.4", only: [:dev, :test]},
       {:credo, "~> 0.5", only: [:dev, :test]},
       {:ex_doc, "~> 0.14", only: :dev},

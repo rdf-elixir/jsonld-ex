@@ -1,23 +1,27 @@
 # JSON.LD
 
-**TODO: Add description**
+An implementation of the [JSON-LD](https://en.wikipedia.org/wiki/JSON-LD) standard.
+
 
 ## Installation
 
-If [available in Hex](https://hex.pm/docs/publish), the package can be installed as:
-
-  1. Add `json_ld` to your list of dependencies in `mix.exs`:
+The package can be installed by adding `json_ld` to your list of dependencies in `mix.exs`:
 
     ```elixir
     def deps do
-      [{:json_ld, "~> 0.1.0"}]
+      [
+        {:json_ld, "~> 0.1.0"}
+      ]
     end
     ```
 
-  2. Ensure `json_ld` is started before your application:
+Then, update your dependencies:
 
-    ```elixir
-    def application do
-      [applications: [:json_ld]]
-    end
-    ```
+```sh-session
+$ mix deps.get
+```
+
+
+## Usage
+
+
