@@ -1,4 +1,4 @@
-defmodule JSON.LD.ExpandIRITest do
+defmodule JSON.LD.IRIExpansionTest do
   use ExUnit.Case, async: false
 
   setup do

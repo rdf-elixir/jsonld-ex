@@ -1,5 +1,7 @@
-defmodule JSON.LD.ExpandTest do
+defmodule JSON.LD.ExpansionTest do
   use ExUnit.Case, async: false
+
+  import JSON.LD.Expansion, only: [expand_value: 3]
 
   test "Expanded form of a JSON-LD document (EXAMPLE 55 and 56 of https://www.w3.org/TR/json-ld/#expanded-document-form)" do
     input = Poison.Parser.parse! """
@@ -917,7 +919,7 @@ defmodule JSON.LD.ExpandTest do
       @tag skip: "This seems to be RDF.rb specific. The @id keys are produced when value is an RDF::URI or RDF::Node. Do we need/want something similar?"
       @tag dt: dt
       test "expands datatype xsd:#{dt}", %{dt: dt, example_context: context} do
-        assert JSON.LD.expand_value(context, "foo", apply(RDF.XSD, String.to_atom(dt), []) |> to_string) ==
+        assert expand_value(context, "foo", apply(RDF.XSD, String.to_atom(dt), []) |> to_string) ==
           %{"@id" => "http://www.w3.org/2001/XMLSchema##{dt}"}
       end
     end)
@@ -950,7 +952,7 @@ defmodule JSON.LD.ExpandTest do
     |> Enum.each(fn ({title, data}) ->
          @tag data: data
          test title, %{data: [key, compacted, expanded], example_context: context} do
-           assert JSON.LD.expand_value(context, key, compacted) == expanded
+           assert expand_value(context, key, compacted) == expanded
          end
        end)
 
@@ -970,7 +972,7 @@ defmodule JSON.LD.ExpandTest do
         @tag skip: "Why does this produce @language tags, although no term definition of foo exists? Is this also RDF.rb specific?"
          @tag data: data
          test "@language #{title}", %{data: [key, compacted, expanded], example_context: context} do
-           assert JSON.LD.expand_value(context, key, compacted) == expanded
+           assert expand_value(context, key, compacted) == expanded
          end
        end)
 
@@ -991,7 +993,7 @@ defmodule JSON.LD.ExpandTest do
     |> Enum.each(fn ({title, data}) ->
          @tag data: data
          test "coercion #{title}", %{data: [key, compacted, expanded], example_context: context} do
-           assert JSON.LD.expand_value(context, key, compacted) == expanded
+           assert expand_value(context, key, compacted) == expanded
          end
        end)
   end

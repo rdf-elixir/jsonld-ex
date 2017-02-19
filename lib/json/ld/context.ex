@@ -110,7 +110,7 @@ defmodule JSON.LD.Context do
   @doc """
   Expands the given input according to the steps in the JSON-LD Create Term Definition Algorithm.
 
-  see https://www.w3.org/TR/json-ld-api/#create-term-definition
+  see <https://www.w3.org/TR/json-ld-api/#create-term-definition>
   """
   def create_term_definition(active, local, term, value, defined)
 
