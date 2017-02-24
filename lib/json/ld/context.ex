@@ -47,9 +47,9 @@ defmodule JSON.LD.Context do
 
   # 3.4) - 3.8)
   defp do_update(%JSON.LD.Context{} = active, local, remote) when is_map(local) do
-    with {base, local}     <- Map.pop(local, "@base", :undefined),
-         {vocab, local}    <- Map.pop(local, "@vocab", :undefined),
-         {language, local} <- Map.pop(local, "@language", :undefined) do
+    with {base, local}     <- Map.pop(local, "@base", false),
+         {vocab, local}    <- Map.pop(local, "@vocab", false),
+         {language, local} <- Map.pop(local, "@language", false) do
       active
       |> set_base(base, remote)
       |> set_vocab(vocab)
@@ -64,7 +64,7 @@ defmodule JSON.LD.Context do
           message: "#{inspect local} is not a valid @context value"
 
 
-  defp set_base(active, :undefined, _),
+  defp set_base(active, false, _),
     do: active
   defp set_base(active, _, remote) when is_list(remote) and length(remote) > 0,
     do: active
@@ -80,7 +80,7 @@ defmodule JSON.LD.Context do
     end
   end
 
-  defp set_vocab(active, :undefined), do: active
+  defp set_vocab(active, false), do: active
   defp set_vocab(active, vocab) do
     if is_nil(vocab) or absolute_iri?(vocab) or blank_node_id?(vocab) do
       %JSON.LD.Context{active | vocab: vocab}
@@ -90,7 +90,7 @@ defmodule JSON.LD.Context do
     end
   end
 
-  defp set_language(active, :undefined), do: active
+  defp set_language(active, false), do: active
   defp set_language(active, nil),
     do: %JSON.LD.Context{active | default_language: nil}
   defp set_language(active, language) when is_binary(language),
@@ -209,8 +209,8 @@ defmodule JSON.LD.Context do
           raise JSON.LD.InvalidIRIMappingError,
                   message: "#{inspect reverse} is not a valid IRI mapping"
         end
-        case Map.get(value, "@container", {:undefined}) do  # 11.4)
-          {:undefined} -> nil
+        case Map.get(value, "@container", {false}) do  # 11.4)
+          {false} -> nil
           container when is_nil(container) or container in ~w[@set @index] ->
             definition = %TermDefinition{definition | container_mapping: container}
           _ ->
@@ -307,5 +307,60 @@ defmodule JSON.LD.Context do
     end
   end
   defp do_create_language_definition(definition, _), do: definition
+
+
+  @doc """
+  Inverse Context Creation algorithm
+
+  Details at <https://www.w3.org/TR/json-ld-api/#inverse-context-creation>
+  """
+  def inverse(%JSON.LD.Context{} = context) do
+    # 2) Initialize default language to @none. If the active context has a default language, set default language to it.
+    default_language = context.default_language || "@none"
+    # 3) For each key term and value term definition in the active context, ordered by shortest term first (breaking ties by choosing the lexicographically least term)
+    context.term_defs
+    |> Enum.sort_by(fn {term, _} -> String.length(term) end)
+    |> Enum.reduce(%{}, fn ({term, term_def}, result) ->
+         # 3.1) If the term definition is null, term cannot be selected during compaction, so continue to the next term.
+         if term_def do
+           # 3.2) Initialize container to @none. If there is a container mapping in term definition, set container to its associated value.
+           container = term_def.container_mapping || "@none"
+           # 3.3) Initialize iri to the value of the IRI mapping for the term definition.
+           iri = term_def.iri_mapping
+
+           type_map     = get_in(result, [iri, container, "@type"]) || %{}
+           language_map = get_in(result, [iri, container, "@language"]) || %{}
+
+           case term_def do
+             # 3.8) If the term definition indicates that the term represents a reverse property
+             %TermDefinition{reverse_property: true} ->
+               type_map = Map.put_new(type_map, "@reverse", term)
+             # 3.9) Otherwise, if term definition has a type mapping
+             %TermDefinition{type_mapping: type_mapping}
+                              when not is_nil(type_mapping) ->
+               type_map = Map.put_new(type_map, type_mapping, term)
+             # 3.10) Otherwise, if term definition has a language mapping (might be null)
+             %TermDefinition{language_mapping: language_mapping}
+                              when not is_nil(language_mapping) ->
+               language = language_mapping || "@null"
+               language_map = Map.put_new(language_map, language, term)
+             # 3.11) Otherwise
+             _ ->
+               language_map = Map.put_new(language_map, default_language, term)
+               language_map = Map.put_new(language_map, "@none", term)
+               type_map = Map.put_new(type_map, "@none", term)
+           end
+
+           Map.update result, iri, %{}, fn container_map ->
+             Map.put container_map, container, %{
+               "@type"     => type_map,
+               "@language" => language_map,
+             }
+           end
+         else
+           result
+         end
+       end)
+  end
 
 end
