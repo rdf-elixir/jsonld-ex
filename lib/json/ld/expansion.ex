@@ -357,9 +357,9 @@ defmodule JSON.LD.Expansion do
         is_binary(value) ->
           language_mapping = term_def.language_mapping
           cond do
-           not language_mapping in [nil, :undefined] ->
+           language_mapping ->
               %{"@value" => value, "@language" => language_mapping}
-           language_mapping == :undefined && active_context.default_language ->
+           language_mapping == false && active_context.default_language ->
               %{"@value" => value, "@language" => active_context.default_language}
            true ->
             %{"@value" => value}
