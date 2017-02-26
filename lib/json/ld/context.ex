@@ -99,6 +99,13 @@ defmodule JSON.LD.Context do
     do: raise JSON.LD.InvalidDefaultLanguageError,
           message: "#{inspect language} is not a valid language"
 
+  def language(active, term) do
+    case Map.get(active.term_defs, term, %TermDefinition{}).language_mapping do
+      false    -> active.default_language
+      language -> language
+    end
+  end
+
   defp create_term_definitions(active, local, defined \\ %{}) do
     {active, _} =
       Enum.reduce local, {active, defined}, fn ({term, value}, {active, defined}) ->
