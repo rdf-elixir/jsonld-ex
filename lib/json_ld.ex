@@ -31,6 +31,9 @@ defmodule JSON.LD do
                           vocab \\ false, local_context \\ nil, defined \\ nil),
     to: JSON.LD.IRIExpansion
 
+  defdelegate compact(json_ld_object, context, opts \\ []),
+    to: JSON.LD.Compaction
+
 
   @doc """
   Generator function for `JSON.LD.Context`s.
@@ -112,5 +115,12 @@ defmodule JSON.LD do
   def scalar?(value) when is_binary(value) or is_number(value) or
                           is_boolean(value), do: true
   def scalar?(_), do: false
+
+  def list?(%{"@list" => _}), do: true
+  def list?(_),          do: false
+  def index?(%{"@index" => _}), do: true
+  def index?(_),          do: false
+  def value?(%{"@value" => _}), do: true
+  def value?(_),          do: false
 
 end

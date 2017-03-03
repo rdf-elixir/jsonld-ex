@@ -1,6 +1,7 @@
 defmodule JSON.LD.Compaction do
   @moduledoc nil
 
+  import JSON.LD
   alias JSON.LD.Context
 
   @doc """
@@ -17,11 +18,22 @@ defmodule JSON.LD.Compaction do
   Details at <https://www.w3.org/TR/json-ld-api/#compaction-algorithms>
   """
   def compact(input, context, opts \\ []) do
-    with active_context = JSON.LD.context(context),
-         compact_arrays = Keyword.get(opts, :compact_arrays, true)
+    with active_context  = JSON.LD.context(context),
+         inverse_context = Context.inverse(active_context),
+         compact_arrays  = Keyword.get(opts, :compact_arrays, true)
     do
-      do_compact(JSON.LD.expand(input), active_context, Context.inverse(active_context),
-                 nil, compact_arrays)
+      result = case do_compact(JSON.LD.expand(input), active_context, inverse_context,
+                                nil, compact_arrays) do
+        [] ->
+          %{}
+        result when is_list(result) ->
+          %{compact_iri("@graph", active_context, inverse_context) => result}
+        result ->
+          result
+      end
+      if Context.empty?(active_context),
+        do: result,
+        else: Map.put(result, "@context", context["@context"] || context)
     end
   end
 
@@ -43,11 +55,194 @@ defmodule JSON.LD.Compaction do
         compacted_item -> [compacted_item | result]
       end
     end) |> Enum.reverse
-
+    if compact_arrays and length(result) == 1 and
+         is_nil((term_def = active_context.term_defs[active_property]) && term_def.container_mapping) do
+      List.first(result)
+    else
+      result
+    end
   end
 
-  defp do_compact(element, active_context, inverse_context, active_property, compact_arrays) do
+  # 3) Otherwise element is a JSON object.
+  defp do_compact(element, active_context, inverse_context, active_property, compact_arrays)
+          when is_map(element) do
+    # 4)
+    if (Map.has_key?(element, "@value") or Map.has_key?(element, "@id")) and
+        scalar?(result = compact_value(element, active_context, inverse_context, active_property)) do
+      result
+    else
+      # 5)
+      inside_reverse = active_property == "@reverse"
+      # 6) + 7)
+      element
+      |> Enum.sort_by(fn {expanded_property , _} -> expanded_property end)
+      |> Enum.reduce(%{}, fn ({expanded_property, expanded_value}, result) ->
+          cond do
+            # 7.1)
+            expanded_property in ~w[@id @type] ->
+              # 7.1.1)
+              compacted_value =
+                if is_binary(expanded_value) do
+                  compact_iri(expanded_value, active_context, inverse_context, nil,
+                               expanded_property == '@type')
+                # 7.1.2)
+                else
+                  # 7.1.2.1)
+                  # TODO: RDF.rb calls also Array#compact
+                  if(is_list(expanded_value),
+                    do: expanded_value,
+                    else: [expanded_value])
+                  # 7.1.2.2)
+                  |> Enum.reduce([], fn (expanded_type, compacted_value) ->
+                       compacted_value ++
+                        [compact_iri(expanded_type, active_context, inverse_context, nil, true)]
+                     end)
+                  # 7.1.2.3)
+                  |> case(do: (
+                      [compacted_value] -> compacted_value
+                       compacted_value  -> compacted_value))
+                end
+              # 7.1.3)
+              alias = compact_iri(expanded_property, active_context, inverse_context, nil, true)
+              # 7.1.4)
+              Map.put(result, alias, compacted_value)
 
+            # 7.2)
+            expanded_property == "@reverse" ->
+              # 7.2.1)
+              compacted_value = do_compact(expanded_value, active_context, inverse_context, "@reverse")
+              # 7.2.2)
+              {compacted_value, result} =
+                Enum.reduce compacted_value, {%{}, result},
+                  fn ({property, value}, {compacted_value, result}) ->
+                    term_def = active_context.term_defs[property]
+                    # 7.2.2.1)
+                    if term_def.reverse_property do
+                      # 7.2.2.1.1)
+                      if (!compact_arrays or term_def.container_mapping == "@set") and
+                           !is_list(value) do
+                        value = [value]
+                      end
+                      # 7.2.2.1.2) + 7.2.2.1.3)
+                      {compacted_value, merge_compacted_value(result, property, value)}
+                    else
+                      {Map.put(compacted_value, property, value), result}
+                    end
+                  end
+              # 7.2.3)
+              unless Enum.empty?(compacted_value) do
+                # 7.2.3.1)
+                alias = compact_iri("@reverse", active_context, inverse_context, nil, true)
+                # 7.2.3.2)
+                Map.put(result, alias, compacted_value)
+              else
+                result
+              end
+
+            # 7.3)
+            expanded_property == "@index" &&
+                (term_def = active_context.term_defs[active_property]) &&
+                term_def.container_mapping == "@index" ->
+              result
+              |> IO.inspect(label: "7.3")
+
+            # 7.4)
+            expanded_property in ~w[@index @value @language] ->
+              # 7.4.1)
+              alias = compact_iri(expanded_property, active_context, inverse_context, nil, true)
+              # 7.4.2)
+              Map.put(result, alias, expanded_value)
+
+            true ->
+              # 7.5)
+              if expanded_value == [] do
+                # 7.5.1)
+                item_active_property =
+                  compact_iri(expanded_property, active_context, inverse_context,
+                              expanded_value, true, inside_reverse)
+                # 7.5.2)
+                result = Map.update(result, item_active_property, [], fn
+                   value when not is_list(value) -> [value]
+                   value                         -> value
+                end)
+              end
+
+              # 7.6)
+              Enum.reduce(expanded_value, result, fn (expanded_item, result) ->
+                # 7.6.1)
+                item_active_property =
+                  compact_iri(expanded_property, active_context, inverse_context,
+                              expanded_item, true, inside_reverse)
+
+                # 7.6.2)
+                term_def = active_context.term_defs[item_active_property]
+                container = (term_def && term_def.container_mapping) || nil
+
+                # 7.6.3)
+                value = (is_map(expanded_item) && expanded_item["@list"]) || expanded_item
+                compacted_item =
+                  do_compact(value, active_context, inverse_context,
+                              item_active_property, compact_arrays)
+
+                # 7.6.4)
+                if list?(expanded_item) do
+                  # 7.6.4.1)
+                  unless is_list(compacted_item),
+                    do: compacted_item = [compacted_item]
+                  # 7.6.4.2)
+                  unless container == "@list" do
+                    # 7.6.4.2.1)
+                    compacted_item = %{
+                      # TODO: Spec fixme? We're setting vocab to true, as RDF.rb does it, but this is not mentioned in the spec
+                      compact_iri("@list", active_context, inverse_context, nil, true) =>
+                        compacted_item}
+                    # 7.6.4.2.2)
+                      if Map.has_key?(expanded_item, "@index") do
+                        compacted_item = Map.put(compacted_item,
+                          compact_iri("@index", active_context, inverse_context),
+                          expanded_item["@index"])
+                      end
+                  # 7.6.4.3)
+                  else
+                    if Map.has_key?(result, item_active_property),
+                      do: raise JSON.LD.CompactionToListOfListsError,
+                            message: "The compacted document contains a list of lists as multiple lists have been compacted to the same term."
+                  end
+                end
+
+                # 7.6.5)
+                if container in ~w[@language @index] do
+                  map_object = result[item_active_property] || %{}
+                  if container == "@language" and Map.has_key?(compacted_item, "@value"),
+                    do: compacted_item = compacted_item["@value"]
+                  map_key = expanded_item[container]
+                  map_object = merge_compacted_value(map_object, map_key, compacted_item)
+                  Map.put(result, item_active_property, map_object)
+
+                # 7.6.6)
+                else
+                  if !is_list(compacted_item) and (!compact_arrays or
+                        container in ~w[@set @list] or expanded_property in ~w[@list @graph]),
+                    do: compacted_item = [compacted_item]
+                  merge_compacted_value(result, item_active_property, compacted_item)
+                end
+              end)
+          end
+      end)
+    end
+  end
+
+  defp merge_compacted_value(map, key, value) do
+    Map.update map, key, value, fn
+      old_value when is_list(old_value) and is_list(value) ->
+        old_value ++ value
+      old_value when is_list(old_value) ->
+        old_value ++ [value]
+      old_value when is_list(value) ->
+        [old_value | value]
+      old_value ->
+        [old_value, value]
+    end
   end
 
 
@@ -72,8 +267,7 @@ defmodule JSON.LD.Compaction do
       type_language_value = "@null"
       # 2.2) Initialize containers to an empty array. This array will be used to keep track of an ordered list of preferred container mappings for a term, based on what is compatible with value.
       # 2.4) If value is a JSON object that contains the key @index, then append the value @index to containers.
-      containers = if is_map(value) and Map.has_key?(value, "@index"),
-        do: ["@index"], else: []
+      containers = if index?(value), do: ["@index"], else: []
       cond do
         # 2.5) If reverse is true, set type/language to @type, type/language value to @reverse, and append @set to containers.
         reverse ->
@@ -81,9 +275,9 @@ defmodule JSON.LD.Compaction do
           type_language = "@type"
           type_language_value = "@reverse"
         # 2.6) Otherwise, if value is a list object, then set type/language and type/language value to the most specific values that work for all items in the list as follows:
-        is_map(value) and Map.has_key?(value, "@list") ->
+        list?(value) ->
           # 2.6.1) If @index is a not key in value, then append @list to containers.
-          if not Map.has_key?(value, "@index"),
+          if not index?(value),
             do: containers = containers ++ ["@list"]
           # 2.6.2) Initialize list to the array associated with the key @list in value.
           list = value["@list"]
@@ -315,10 +509,10 @@ defmodule JSON.LD.Compaction do
           cond do
             # 4.1) If number members is 1 and the type mapping of active property is set to @id, return the result of using the IRI compaction algorithm, passing active context, inverse context, and the value of the @id member for iri.
             number_members == 1 and type_mapping == "@id" ->
-              compact_iri(id, active_context, active_property)
+              compact_iri(id, active_context, inverse_context)
             # 4.2) Otherwise, if number members is 1 and the type mapping of active property is set to @vocab, return the result of using the IRI compaction algorithm, passing active context, inverse context, the value of the @id member for iri, and true for vocab.
             number_members == 1 and type_mapping == "@vocab" ->
-              compact_iri(id, active_context, active_property, nil, true)
+              compact_iri(id, active_context, inverse_context, nil, true)
             # 4.3) Otherwise, return value as is.
             true ->
               value

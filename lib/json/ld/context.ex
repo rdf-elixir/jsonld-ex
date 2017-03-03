@@ -5,10 +5,7 @@ defmodule JSON.LD.Context do
             default_language: nil
 
   import JSON.LD
-
   alias JSON.LD.Context.TermDefinition
-
-  @keywords JSON.LD.keywords # to allow this to be used in function guard clauses, we redefine this here
 
 
   def new(opts \\ [])
@@ -371,5 +368,11 @@ defmodule JSON.LD.Context do
          end
        end)
   end
+
+  def empty?(%JSON.LD.Context{term_defs: term_defs, vocab: nil, base_iri: nil, default_language: nil})
+    when map_size(term_defs) == 0,
+    do: true
+  def empty?(_),
+    do: false
 
 end
