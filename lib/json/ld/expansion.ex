@@ -313,7 +313,7 @@ defmodule JSON.LD.Expansion do
       %{"@set" => set} ->
         validate_set_or_list_object(result)
         set
-      %{"@list" => list} ->
+      %{"@list" => _} ->
         validate_set_or_list_object(result)
         result
       _ -> result
