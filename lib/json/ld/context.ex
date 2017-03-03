@@ -5,10 +5,7 @@ defmodule JSON.LD.Context do
             default_language: nil
 
   import JSON.LD
-
   alias JSON.LD.Context.TermDefinition
-
-  @keywords JSON.LD.keywords # to allow this to be used in function guard clauses, we redefine this here
 
 
   def new(opts \\ [])
@@ -98,6 +95,13 @@ defmodule JSON.LD.Context do
   defp set_language(_, language),
     do: raise JSON.LD.InvalidDefaultLanguageError,
           message: "#{inspect language} is not a valid language"
+
+  def language(active, term) do
+    case Map.get(active.term_defs, term, %TermDefinition{}).language_mapping do
+      false    -> active.default_language
+      language -> language
+    end
+  end
 
   defp create_term_definitions(active, local, defined \\ %{}) do
     {active, _} =
@@ -337,11 +341,11 @@ defmodule JSON.LD.Context do
                type_map = Map.put_new(type_map, "@reverse", term)
              # 3.9) Otherwise, if term definition has a type mapping
              %TermDefinition{type_mapping: type_mapping}
-                              when not is_nil(type_mapping) ->
+                              when type_mapping != false ->
                type_map = Map.put_new(type_map, type_mapping, term)
              # 3.10) Otherwise, if term definition has a language mapping (might be null)
              %TermDefinition{language_mapping: language_mapping}
-                              when not is_nil(language_mapping) ->
+                              when language_mapping != false ->
                language = language_mapping || "@null"
                language_map = Map.put_new(language_map, language, term)
              # 3.11) Otherwise
@@ -351,16 +355,24 @@ defmodule JSON.LD.Context do
                type_map = Map.put_new(type_map, "@none", term)
            end
 
-           Map.update result, iri, %{}, fn container_map ->
-             Map.put container_map, container, %{
-               "@type"     => type_map,
-               "@language" => language_map,
-             }
-           end
+           result
+           |> Map.put_new(iri, %{})
+           |> Map.update(iri, %{}, fn container_map ->
+                Map.put container_map, container, %{
+                  "@type"     => type_map,
+                  "@language" => language_map,
+                }
+              end)
          else
            result
          end
        end)
   end
+
+  def empty?(%JSON.LD.Context{term_defs: term_defs, vocab: nil, base_iri: nil, default_language: nil})
+    when map_size(term_defs) == 0,
+    do: true
+  def empty?(_),
+    do: false
 
 end
