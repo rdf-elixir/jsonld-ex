@@ -3,6 +3,8 @@ defmodule JSON.LD.IRICompactionTest do
 
   import JSON.LD.Compaction, only: [compact_iri: 3, compact_iri: 4, compact_iri: 5]
 
+  alias RDF.NS.{XSD}
+
   setup do
     context = JSON.LD.context(%{
       "@base"   => "http://base/",
@@ -94,7 +96,7 @@ defmodule JSON.LD.IRICompactionTest do
   describe "with value" do
     setup do
       context = JSON.LD.context(%{
-        "xsd" => RDF.XSD.__base_uri__,
+        "xsd" => XSD.__base_uri__,
         "plain" => "http://example.com/plain",
         "lang" => %{"@id" => "http://example.com/lang", "@language" => "en"},
         "bool" => %{"@id" => "http://example.com/bool", "@type" => "xsd:boolean"},
@@ -149,10 +151,10 @@ defmodule JSON.LD.IRICompactionTest do
           [%{"@value" => 1}], [%{"@value" => 1.1}],
         ],
         "listlang" => [[%{"@value" => "en", "@language" => "en"}]],
-        "listbool" => [[%{"@value" => "true", "@type" => to_string(RDF.XSD.boolean)}]],
-        "listinteger" => [[%{"@value" => "1", "@type" => to_string(RDF.XSD.integer)}]],
-        "listdouble" => [[%{"@value" => "1", "@type" => to_string(RDF.XSD.double)}]],
-        "listdate" => [[%{"@value" => "2012-04-17", "@type" => to_string(RDF.XSD.date)}]],
+        "listbool" => [[%{"@value" => "true", "@type" => to_string(XSD.boolean)}]],
+        "listinteger" => [[%{"@value" => "1", "@type" => to_string(XSD.integer)}]],
+        "listdouble" => [[%{"@value" => "1", "@type" => to_string(XSD.double)}]],
+        "listdate" => [[%{"@value" => "2012-04-17", "@type" => to_string(XSD.date)}]],
       }
     |> Enum.each(fn {prop, values} ->
          Enum.each values, fn value ->

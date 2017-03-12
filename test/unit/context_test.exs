@@ -1,6 +1,8 @@
 defmodule JSON.LD.ContextTest do
   use ExUnit.Case
 
+  alias RDF.NS.{XSD}
+
   doctest JSON.LD.Context
 
   describe "create from Hash" do
@@ -55,10 +57,10 @@ defmodule JSON.LD.ContextTest do
 
     test "associates type mapping with predicate" do
       c = JSON.LD.context(%{"foo" =>
-            %{"@id" => "http://example.com/", "@type" => to_string(RDF.XSD.string)}})
+            %{"@id" => "http://example.com/", "@type" => to_string(XSD.string)}})
       assert c.term_defs["foo"]
       assert c.term_defs["foo"].iri_mapping == "http://example.com/"
-      assert c.term_defs["foo"].type_mapping == to_string(RDF.XSD.string)
+      assert c.term_defs["foo"].type_mapping == to_string(XSD.string)
     end
 
     test "associates language mapping with predicate" do

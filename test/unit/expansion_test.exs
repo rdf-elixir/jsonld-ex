@@ -3,6 +3,8 @@ defmodule JSON.LD.ExpansionTest do
 
   import JSON.LD.Expansion, only: [expand_value: 3]
 
+  alias RDF.NS.{RDFS, XSD}
+
   test "Expanded form of a JSON-LD document (EXAMPLE 55 and 56 of https://www.w3.org/TR/json-ld/#expanded-document-form)" do
     input = Poison.Parser.parse! """
       {
@@ -104,31 +106,31 @@ defmodule JSON.LD.ExpansionTest do
       "base" => %{
         input: %{
           "@id" => "",
-          "@type" => "http://www.w3.org/2000/01/rdf-schema#Resource"  # TODO: RDF.RDFS.Resource
+          "@type" => (RDFS.Resource |> RDF.uri |> to_string)
         },
         output: [%{
           "@id" => "http://example.org/",
-          "@type" => ["http://www.w3.org/2000/01/rdf-schema#Resource"]  # TODO: RDF.RDFS.Resource
+          "@type" => [RDFS.Resource |> RDF.uri |> to_string]
         }]
       },
       "relative" => %{
         input: %{
           "@id" => "a/b",
-          "@type" => "http://www.w3.org/2000/01/rdf-schema#Resource"  # TODO: RDF.RDFS.Resource
+          "@type" => (RDFS.Resource |> RDF.uri |> to_string)
         },
         output: [%{
           "@id" => "http://example.org/a/b",
-          "@type" => ["http://www.w3.org/2000/01/rdf-schema#Resource"]  # TODO: RDF.RDFS.Resource
+          "@type" => [RDFS.Resource |> RDF.uri |> to_string]
         }]
       },
       "hash" => %{
         input: %{
           "@id" => "#a",
-          "@type" => "http://www.w3.org/2000/01/rdf-schema#Resource"  # TODO: RDF.RDFS.Resource
+          "@type" => (RDFS.Resource |> RDF.uri |> to_string)
         },
         output: [%{
           "@id" => "http://example.org/#a",
-          "@type" => ["http://www.w3.org/2000/01/rdf-schema#Resource"]  # TODO: RDF.RDFS.Resource
+          "@type" => [RDFS.Resource |> RDF.uri |> to_string]
         }]
       },
       "unmapped @id" => %{
@@ -154,21 +156,21 @@ defmodule JSON.LD.ExpansionTest do
         input: %{
           "@context" => %{"id" => "@id"},
           "id" => "",
-          "@type" => "http://www.w3.org/2000/01/rdf-schema#Resource"  # TODO: RDF.RDFS.Resource
+          "@type" => (RDFS.Resource |> RDF.uri |> to_string)
         },
         output: [%{
           "@id" => "",
-          "@type" =>[ "http://www.w3.org/2000/01/rdf-schema#Resource"] # TODO: RDF.RDFS.Resource
+          "@type" =>[ (RDFS.Resource |> RDF.uri |> to_string)]
         }]
       },
       "@type" => %{
         input: %{
           "@context" => %{"type" => "@type"},
-          "type" => "http://www.w3.org/2000/01/rdf-schema#Resource",  # TODO: RDF.RDFS.Resource
+          "type" => (RDFS.Resource |> RDF.uri |> to_string),
           "http://example.com/foo" => %{"@value" => "bar", "type" => "http://example.com/baz"}
         },
         output: [%{
-          "@type" => ["http://www.w3.org/2000/01/rdf-schema#Resource"],  # TODO: RDF.RDFS.Resource
+          "@type" => [RDFS.Resource |> RDF.uri |> to_string],
           "http://example.com/foo" => [%{"@value" => "bar", "@type" => "http://example.com/baz"}]
         }]
       },
@@ -268,20 +270,20 @@ defmodule JSON.LD.ExpansionTest do
     %{
       "boolean" => %{
         input: %{
-          "@context" => %{"foo" => %{"@id" => "http://example.org/foo", "@type" => to_string(RDF.XSD.boolean)}},
+          "@context" => %{"foo" => %{"@id" => "http://example.org/foo", "@type" => to_string(XSD.boolean)}},
           "foo" => "true"
         },
         output: [%{
-          "http://example.org/foo" => [%{"@value" => "true", "@type" => to_string(RDF.XSD.boolean)}]
+          "http://example.org/foo" => [%{"@value" => "true", "@type" => to_string(XSD.boolean)}]
         }]
       },
       "date" => %{
         input: %{
-          "@context" => %{"foo" => %{"@id" => "http://example.org/foo", "@type" => to_string(RDF.XSD.date)}},
+          "@context" => %{"foo" => %{"@id" => "http://example.org/foo", "@type" => to_string(XSD.date)}},
           "foo" => "2011-03-26"
         },
         output: [%{
-          "http://example.org/foo" => [%{"@value" => "2011-03-26", "@type" => to_string(RDF.XSD.date)}]
+          "http://example.org/foo" => [%{"@value" => "2011-03-26", "@type" => to_string(XSD.date)}]
         }]
       },
     }
@@ -530,11 +532,11 @@ defmodule JSON.LD.ExpansionTest do
       },
       "explicit list with coerced datatype values" => %{
         input: %{
-          "@context" => %{"http://example.com/foo" => %{"@type" => to_string(RDF.XSD.date)}},
+          "@context" => %{"http://example.com/foo" => %{"@type" => to_string(XSD.date)}},
           "http://example.com/foo" => %{"@list" => ["2012-04-12"]}
         },
         output: [%{
-          "http://example.com/foo" => [%{"@list" => [%{"@value" => "2012-04-12", "@type" => to_string(RDF.XSD.date)}]}]
+          "http://example.com/foo" => [%{"@list" => [%{"@value" => "2012-04-12", "@type" => to_string(XSD.date)}]}]
         }]
       },
       "expand-0004" => %{
@@ -919,7 +921,7 @@ defmodule JSON.LD.ExpansionTest do
       @tag skip: "This seems to be RDF.rb specific. The @id keys are produced when value is an RDF::URI or RDF::Node. Do we need/want something similar?"
       @tag dt: dt
       test "expands datatype xsd:#{dt}", %{dt: dt, example_context: context} do
-        assert expand_value(context, "foo", apply(RDF.XSD, String.to_atom(dt), []) |> to_string) ==
+        assert expand_value(context, "foo", apply(XSD, String.to_atom(dt), []) |> to_string) ==
           %{"@id" => "http://www.w3.org/2001/XMLSchema##{dt}"}
       end
     end)
@@ -931,23 +933,23 @@ defmodule JSON.LD.ExpansionTest do
       "no IRI" =>         ["foo",         "http://example.com/",  %{"@value" => "http://example.com/"}],
       "no term" =>        ["foo",         "ex",                   %{"@value" => "ex"}],
       "no prefix" =>      ["foo",         "ex:suffix",            %{"@value" => "ex:suffix"}],
-      "integer" =>        ["foaf:age",    "54",                   %{"@value" => "54", "@type" => RDF.XSD.integer |> to_string}],
-      "date " =>          ["dc:created",  "2011-12-27Z",          %{"@value" => "2011-12-27Z", "@type" => RDF.XSD.date |> to_string}],
+      "integer" =>        ["foaf:age",    "54",                   %{"@value" => "54", "@type" => XSD.integer |> to_string}],
+      "date " =>          ["dc:created",  "2011-12-27Z",          %{"@value" => "2011-12-27Z", "@type" => XSD.date |> to_string}],
       "native boolean" => ["foo", true,                           %{"@value" => true}],
       "native integer" => ["foo", 1,                              %{"@value" => 1}],
       "native double" =>  ["foo", 1.1e1,                          %{"@value" => 1.1E1}],
 # TODO:
-#      "native date" =>    ["foo", Date.parse("2011-12-27"),       %{"@value" => "2011-12-27", "@type" => RDF.XSD.date |> to_string}],
-#      "native time" =>    ["foo", Time.parse("10:11:12Z"),        %{"@value" => "10:11:12Z", "@type" => RDF.XSD.time |> to_string}],
-#      "native dateTime" =>["foo", DateTime.parse("2011-12-27T10:11:12Z"), {"@value" => "2011-12-27T10:11:12Z", "@type" => RDF.XSD.dateTime |> to_string}],
+#      "native date" =>    ["foo", Date.parse("2011-12-27"),       %{"@value" => "2011-12-27", "@type" => XSD.date |> to_string}],
+#      "native time" =>    ["foo", Time.parse("10:11:12Z"),        %{"@value" => "10:11:12Z", "@type" => XSD.time |> to_string}],
+#      "native dateTime" =>["foo", DateTime.parse("2011-12-27T10:11:12Z"), {"@value" => "2011-12-27T10:11:12Z", "@type" => XSD.dateTime |> to_string}],
 #      "rdf boolean" =>    ["foo", RDF::Literal(true),             %{"@value" => "true", "@type" => RDF::XSD.boolean.to_s}],
-#      "rdf integer" =>    ["foo", RDF::Literal(1),                %{"@value" => "1", "@type" => RDF.XSD.integer |> to_string],
-#      "rdf decimal" =>    ["foo", RDF::Literal::Decimal.new(1.1), %{"@value" => "1.1", "@type" => RDF.XSD.decimal |> to_string}],
-#      "rdf double" =>     ["foo", RDF::Literal::Double.new(1.1),  %{"@value" => "1.1E0", "@type" => RDF.XSD.double |> to_string}],
+#      "rdf integer" =>    ["foo", RDF::Literal(1),                %{"@value" => "1", "@type" => XSD.integer |> to_string],
+#      "rdf decimal" =>    ["foo", RDF::Literal::Decimal.new(1.1), %{"@value" => "1.1", "@type" => XSD.decimal |> to_string}],
+#      "rdf double" =>     ["foo", RDF::Literal::Double.new(1.1),  %{"@value" => "1.1E0", "@type" => XSD.double |> to_string}],
 #      "rdf URI" =>        ["foo", RDF::URI("foo"),                %{"@id" => "foo"}],
-#      "rdf date " =>      ["foo", RDF::Literal(Date.parse("2011-12-27")), %{"@value" => "2011-12-27", "@type" => RDF.XSD.date |> to_string}],
-#      "rdf nonNeg" =>     ["foo", RDF::Literal::NonNegativeInteger.new(1), %{"@value" => "1", "@type" => RDF.XSD.nonNegativeInteger |> to_string}],
-#      "rdf float" =>      ["foo", RDF::Literal::Float.new(1.0), %{"@value" => "1.0", "@type" => RDF.XSD.float |> to_string}],
+#      "rdf date " =>      ["foo", RDF::Literal(Date.parse("2011-12-27")), %{"@value" => "2011-12-27", "@type" => XSD.date |> to_string}],
+#      "rdf nonNeg" =>     ["foo", RDF::Literal::NonNegativeInteger.new(1), %{"@value" => "1", "@type" => XSD.nonNegativeInteger |> to_string}],
+#      "rdf float" =>      ["foo", RDF::Literal::Float.new(1.0), %{"@value" => "1.0", "@type" => XSD.float |> to_string}],
     }
     |> Enum.each(fn ({title, data}) ->
          @tag data: data
@@ -977,18 +979,18 @@ defmodule JSON.LD.ExpansionTest do
        end)
 
     %{
-      "boolean-boolean" => ["ex:boolean", true,   %{"@value" => true, "@type" => RDF.XSD.boolean |> to_string}],
-      "boolean-integer" => ["ex:integer", true,   %{"@value" => true, "@type" => RDF.XSD.integer |> to_string}],
-      "boolean-double"  => ["ex:double",  true,   %{"@value" => true, "@type" => RDF.XSD.double |> to_string}],
-      "double-boolean"  => ["ex:boolean", 1.1,    %{"@value" => 1.1, "@type" => RDF.XSD.boolean |> to_string}],
-      "double-double"   => ["ex:double",  1.1,    %{"@value" => 1.1, "@type" => RDF.XSD.double |> to_string}],
-      "double-integer"  => ["foaf:age",   1.1,    %{"@value" => 1.1, "@type" => RDF.XSD.integer |> to_string}],
-      "integer-boolean" => ["ex:boolean", 1,      %{"@value" => 1, "@type" => RDF.XSD.boolean |> to_string}],
-      "integer-double"  => ["ex:double",  1,      %{"@value" => 1, "@type" => RDF.XSD.double |> to_string}],
-      "integer-integer" => ["foaf:age",   1,      %{"@value" => 1, "@type" => RDF.XSD.integer |> to_string}],
-      "string-boolean"  => ["ex:boolean", "foo",  %{"@value" => "foo", "@type" => RDF.XSD.boolean |> to_string}],
-      "string-double"   => ["ex:double",  "foo",  %{"@value" => "foo", "@type" => RDF.XSD.double |> to_string}],
-      "string-integer"  => ["foaf:age",   "foo",  %{"@value" => "foo", "@type" => RDF.XSD.integer |> to_string}],
+      "boolean-boolean" => ["ex:boolean", true,   %{"@value" => true, "@type" => XSD.boolean |> to_string}],
+      "boolean-integer" => ["ex:integer", true,   %{"@value" => true, "@type" => XSD.integer |> to_string}],
+      "boolean-double"  => ["ex:double",  true,   %{"@value" => true, "@type" => XSD.double |> to_string}],
+      "double-boolean"  => ["ex:boolean", 1.1,    %{"@value" => 1.1, "@type" => XSD.boolean |> to_string}],
+      "double-double"   => ["ex:double",  1.1,    %{"@value" => 1.1, "@type" => XSD.double |> to_string}],
+      "double-integer"  => ["foaf:age",   1.1,    %{"@value" => 1.1, "@type" => XSD.integer |> to_string}],
+      "integer-boolean" => ["ex:boolean", 1,      %{"@value" => 1, "@type" => XSD.boolean |> to_string}],
+      "integer-double"  => ["ex:double",  1,      %{"@value" => 1, "@type" => XSD.double |> to_string}],
+      "integer-integer" => ["foaf:age",   1,      %{"@value" => 1, "@type" => XSD.integer |> to_string}],
+      "string-boolean"  => ["ex:boolean", "foo",  %{"@value" => "foo", "@type" => XSD.boolean |> to_string}],
+      "string-double"   => ["ex:double",  "foo",  %{"@value" => "foo", "@type" => XSD.double |> to_string}],
+      "string-integer"  => ["foaf:age",   "foo",  %{"@value" => "foo", "@type" => XSD.integer |> to_string}],
     }
     |> Enum.each(fn ({title, data}) ->
          @tag data: data

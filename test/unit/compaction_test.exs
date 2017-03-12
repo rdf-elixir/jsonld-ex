@@ -1,6 +1,8 @@
 defmodule JSON.LD.CompactionTest do
   use ExUnit.Case, async: false
 
+  alias RDF.NS.{RDFS, XSD}
+
   test "Flattened form of a JSON-LD document (EXAMPLES 57-59 of https://www.w3.org/TR/json-ld/#compacted-document-form)" do
     input = Poison.Parser.parse! """
       [
@@ -109,15 +111,15 @@ defmodule JSON.LD.CompactionTest do
     },
     "xsd:date coercion" => %{
       input: %{
-        "http://example.com/b" => %{"@value" => "2012-01-04", "@type" => to_string(RDF.XSD.date)}
+        "http://example.com/b" => %{"@value" => "2012-01-04", "@type" => to_string(XSD.date)}
       },
       context: %{
-        "xsd" => RDF.XSD.__base_uri__,
+        "xsd" => XSD.__base_uri__,
         "b" => %{"@id" => "http://example.com/b", "@type" => "xsd:date"}
       },
       output: %{
         "@context" => %{
-          "xsd" => RDF.XSD.__base_uri__,
+          "xsd" => XSD.__base_uri__,
           "b" => %{"@id" => "http://example.com/b", "@type" => "xsd:date"}
         },
         "b" => "2012-01-04"
@@ -174,23 +176,23 @@ defmodule JSON.LD.CompactionTest do
     "@type with string @id" => %{
       input: %{
         "@id" => "http://example.com/",
-        "@type" => "http://www.w3.org/2000/01/rdf-schema#Resource" # TODO: RDF::RDFS.Resource
+        "@type" => (RDFS.Resource |> RDF.uri |> to_string)
       },
       context: %{},
       output: %{
         "@id" => "http://example.com/",
-        "@type" => "http://www.w3.org/2000/01/rdf-schema#Resource" # TODO: RDF::RDFS.Resource
+        "@type" => (RDFS.Resource |> RDF.uri |> to_string)
       },
     },
     "@type with array @id" => %{
       input: %{
         "@id" => "http://example.com/",
-        "@type" => "http://www.w3.org/2000/01/rdf-schema#Resource" # TODO: RDF::RDFS.Resource
+        "@type" => (RDFS.Resource |> RDF.uri |> to_string)
       },
       context: %{},
       output: %{
         "@id" => "http://example.com/",
-        "@type" => "http://www.w3.org/2000/01/rdf-schema#Resource" # TODO: RDF::RDFS.Resource
+        "@type" => (RDFS.Resource |> RDF.uri |> to_string)
       },
     },
     "default language" => %{
@@ -225,24 +227,24 @@ defmodule JSON.LD.CompactionTest do
       "@id" => %{
         input: %{
           "@id" => "",
-          "@type" => "http://www.w3.org/2000/01/rdf-schema#Resource" # TODO: RDF::RDFS.Resource
+          "@type" => (RDFS.Resource |> RDF.uri |> to_string)
         },
         context: %{"id" => "@id"},
         output: %{
           "@context" => %{"id" => "@id"},
           "id" => "",
-          "@type" => "http://www.w3.org/2000/01/rdf-schema#Resource" # TODO: RDF::RDFS.Resource
+          "@type" => (RDFS.Resource |> RDF.uri |> to_string)
         }
       },
       "@type" => %{
         input: %{
-          "@type" => "http://www.w3.org/2000/01/rdf-schema#Resource", # TODO: RDF::RDFS.Resource
+          "@type" => (RDFS.Resource |> RDF.uri |> to_string),
           "http://example.org/foo" => %{"@value" => "bar", "@type" => "http://example.com/type"}
         },
         context: %{"type" => "@type"},
         output: %{
           "@context" => %{"type" => "@type"},
-          "type" => "http://www.w3.org/2000/01/rdf-schema#Resource", # TODO: RDF::RDFS.Resource
+          "type" => (RDFS.Resource |> RDF.uri |> to_string),
           "http://example.org/foo" => %{"@value" => "bar", "type" => "http://example.com/type"}
         }
       },

@@ -3,17 +3,19 @@ defmodule JSON.LD.ValueCompactionTest do
 
   import JSON.LD.Compaction, only: [compact_value: 4]
 
+  alias RDF.NS.{XSD}
+
   setup do
     context = JSON.LD.context(%{
         "dc"         => "http://purl.org/dc/terms/",   # TODO: RDF::Vocab::DC.to_uri.to_s,
         "ex"         => "http://example.org/",
         "foaf"       => "http://xmlns.com/foaf/0.1/",  # TODO: RDF::Vocab::FOAF.to_uri.to_s,
-        "xsd"        => to_string(RDF.XSD.__base_uri__),
+        "xsd"        => to_string(XSD.__base_uri__),
         "langmap"    => %{"@id" => "http://example.com/langmap", "@container" => "@language"},
         "list"       => %{"@id" => "http://example.org/list", "@container" => "@list"},
         "nolang"     => %{"@id" => "http://example.org/nolang", "@language" => nil},
-        "dc:created" => %{"@type" => to_string(RDF.XSD.date)},
-        "foaf:age"   => %{"@type" => to_string(RDF.XSD.integer)},
+        "dc:created" => %{"@type" => to_string(XSD.date)},
+        "foaf:age"   => %{"@type" => to_string(XSD.integer)},
         "foaf:knows" => %{"@type" => "@id"},
       })
     %{example_context: context, inverse_context: JSON.LD.Context.inverse(context)}
@@ -22,13 +24,13 @@ defmodule JSON.LD.ValueCompactionTest do
   %{
     "absolute IRI" =>   ["foaf:knows",  "http://example.com/",  %{"@id" => "http://example.com/"}],
     "prefix:suffix" =>  ["foaf:knows",  "ex:suffix",            %{"@id" => "http://example.org/suffix"}],
-    "integer" =>        ["foaf:age",    "54",                   %{"@value" => "54", "@type" => to_string(RDF.XSD.integer)}],
-    "date " =>          ["dc:created",  "2011-12-27Z",          %{"@value" => "2011-12-27Z", "@type" => to_string(RDF.XSD.date)}],
+    "integer" =>        ["foaf:age",    "54",                   %{"@value" => "54", "@type" => to_string(XSD.integer)}],
+    "date " =>          ["dc:created",  "2011-12-27Z",          %{"@value" => "2011-12-27Z", "@type" => to_string(XSD.date)}],
     "no IRI" =>         ["foo", %{"@id" => "http://example.com/"}, %{"@id" => "http://example.com/"}],
     "no IRI (CURIE)" => ["foo", %{"@id" => "http://xmlns.com/foaf/0.1/Person"},       %{"@id" => "http://xmlns.com/foaf/0.1/Person"}],
-    "no boolean" =>     ["foo", %{"@value" => "true", "@type" => to_string(RDF.XSD.boolean)},%{"@value" => "true", "@type" => to_string(RDF.XSD.boolean)}],
-    "no integer" =>     ["foo", %{"@value" => "54", "@type" => to_string(RDF.XSD.integer)},%{"@value" => "54", "@type" => to_string(RDF.XSD.integer)}],
-    "no date " =>       ["foo", %{"@value" => "2011-12-27Z", "@type" => to_string(RDF.XSD.date)}, %{"@value" => "2011-12-27Z", "@type" => to_string(RDF.XSD.date)}],
+    "no boolean" =>     ["foo", %{"@value" => "true", "@type" => to_string(XSD.boolean)},%{"@value" => "true", "@type" => to_string(XSD.boolean)}],
+    "no integer" =>     ["foo", %{"@value" => "54", "@type" => to_string(XSD.integer)},%{"@value" => "54", "@type" => to_string(XSD.integer)}],
+    "no date " =>       ["foo", %{"@value" => "2011-12-27Z", "@type" => to_string(XSD.date)}, %{"@value" => "2011-12-27Z", "@type" => to_string(XSD.date)}],
     "no string " =>     ["foo", "string",                       %{"@value" => "string"}],
     "no lang " =>       ["nolang", "string",                    %{"@value" => "string"}],
     "native boolean" => ["foo", true,                           %{"@value" => true}],
@@ -52,8 +54,8 @@ defmodule JSON.LD.ValueCompactionTest do
 
     %{
       "@id"                            => ["foo", %{"@id" => "foo"},                                 %{"@id" => "foo"}],
-      "integer"                        => ["foo", %{"@value" => "54", "@type" => to_string(RDF.XSD.integer)},     %{"@value" => "54", "@type" => to_string(RDF.XSD.integer)}],
-      "date"                           => ["foo", %{"@value" => "2011-12-27Z","@type" => to_string(RDF.XSD.date)},%{"@value" => "2011-12-27Z", "@type" => to_string(RDF.XSD.date)}],
+      "integer"                        => ["foo", %{"@value" => "54", "@type" => to_string(XSD.integer)},     %{"@value" => "54", "@type" => to_string(XSD.integer)}],
+      "date"                           => ["foo", %{"@value" => "2011-12-27Z","@type" => to_string(XSD.date)},%{"@value" => "2011-12-27Z", "@type" => to_string(XSD.date)}],
       "no lang"                        => ["foo", %{"@value" => "foo" },                             %{"@value" => "foo"}],
       "same lang"                      => ["foo", "foo",                                             %{"@value" => "foo", "@language" => "en"}],
       "other lang"                     => ["foo", %{"@value" => "foo", "@language" => "bar"},        %{"@value" => "foo", "@language" => "bar"}],
