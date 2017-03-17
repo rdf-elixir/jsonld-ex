@@ -5,7 +5,7 @@ defmodule JSON.LD.Compaction do
   alias JSON.LD.Context
 
   @doc """
-  Flattens the given input according to the steps in the JSON-LD Flattening Algorithm.
+  Compacts the given input according to the steps in the JSON-LD Compaction Algorithm.
 
   > Compaction is the process of applying a developer-supplied context to shorten
   > IRIs to terms or compact IRIs and JSON-LD values expressed in expanded form
