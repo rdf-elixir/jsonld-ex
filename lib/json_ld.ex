@@ -34,6 +34,9 @@ defmodule JSON.LD do
   defdelegate compact(json_ld_object, context, opts \\ []),
     to: JSON.LD.Compaction
 
+  defdelegate flatten(json_ld_object, context \\ nil, opts \\ []),
+    to: JSON.LD.Flattening
+
 
   @doc """
   Generator function for `JSON.LD.Context`s.
