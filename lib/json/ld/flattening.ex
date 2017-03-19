@@ -132,16 +132,23 @@ defmodule JSON.LD.Flattening do
             node_map
           end
         else
-          # TODO: list a reference! We'll have to rewrite this to work without references
-          list = Map.update(list, "@list", [element], fn l -> l ++ [element] end)
+          append_to_list(list, element)
           node_map
         end
 
       # 5)
       Map.has_key?(element, "@list") ->
-        result = %{"@list" => []}
-        node_map = generate_node_map(element["@list"], node_map, node_id_map,
-                          active_graph, active_subject, active_property, result)
+        {:ok, result_list} = new_list
+        {node_map, result} =
+          try do
+            {
+              generate_node_map(element["@list"], node_map, node_id_map,
+                active_graph, active_subject, active_property, result_list),
+              get_list(result_list)
+            }
+        after
+          terminate_list(result_list)
+        end
         if node do
           update_in(node_map, [active_graph, active_subject, active_property], fn
             nil   -> [result]
@@ -204,8 +211,7 @@ defmodule JSON.LD.Flattening do
                 end)
             # 6.6.3) TODO: Spec fixme: specs says to add ELEMENT to @list member, should be REFERENCE
             else
-            # TODO: list a reference! We'll have to rewrite this to work without references
-              list = Map.update(list, "@list", [reference], fn l -> l ++ [reference] end)
+              append_to_list(list, reference)
             end
           end
         end
@@ -288,5 +294,24 @@ defmodule JSON.LD.Flattening do
   end
   defp deep_compare(v, v), do: true
   defp deep_compare(_, _), do: false
+
+
+  defp new_list do
+    Agent.start_link fn -> %{"@list" => []} end
+  end
+
+  defp terminate_list(pid) do
+    Agent.stop pid
+  end
+
+  defp get_list(pid) do
+    Agent.get pid, fn list_node -> list_node end
+  end
+
+  defp append_to_list(pid, element) do
+    Agent.update pid, fn list_node ->
+      Map.update(list_node, "@list", [element], fn list -> list ++ [element] end)
+    end
+  end
 
 end

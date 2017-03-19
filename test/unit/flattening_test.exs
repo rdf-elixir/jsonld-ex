@@ -211,32 +211,31 @@ defmodule JSON.LD.FlatteningTest do
         }]
       """)
     },
-# TODO: @list don't work yet, since the reference-based implementation in the spec is not possible in Elixir
-#    "Test Manifest (shortened)" => %{
-#      input: Poison.Parser.parse!("""
-#        {
-#          "@id": "",
-#          "http://example/sequence": {"@list": [
-#            {
-#              "@id": "#t0001",
-#              "http://example/name": "Keywords cannot be aliased to other keywords",
-#              "http://example/input": {"@id": "error-expand-0001-in.jsonld"}
-#            }
-#          ]}
-#        }
-#      """),
-#      output: Poison.Parser.parse!("""
-#        [{
-#          "@id": "",
-#          "http://example/sequence": [{"@list": [{"@id": "#t0001"}]}]
-#        }, {
-#          "@id": "#t0001",
-#          "http://example/input": [{"@id": "error-expand-0001-in.jsonld"}],
-#          "http://example/name": [{"@value": "Keywords cannot be aliased to other keywords"}]
-#        }]
-#      """),
-#      options: %{}
-#    },
+    "Test Manifest (shortened)" => %{
+      input: Poison.Parser.parse!("""
+        {
+          "@id": "",
+          "http://example/sequence": {"@list": [
+            {
+              "@id": "#t0001",
+              "http://example/name": "Keywords cannot be aliased to other keywords",
+              "http://example/input": {"@id": "error-expand-0001-in.jsonld"}
+            }
+          ]}
+        }
+      """),
+      output: Poison.Parser.parse!("""
+        [{
+          "@id": "",
+          "http://example/sequence": [{"@list": [{"@id": "#t0001"}]}]
+        }, {
+          "@id": "#t0001",
+          "http://example/input": [{"@id": "error-expand-0001-in.jsonld"}],
+          "http://example/name": [{"@value": "Keywords cannot be aliased to other keywords"}]
+        }]
+      """),
+      options: %{}
+    },
     "@reverse bnode issue (0045)" => %{
       input: Poison.Parser.parse!("""
         {
