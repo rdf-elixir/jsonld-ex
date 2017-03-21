@@ -1,24 +1,14 @@
 defmodule JSON.LD.Flattening do
   @moduledoc nil
 
-  import JSON.LD.Utils
-
+  import JSON.LD.{NodeIdentifierMap, Utils}
   alias JSON.LD.NodeIdentifierMap
 
-  @doc """
-  Flattens the given input according to the steps in the JSON-LD Flattening Algorithm.
 
-  > Flattening collects all properties of a node in a single JSON object and labels
-  > all blank nodes with blank node identifiers. This ensures a shape of the data
-  > and consequently may drastically simplify the code required to process JSON-LD
-  > in certain applications.
-
-  -- <https://www.w3.org/TR/json-ld/#flattened-document-form>
-
-  Details at <https://www.w3.org/TR/json-ld-api/#flattening-algorithms>
-  """
-  def flatten(input, context \\ nil, opts \\ []) do
-    with expanded = JSON.LD.expand(input) do
+  def flatten(input, context \\ nil, options \\ %JSON.LD.Options{}) do
+    with options  = JSON.LD.Options.new(options),
+         expanded = JSON.LD.expand(input, options)
+    do
       {:ok, node_id_map} = NodeIdentifierMap.start_link
       node_map =
         try do
@@ -66,7 +56,7 @@ defmodule JSON.LD.Flattening do
         |> Enum.reverse
 
       if context && !Enum.empty?(flattened) do # TODO: Spec fixme: !Enum.empty?(flattened) is not in the spec, but in other implementations (Ruby, Java, Go, ...)
-        JSON.LD.compact(flattened, context, opts)
+        JSON.LD.compact(flattened, context, options)
       else
         flattened
       end
@@ -106,7 +96,7 @@ defmodule JSON.LD.Flattening do
       types = Enum.reduce(types, [],
         fn (item, types) ->
           if blank_node_id?(item) do
-            identifier = NodeIdentifierMap.generate_blank_node_id(node_id_map, item)
+            identifier = generate_blank_node_id(node_id_map, item)
             types ++ [identifier]
           else
             types ++ [item]
@@ -165,13 +155,13 @@ defmodule JSON.LD.Flattening do
         id =
           if id do
             if blank_node_id?(id) do
-              NodeIdentifierMap.generate_blank_node_id(node_id_map, id)
+              generate_blank_node_id(node_id_map, id)
             else
               id
             end
           # 6.2)
           else
-            NodeIdentifierMap.generate_blank_node_id(node_id_map)
+            generate_blank_node_id(node_id_map)
           end
 
         # 6.3)
@@ -271,7 +261,7 @@ defmodule JSON.LD.Flattening do
         |> Enum.sort_by(fn {property, _} -> property end)
         |> Enum.reduce(node_map, fn ({property, value}, node_map) ->
              if blank_node_id?(property) do
-               property = NodeIdentifierMap.generate_blank_node_id(node_id_map, property)
+               property = generate_blank_node_id(node_id_map, property)
              end
              unless Map.has_key?(node_map[active_graph][id], property) do
                node_map = update_in node_map, [active_graph, id], fn node ->

@@ -2,36 +2,24 @@ defmodule JSON.LD.Compaction do
   @moduledoc nil
 
   import JSON.LD.Utils
-
   alias JSON.LD.Context
 
-  @doc """
-  Compacts the given input according to the steps in the JSON-LD Compaction Algorithm.
 
-  > Compaction is the process of applying a developer-supplied context to shorten
-  > IRIs to terms or compact IRIs and JSON-LD values expressed in expanded form
-  > to simple values such as strings or numbers. Often this makes it simpler to
-  > work with document as the data is expressed in application-specific terms.
-  > Compacted documents are also typically easier to read for humans.
-
-  -- <https://www.w3.org/TR/json-ld/#compacted-document-form>
-
-  Details at <https://www.w3.org/TR/json-ld-api/#compaction-algorithms>
-  """
-  def compact(input, context, opts \\ []) do
-    with active_context  = JSON.LD.context(context),
+  def compact(input, context, options \\ %JSON.LD.Options{}) do
+    with options         = JSON.LD.Options.new(options),
+         active_context  = JSON.LD.context(context),
          inverse_context = Context.inverse(active_context),
-         compact_arrays  = Keyword.get(opts, :compact_arrays, true)
+         expanded        = JSON.LD.expand(input, options)
     do
-      result = case do_compact(JSON.LD.expand(input), active_context, inverse_context,
-                                nil, compact_arrays) do
-        [] ->
-          %{}
-        result when is_list(result) ->
-          %{compact_iri("@graph", active_context, inverse_context) => result}
-        result ->
-          result
-      end
+      result =
+        case do_compact(expanded, active_context, inverse_context, nil, options.compact_arrays) do
+          [] ->
+            %{}
+          result when is_list(result) ->
+            %{compact_iri("@graph", active_context, inverse_context) => result}
+          result ->
+            result
+        end
       if Context.empty?(active_context),
         do: result,
         else: Map.put(result, "@context", context["@context"] || context)

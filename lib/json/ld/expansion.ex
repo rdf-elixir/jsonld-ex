@@ -1,40 +1,42 @@
 defmodule JSON.LD.Expansion do
   @moduledoc nil
 
-  import JSON.LD.IRIExpansion
-  import JSON.LD.Utils
+  import JSON.LD.{IRIExpansion, Utils}
 
 
-  @doc """
-  Expands the given input according to the steps in the JSON-LD Expansion Algorithm.
+  def expand(input, options \\ %JSON.LD.Options{}) do
+    with options        = JSON.LD.Options.new(options),
+         active_context = JSON.LD.Context.new(options)
+    do
+      active_context =
+        case options.expand_context do
+          %{"@context" => context} ->
+            JSON.LD.Context.update(active_context, context)
+          %{} = context ->
+            JSON.LD.Context.update(active_context, context)
+          nil ->
+            active_context
+        end
 
-  > Expansion is the process of taking a JSON-LD document and applying a `@context`
-  > such that all IRIs, types, and values are expanded so that the `@context` is
-  > no longer necessary.
-
-  -- <https://www.w3.org/TR/json-ld/#expanded-document-form>
-
-  Details at <http://json-ld.org/spec/latest/json-ld-api/#expansion-algorithm>
-  """
-  def expand(json_ld_object, opts \\ []) do
-    case do_expand(JSON.LD.Context.new(opts), nil, json_ld_object, Keyword.delete(opts, :base)) do
-      result = %{"@graph" => graph} when map_size(result) == 1 ->
-        graph
-      nil ->
-        []
-      result when not is_list(result) ->
-        [result]
-      result -> result
+      case do_expand(active_context, nil, input, options) do
+        result = %{"@graph" => graph} when map_size(result) == 1 ->
+          graph
+        nil ->
+          []
+        result when not is_list(result) ->
+          [result]
+        result -> result
+      end
     end
   end
 
-  defp do_expand(active_context, active_property, element, opts \\ [])
+  defp do_expand(active_context, active_property, element, options)
 
   # 1) If element is null, return null.
   defp do_expand(_, _, nil, _), do: nil
 
   # 2) If element is a scalar, ...
-  defp do_expand(active_context, active_property, element, opts)
+  defp do_expand(active_context, active_property, element, options)
         when is_binary(element) or is_number(element) or is_boolean(element) do
     if active_property in [nil, "@graph"] do
       nil
@@ -44,13 +46,13 @@ defmodule JSON.LD.Expansion do
   end
 
   # 3) If element is an array, ...
-  defp do_expand(active_context, active_property, element, opts)
+  defp do_expand(active_context, active_property, element, options)
         when is_list(element) do
     term_def = active_context.term_defs[active_property]
     container_mapping = term_def && term_def.container_mapping
     element
     |> Enum.reduce([], fn (item, result) ->
-        expanded_item = do_expand(active_context, active_property, item)
+        expanded_item = do_expand(active_context, active_property, item, options)
         if (active_property == "@list" or container_mapping == "@list") and
             (is_list(expanded_item) or Map.has_key?(expanded_item, "@list")),
           do: raise JSON.LD.ListOfListsError,
@@ -66,7 +68,7 @@ defmodule JSON.LD.Expansion do
   end
 
   # 4) - 13)
-  defp do_expand(active_context, active_property, element, opts)
+  defp do_expand(active_context, active_property, element, options)
         when is_map(element) do
     # 5)
     if Map.has_key?(element, "@context") do
@@ -107,7 +109,7 @@ defmodule JSON.LD.Expansion do
                           message: "#{inspect value} is not a valid @type value"
               end
             "@graph" -> # 7.4.5)
-              do_expand(active_context, "@graph", value, opts)
+              do_expand(active_context, "@graph", value, options)
             "@value" -> # 7.4.6)
               if scalar?(value) or is_nil(value) do
                 if is_nil(value) do
@@ -133,7 +135,7 @@ defmodule JSON.LD.Expansion do
               if active_property in [nil, "@graph"] do  # 7.4.9.1)
                 {:skip, result}
               else
-                value = do_expand(active_context, active_property, value, opts)
+                value = do_expand(active_context, active_property, value, options)
 
                 # Spec FIXME: need to be sure that result is a list [from RDF.rb implementation]
                 value = if is_list(value),
@@ -148,12 +150,12 @@ defmodule JSON.LD.Expansion do
                 value
               end
             "@set" -> # 7.4.10)
-              do_expand(active_context, active_property, value, opts)
+              do_expand(active_context, active_property, value, options)
             "@reverse" -> # 7.4.11)
               unless is_map(value),
                 do: raise JSON.LD.InvalidReverseValueError,
                       message: "#{inspect value} is not a valid @reverse value"
-              expanded_value = do_expand(active_context, "@reverse", value, opts) # 7.4.11.1)
+              expanded_value = do_expand(active_context, "@reverse", value, options) # 7.4.11.1)
               new_result =
                 if Map.has_key?(expanded_value, "@reverse") do  # 7.4.11.2) If expanded value contains an @reverse member, i.e., properties that are reversed twice, execute for each of its property and item the following steps:
                   Enum.reduce expanded_value["@reverse"], result,
@@ -234,7 +236,7 @@ defmodule JSON.LD.Expansion do
                      index_value = if(is_list(index_value),
                        do:   index_value,
                        else: [index_value])
-                     index_value = do_expand(active_context, key, index_value, opts)
+                     index_value = do_expand(active_context, key, index_value, options)
                      Enum.map(index_value, fn item ->
                         Map.put_new(item, "@index", index)
                      end)
@@ -242,7 +244,7 @@ defmodule JSON.LD.Expansion do
                  end)
             # 7.7)
             true ->
-              do_expand(active_context, key, value, opts)
+              do_expand(active_context, key, value, options)
           end
           # 7.8)
           if is_nil(expanded_value) do

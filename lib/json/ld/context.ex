@@ -10,14 +10,12 @@ defmodule JSON.LD.Context do
   alias JSON.LD.Context.TermDefinition
 
 
-  def new(opts \\ [])
-
-  def new([base: base_iri]), do: %JSON.LD.Context{base_iri: base_iri}
-  def new(_), do: %JSON.LD.Context{}
+  def new(options \\ %JSON.LD.Options{}),
+    do: %JSON.LD.Context{base_iri: JSON.LD.Options.new(options).base}
 
 
-  def create(%{"@context" => json_ld_context}, opts),
-    do: new(opts) |> update(json_ld_context, Keyword.get(opts, :remote, []))
+  def create(%{"@context" => json_ld_context}, options),
+    do: new(options) |> update(json_ld_context)
 
 
   def update(active, local, remote \\ [])
