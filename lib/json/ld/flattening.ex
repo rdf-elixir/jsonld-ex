@@ -1,7 +1,7 @@
 defmodule JSON.LD.Flattening do
   @moduledoc nil
 
-  import JSON.LD
+  import JSON.LD.Utils
 
   alias JSON.LD.NodeIdentifierMap
 
@@ -66,7 +66,7 @@ defmodule JSON.LD.Flattening do
         |> Enum.reverse
 
       if context && !Enum.empty?(flattened) do # TODO: Spec fixme: !Enum.empty?(flattened) is not in the spec, but in other implementations (Ruby, Java, Go, ...)
-        compact(flattened, context, opts)
+        JSON.LD.compact(flattened, context, opts)
       else
         flattened
       end

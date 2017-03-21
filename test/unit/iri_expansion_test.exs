@@ -1,6 +1,8 @@
 defmodule JSON.LD.IRIExpansionTest do
   use ExUnit.Case, async: false
 
+  import JSON.LD.IRIExpansion
+
   setup do
     context = JSON.LD.context(%{
       "@base" => "http://base/",
@@ -13,7 +15,7 @@ defmodule JSON.LD.IRIExpansionTest do
   end
 
   test "bnode", %{example_context: context}  do
-    assert JSON.LD.expand_iri("_:a", context) == "_:a"
+    assert expand_iri("_:a", context) == "_:a"
   end
 
   describe "relative IRI with no options" do
@@ -49,7 +51,7 @@ defmodule JSON.LD.IRIExpansionTest do
     |> Enum.each(fn ({title, data}) ->
          @tag data: data
          test title, %{data: [input, result], example_context: context} do
-           assert JSON.LD.expand_iri(input, context) == result
+           assert expand_iri(input, context) == result
          end
        end)
   end
@@ -87,7 +89,7 @@ defmodule JSON.LD.IRIExpansionTest do
     |> Enum.each(fn ({title, data}) ->
          @tag data: data
          test title, %{data: [input, result], example_context: context} do
-           assert JSON.LD.expand_iri(input, context, true) == result
+           assert expand_iri(input, context, true) == result
          end
        end)
   end
@@ -125,7 +127,7 @@ defmodule JSON.LD.IRIExpansionTest do
     |> Enum.each(fn ({title, data}) ->
          @tag data: data
          test title, %{data: [input, result], example_context: context} do
-           assert JSON.LD.expand_iri(input, context, false, true) == result
+           assert expand_iri(input, context, false, true) == result
          end
        end)
   end

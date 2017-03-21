@@ -4,7 +4,9 @@ defmodule JSON.LD.Context do
             base_iri: nil,
             default_language: nil
 
-  import JSON.LD
+  import JSON.LD.IRIExpansion
+  import JSON.LD.Utils
+
   alias JSON.LD.Context.TermDefinition
 
 
@@ -241,7 +243,7 @@ defmodule JSON.LD.Context do
         expanded_id == "@context" ->
           raise JSON.LD.InvalidKeywordAliasError,
                   message: "#{inspect id} is an invalid keyword alias"
-        keyword?(expanded_id) or
+        JSON.LD.keyword?(expanded_id) or
         absolute_iri?(expanded_id) or
         blank_node_id?(expanded_id) ->
           {%TermDefinition{definition | iri_mapping: expanded_id}, active, defined}

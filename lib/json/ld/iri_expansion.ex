@@ -1,6 +1,6 @@
 defmodule JSON.LD.IRIExpansion do
 
-  import JSON.LD
+  import JSON.LD.Utils
 
   @keywords JSON.LD.keywords # to allow this to be used in function guard clauses, we redefine this here
 
@@ -70,6 +70,5 @@ defmodule JSON.LD.IRIExpansion do
       result
     end
   end
-
 
 end

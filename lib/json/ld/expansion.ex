@@ -1,7 +1,8 @@
 defmodule JSON.LD.Expansion do
   @moduledoc nil
 
-  import JSON.LD
+  import JSON.LD.IRIExpansion
+  import JSON.LD.Utils
 
 
   @doc """
@@ -77,8 +78,8 @@ defmodule JSON.LD.Expansion do
     |> Enum.reduce(%{}, fn ({key, value}, result) ->
       if (key != "@context") &&  # 7.1)
           (expanded_property = expand_iri(key, active_context, false, true)) && # 7.2)
-          (String.contains?(expanded_property, ":") || keyword?(expanded_property)) do  # 7.3)
-        if keyword?(expanded_property) do  # 7.4)
+          (String.contains?(expanded_property, ":") || JSON.LD.keyword?(expanded_property)) do  # 7.3)
+        if JSON.LD.keyword?(expanded_property) do  # 7.4)
           if active_property == "@reverse", # 7.4.1)
             do: raise JSON.LD.InvalidReversePropertyMapError,
                   message: "An invalid reverse property map has been detected. No keywords apart from @context are allowed in reverse property maps."

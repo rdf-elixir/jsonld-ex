@@ -1,7 +1,8 @@
 defmodule JSON.LD.Compaction do
   @moduledoc nil
 
-  import JSON.LD
+  import JSON.LD.Utils
+
   alias JSON.LD.Context
 
   @doc """
