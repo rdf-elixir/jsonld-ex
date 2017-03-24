@@ -911,7 +911,6 @@ defmodule JSON.LD.ExpansionTest do
         "ex:integer" => %{"@type" => "xsd:integer"},
         "ex:double" => %{"@type" => "xsd:double"},
         "ex:boolean" => %{"@type" => "xsd:boolean"},
-        "@language" => "en"
       })
       %{example_context: context}
     end

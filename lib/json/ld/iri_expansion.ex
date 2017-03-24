@@ -30,8 +30,8 @@ defmodule JSON.LD.IRIExpansion do
 
     result = cond do
       # 3) If vocab is true and the active context has a term definition for value, return the associated IRI mapping.
-      vocab && (term_def = active_context.term_defs[value]) ->
-        term_def.iri_mapping
+      vocab && Map.has_key?(active_context.term_defs, value) ->
+        (term_def = active_context.term_defs[value]) && term_def.iri_mapping
       # 4) If value contains a colon (:), it is either an absolute IRI, a compact IRI, or a blank node identifier
       String.contains?(value, ":") ->
         case compact_iri_parts(value) do

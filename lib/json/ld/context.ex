@@ -15,35 +15,34 @@ defmodule JSON.LD.Context do
 
 
   def create(%{"@context" => json_ld_context}, options),
-    do: new(options) |> update(json_ld_context)
+    do: new(options) |> update(json_ld_context, [], options)
 
 
-  def update(active, local, remote \\ [])
+  def update(active, local, remote \\ [], options \\ %JSON.LD.Options{})
 
-  def update(%JSON.LD.Context{} = active, local, remote) when is_list(local) do
+  def update(%JSON.LD.Context{} = active, local, remote, options) when is_list(local) do
     Enum.reduce local, active, fn (local, result) ->
-      do_update(result, local, remote)
+      do_update(result, local, remote, options)
     end
   end
 
   # 2) If local context is not an array, set it to an array containing only local context.
-  def update(%JSON.LD.Context{} = active, local, remote) do
-    update(active, [local], remote)
+  def update(%JSON.LD.Context{} = active, local, remote, options) do
+    update(active, [local], remote, options)
   end
 
   # 3.1) If context is null, set result to a newly-initialized active context and continue with the next context. The base IRI of the active context is set to the IRI of the currently being processed document (which might be different from the currently being processed context), if available; otherwise to null. If set, the base option of a JSON-LD API Implementation overrides the base IRI.
-  defp do_update(%JSON.LD.Context{} = active, nil, remote) do
-    # TODO: "If set, the base option of a JSON-LD API Implementation overrides the base IRI."
-    JSON.LD.Context.new(base: active.base_iri)
+  defp do_update(%JSON.LD.Context{} = active, nil, remote, options) do
+    JSON.LD.Context.new(base: JSON.LD.Options.new(options).base || active.base_iri)
   end
 
   # 3.2) If context is a string, [it's interpreted as a remote context]
-  defp do_update(%JSON.LD.Context{} = active, local, remote) when is_binary(local) do
+  defp do_update(%JSON.LD.Context{} = active, local, remote, options) when is_binary(local) do
     # TODO: fetch remote context and call recursively with remote updated
   end
 
   # 3.4) - 3.8)
-  defp do_update(%JSON.LD.Context{} = active, local, remote) when is_map(local) do
+  defp do_update(%JSON.LD.Context{} = active, local, remote, _) when is_map(local) do
     with {base, local}     <- Map.pop(local, "@base", false),
          {vocab, local}    <- Map.pop(local, "@vocab", false),
          {language, local} <- Map.pop(local, "@language", false) do
@@ -56,7 +55,7 @@ defmodule JSON.LD.Context do
   end
 
   # 3.3) If context is not a JSON object, an invalid local context error has been detected and processing is aborted.
-  defp do_update(_, local, _),
+  defp do_update(_, local, _, _),
     do: raise JSON.LD.InvalidLocalContextError,
           message: "#{inspect local} is not a valid @context value"
 

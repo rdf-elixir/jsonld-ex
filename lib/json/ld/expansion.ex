@@ -72,7 +72,7 @@ defmodule JSON.LD.Expansion do
         when is_map(element) do
     # 5)
     if Map.has_key?(element, "@context") do
-      active_context = JSON.LD.Context.update(active_context, Map.get(element, "@context"))
+      active_context = JSON.LD.Context.update(active_context, Map.get(element, "@context"), [], options)
     end
     # 6) and 7)
     result = element
@@ -206,7 +206,6 @@ defmodule JSON.LD.Expansion do
             # 7.5) Otherwise, if key's container mapping in active context is @language and value is a JSON object then value is expanded from a language map as follows:
             is_map(value) && term_def && term_def.container_mapping == "@language" ->
               value
-#              |> IO.inspect(label: "value")
               |> Enum.sort_by(fn {language, _} -> language end)
               |> Enum.reduce([], fn ({language, language_value}, language_map_result) ->
                    language_map_result ++ (
@@ -225,7 +224,6 @@ defmodule JSON.LD.Expansion do
 
                         end)
                    )
-#                   |> IO.inspect(label: "result")
                  end)
             # 7.6)
             is_map(value) && term_def && term_def.container_mapping == "@index" ->
@@ -327,7 +325,8 @@ defmodule JSON.LD.Expansion do
       do: result = nil
 
     # 12) If active property is null or @graph, drop free-floating values as follows:
-    if active_property in [nil, "@graph"] and (
+    # Spec FIXME: Due to case 10) we might land with a list here; other implementations deal with that, by just returning in step 10)
+    if is_map(result) and active_property in [nil, "@graph"] and (
         Enum.empty?(result) or
         Map.has_key?(result, "@value") or Map.has_key?(result, "@list") or
         (map_size(result) == 1 and Map.has_key?(result, "@id"))),
@@ -349,7 +348,8 @@ defmodule JSON.LD.Expansion do
   Details at <http://json-ld.org/spec/latest/json-ld-api/#value-expansion>
   """
   def expand_value(active_context, active_property, value) do
-    with term_def when term_def != nil <- active_context.term_defs[active_property] do
+    with term_def = Map.get(active_context.term_defs, active_property,
+                            %JSON.LD.Context.TermDefinition{}) do
       cond do
         term_def.type_mapping == "@id" ->
           %{"@id" => expand_iri(value, active_context, true, false)}
@@ -370,8 +370,6 @@ defmodule JSON.LD.Expansion do
         true ->
           %{"@value" => value}
       end
-    else
-      _ -> %{"@value" => value}
     end
   end
 
