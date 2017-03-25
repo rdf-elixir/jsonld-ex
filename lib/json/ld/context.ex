@@ -202,7 +202,7 @@ defmodule JSON.LD.Context do
                 message: "#{inspect reverse} is not a valid reverse property"
       not is_binary(reverse) ->             # 11.2)
         raise JSON.LD.InvalidIRIMappingError,
-                message: "#{inspect reverse} is not a valid IRI mapping"
+                message: "Expected String for @reverse value. got #{inspect reverse}"
       true ->                               # 11.3)
         {expanded_reverse, active, defined} =
           expand_iri(reverse, active, false, true, local, defined)
@@ -210,7 +210,7 @@ defmodule JSON.LD.Context do
           definition = %TermDefinition{definition | iri_mapping: expanded_reverse}
         else
           raise JSON.LD.InvalidIRIMappingError,
-                  message: "#{inspect reverse} is not a valid IRI mapping"
+                  message: "Non-absolute @reverse IRI: #{inspect reverse}"
         end
         case Map.get(value, "@container", {false}) do  # 11.4)
           {false} -> nil
@@ -239,18 +239,18 @@ defmodule JSON.LD.Context do
       cond do
         expanded_id == "@context" ->
           raise JSON.LD.InvalidKeywordAliasError,
-                  message: "#{inspect id} is an invalid keyword alias"
+                  message: "cannot alias @context"
         JSON.LD.keyword?(expanded_id) or
         absolute_iri?(expanded_id) or
         blank_node_id?(expanded_id) ->
           {%TermDefinition{definition | iri_mapping: expanded_id}, active, defined}
         true ->
           raise JSON.LD.InvalidIRIMappingError,
-                  message: "#{inspect id} is not a valid IRI mapping"
+                  message: "#{inspect id} is not a valid IRI mapping; resulting IRI mapping should be a keyword, absolute IRI or blank node"
       end
     else  # 13.1)
       raise JSON.LD.InvalidIRIMappingError,
-              message: "#{inspect id} is not a valid IRI mapping"
+              message: "expected value of @id to be a string, but got #{inspect id}"
     end
   end
 
@@ -277,7 +277,7 @@ defmodule JSON.LD.Context do
         {%TermDefinition{definition | iri_mapping: active.vocab <> term}, active, defined}
       else
         raise JSON.LD.InvalidIRIMappingError,
-                message: "#{inspect term} is not a valid IRI mapping"
+                message: "#{inspect term} is not a valid IRI mapping; relative term definition without vocab mapping"
       end
     end
   end
@@ -287,7 +287,7 @@ defmodule JSON.LD.Context do
   defp do_create_container_definition(_, %{"@container" => container})
         when not container in ~w[@list @set @index @language],
     do: raise JSON.LD.InvalidContainerMappingError,
-          message: "#{inspect container} is not a valid container mapping; only @list, @set, @index, or @language allowed"
+          message: "#{inspect container} is not a valid container mapping; @container must be either @list, @set, @index, or @language"
   # 16.2)
   defp do_create_container_definition(definition, %{"@container" => container}),
     do: %TermDefinition{definition | container_mapping: container}
@@ -305,7 +305,7 @@ defmodule JSON.LD.Context do
           %TermDefinition{definition | language_mapping: nil}
         _ ->
           raise JSON.LD.InvalidLanguageMappingError,
-                  message: "#{inspect language} is not a valid language mapping"
+                  message: "#{inspect language} is not a valid language mapping; @language must be a string or null"
       end
     end
   end
