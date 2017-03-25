@@ -106,7 +106,7 @@ defmodule JSON.LD.Compaction do
                   fn ({property, value}, {compacted_value, result}) ->
                     term_def = active_context.term_defs[property]
                     # 7.2.2.1)
-                    if term_def.reverse_property do
+                    if term_def && term_def.reverse_property do
                       # 7.2.2.1.1)
                       if (!compact_arrays or term_def.container_mapping == "@set") and
                            !is_list(value) do
@@ -133,7 +133,6 @@ defmodule JSON.LD.Compaction do
                 (term_def = active_context.term_defs[active_property]) &&
                 term_def.container_mapping == "@index" ->
               result
-              |> IO.inspect(label: "7.3")
 
             # 7.4)
             expanded_property in ~w[@index @value @language] ->
@@ -202,7 +201,8 @@ defmodule JSON.LD.Compaction do
                 # 7.6.5)
                 if container in ~w[@language @index] do
                   map_object = result[item_active_property] || %{}
-                  if container == "@language" and Map.has_key?(compacted_item, "@value"),
+                  if container == "@language" and
+                      is_map(compacted_item) and Map.has_key?(compacted_item, "@value"),
                     do: compacted_item = compacted_item["@value"]
                   map_key = expanded_item[container]
                   map_object = merge_compacted_value(map_object, map_key, compacted_item)
@@ -485,7 +485,8 @@ defmodule JSON.LD.Compaction do
     number_members = Enum.count(value)
     # 2) If value has an @index member and the container mapping associated to active property is set to @index, decrease number members by 1.
     number_members =
-      if Map.has_key?(value, "@index") and term_def.container_mapping == "@index",
+      if term_def != nil and Map.has_key?(value, "@index") and
+          term_def.container_mapping == "@index",
         do: number_members - 1, else: number_members
     # 3) If number members is greater than 2, return value as it cannot be compacted.
     unless number_members > 2 do
