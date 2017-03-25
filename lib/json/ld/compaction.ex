@@ -73,7 +73,7 @@ defmodule JSON.LD.Compaction do
               compacted_value =
                 if is_binary(expanded_value) do
                   compact_iri(expanded_value, active_context, inverse_context, nil,
-                               expanded_property == '@type')
+                               expanded_property == "@type")
                 # 7.1.2)
                 else
                   # 7.1.2.1)
