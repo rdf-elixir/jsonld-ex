@@ -16,7 +16,8 @@ defmodule JSON.LD.Compaction do
           [] ->
             %{}
           result when is_list(result) ->
-            %{compact_iri("@graph", active_context, inverse_context) => result}
+            # TODO: Spec fixme? We're setting vocab to true, as other implementations do it, but this is not mentioned in the spec
+            %{compact_iri("@graph", active_context, inverse_context, nil, true) => result}
           result ->
             result
         end
