@@ -181,13 +181,14 @@ defmodule JSON.LD.Compaction do
                   unless container == "@list" do
                     # 7.6.4.2.1)
                     compacted_item = %{
-                      # TODO: Spec fixme? We're setting vocab to true, as RDF.rb does it, but this is not mentioned in the spec
+                      # TODO: Spec fixme? We're setting vocab to true, as other implementations do it, but this is not mentioned in the spec
                       compact_iri("@list", active_context, inverse_context, nil, true) =>
                         compacted_item}
                     # 7.6.4.2.2)
                       if Map.has_key?(expanded_item, "@index") do
                         compacted_item = Map.put(compacted_item,
-                          compact_iri("@index", active_context, inverse_context),
+                          # TODO: Spec fixme? We're setting vocab to true, as other implementations do it, but this is not mentioned in the spec
+                          compact_iri("@index", active_context, inverse_context, nil, true),
                           expanded_item["@index"])
                       end
                   # 7.6.4.3)
