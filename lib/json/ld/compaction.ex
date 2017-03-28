@@ -419,7 +419,7 @@ defmodule JSON.LD.Compaction do
                 # TODO: Spec fixme: "if the term definition has an IRI mapping that equals iri" is already catched in 5.2, so will never happen here ...
                 if (is_nil(compact_iri) or shortest_or_least?(candidate, compact_iri)) and
                      (is_nil(active_context.term_defs[candidate]) or
-                        (term_def.iri_mapping == iri and is_nil(value))) do
+                        (active_context.term_defs[candidate].iri_mapping == iri and is_nil(value))) do
                   candidate
                 else
                   compact_iri
