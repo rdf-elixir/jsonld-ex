@@ -1,8 +1,9 @@
 defmodule JSON.LD.Context do
   defstruct term_defs: %{},
+            default_language: nil,
             vocab: nil,
-            base_iri: nil,
-            default_language: nil
+            base_iri: false,
+            api_base_iri: nil
 
   import JSON.LD.IRIExpansion
   import JSON.LD.Utils
@@ -10,9 +11,14 @@ defmodule JSON.LD.Context do
   alias JSON.LD.Context.TermDefinition
 
 
-  def new(options \\ %JSON.LD.Options{}),
-    do: %JSON.LD.Context{base_iri: JSON.LD.Options.new(options).base}
+  def base(%JSON.LD.Context{base_iri: false, api_base_iri: api_base_iri}),
+    do: api_base_iri
+  def base(%JSON.LD.Context{base_iri: base_iri}),
+    do: base_iri
 
+
+  def new(options \\ %JSON.LD.Options{}),
+    do: %JSON.LD.Context{api_base_iri: JSON.LD.Options.new(options).base}
 
   def create(%{"@context" => json_ld_context}, options),
     do: new(options) |> update(json_ld_context, [], options)
@@ -31,9 +37,10 @@ defmodule JSON.LD.Context do
     update(active, [local], remote, options)
   end
 
+
   # 3.1) If context is null, set result to a newly-initialized active context and continue with the next context. The base IRI of the active context is set to the IRI of the currently being processed document (which might be different from the currently being processed context), if available; otherwise to null. If set, the base option of a JSON-LD API Implementation overrides the base IRI.
-  defp do_update(%JSON.LD.Context{} = active, nil, remote, options) do
-    JSON.LD.Context.new(base: JSON.LD.Options.new(options).base || active.base_iri)
+  defp do_update(%JSON.LD.Context{}, nil, remote, options) do
+    new(options)
   end
 
   # 3.2) If context is a string, [it's interpreted as a remote context]
@@ -368,7 +375,7 @@ defmodule JSON.LD.Context do
        end)
   end
 
-  def empty?(%JSON.LD.Context{term_defs: term_defs, vocab: nil, base_iri: nil, default_language: nil})
+  def empty?(%JSON.LD.Context{term_defs: term_defs, vocab: nil, base_iri: false, default_language: nil})
     when map_size(term_defs) == 0,
     do: true
   def empty?(_),

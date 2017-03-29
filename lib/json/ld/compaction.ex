@@ -7,7 +7,7 @@ defmodule JSON.LD.Compaction do
 
   def compact(input, context, options \\ %JSON.LD.Options{}) do
     with options         = JSON.LD.Options.new(options),
-         active_context  = JSON.LD.context(context),
+         active_context  = JSON.LD.context(context, options),
          inverse_context = Context.inverse(active_context),
          expanded        = JSON.LD.expand(input, options)
     do
@@ -432,7 +432,7 @@ defmodule JSON.LD.Compaction do
             compact_iri
           # 7) If vocab is false then transform iri to a relative IRI using the document's base IRI.
           not vocab ->
-            remove_base(iri, active_context.base_iri)
+            remove_base(iri, Context.base(active_context))
           # 8) Finally, return iri as is.
           true ->
             iri

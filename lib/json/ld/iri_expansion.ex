@@ -55,7 +55,7 @@ defmodule JSON.LD.IRIExpansion do
        vocabulary_mapping <> value
       # 6) Otherwise, if document relative is true, set value to the result of resolving value against the base IRI. Only the basic algorithm in section 5.2 of [RFC3986] is used; neither Syntax-Based Normalization nor Scheme-Based Normalization are performed. Characters additionally allowed in IRI references are treated in the same way that unreserved characters are treated in URI references, per section 6.5 of [RFC3987].
       doc_relative ->
-        absolute_iri(value, active_context.base_iri)
+        absolute_iri(value, JSON.LD.Context.base(active_context))
 # TODO: RDF.rb's implementation differs from the spec here, by checking if base_iri is actually present in the previous clause and adding the following additional clause. Another Spec error?
 #      if local_context && RDF::URI(value).relative?
 #        # If local context is not null and value is not an absolute IRI, an invalid IRI mapping error has been detected and processing is aborted.
