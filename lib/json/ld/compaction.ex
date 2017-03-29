@@ -455,7 +455,7 @@ defmodule JSON.LD.Compaction do
       case URI.parse(base) do
         %URI{path: nil} -> iri
         base ->
-          do_remove_base(iri, %URI{base | path: Path.dirname(base.path)}, 0)
+          do_remove_base(iri, %URI{base | path: parent_path(base.path)}, 0)
       end
     end
   end
@@ -471,10 +471,17 @@ defmodule JSON.LD.Compaction do
         end
       base.path == "/" -> iri
       true ->
-        do_remove_base(iri, %URI{base | path: Path.dirname(base.path)}, index + 1)
+        do_remove_base(iri, %URI{base | path: parent_path(base.path)}, index + 1)
     end
   end
 
+  defp parent_path("/"),  do: "/"
+  defp parent_path(path) do
+    case Path.dirname(String.trim_trailing(path, "/")) do
+      "/"    -> "/"
+      parent -> parent <> "/"
+    end
+  end
 
   @doc """
   Value Compaction
