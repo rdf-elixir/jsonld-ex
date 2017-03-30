@@ -92,8 +92,8 @@ defmodule JSON.LD.Flattening do
     node = node_map[active_graph][active_subject]
 
     # 3)
-    if types = Map.get(element, "@type") do
-      types = Enum.reduce(types, [],
+    if old_types = Map.get(element, "@type") do
+      new_types = Enum.reduce(List.wrap(old_types), [],
         fn (item, types) ->
           if blank_node_id?(item) do
             identifier = generate_blank_node_id(node_id_map, item)
@@ -102,7 +102,8 @@ defmodule JSON.LD.Flattening do
             types ++ [item]
           end
         end)
-      element = Map.put(element, "@type", types)
+      element = Map.put(element, "@type",
+        if(is_list(old_types), do: new_types, else: List.first(new_types)))
     end
 
     cond do
