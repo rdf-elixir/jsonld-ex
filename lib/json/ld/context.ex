@@ -73,12 +73,13 @@ defmodule JSON.LD.Context do
     do: active
   defp set_base(active, base, _) do
     cond do
+      # TODO: this slightly differs from the spec, due to our false special value for base_iri; add more tests
       is_nil(base) or absolute_iri?(base) ->
         %JSON.LD.Context{active | base_iri: base}
-      not is_nil(active.base_iri) ->
+      active.base_iri ->
         %JSON.LD.Context{active | base_iri: absolute_iri(base, active.base_iri)}
       true ->
-        raise JSON.LD.InvalidBaseURIError,
+        raise JSON.LD.InvalidBaseIRIError,
           message: "#{inspect base} is a relative IRI, but no active base IRI defined"
     end
   end

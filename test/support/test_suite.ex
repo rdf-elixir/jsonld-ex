@@ -52,4 +52,14 @@ defmodule JSON.LD.TestSuite do
     |> JSON.LD.Options.new
   end
 
+  def exception(error) do
+    error = error
+    |> String.replace(" ", "_")
+    |> String.replace("-", "_")
+    |> String.replace("@", "_")
+    |> Macro.camelize
+    |> String.replace("_", "")
+    String.to_existing_atom("Elixir.JSON.LD.#{error}Error")
+  end
+
 end

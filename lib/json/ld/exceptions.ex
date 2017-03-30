@@ -68,7 +68,7 @@ defmodule JSON.LD.RecursiveContextInclusionError do
   defexception code: "recursive context inclusion", message: nil
 end
 
-defmodule JSON.LD.InvalidBaseURIError do
+defmodule JSON.LD.InvalidBaseIRIError do
   @moduledoc """
   An invalid base IRI has been detected, i.e., it is neither an absolute IRI nor null.
   """
