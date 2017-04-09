@@ -4,6 +4,7 @@ defmodule JSON.LD do
     @base
     @container
     @context
+    @default
     @graph
     @id
     @index
@@ -92,5 +93,12 @@ defmodule JSON.LD do
 
   def context(context, options),
     do: JSON.LD.Context.create(%{"@context" => context}, options)
+
+
+  @doc """
+  Generator function for JSON-LD node maps.
+  """
+  def node_map(input, node_id_map \\ nil),
+    do: JSON.LD.Flattening.node_map(input, node_id_map)
 
 end

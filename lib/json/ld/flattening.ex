@@ -7,16 +7,9 @@ defmodule JSON.LD.Flattening do
 
   def flatten(input, context \\ nil, options \\ %JSON.LD.Options{}) do
     with options  = JSON.LD.Options.new(options),
-         expanded = JSON.LD.expand(input, options)
+         expanded = JSON.LD.expand(input, options),
+         node_map = node_map(expanded)
     do
-      {:ok, node_id_map} = NodeIdentifierMap.start_link
-      node_map =
-        try do
-          generate_node_map(expanded, %{"@default" => %{}}, node_id_map)
-        after
-          NodeIdentifierMap.stop(node_id_map)
-        end
-
       default_graph =
         Enum.reduce node_map, node_map["@default"], fn
           ({"@default", _}, default_graph) -> default_graph
@@ -63,6 +56,20 @@ defmodule JSON.LD.Flattening do
     end
   end
 
+  def node_map(input, node_id_map \\ nil)
+
+  def node_map(input, nil) do
+    {:ok, node_id_map} = NodeIdentifierMap.start_link
+    try do
+      node_map(input, node_id_map)
+    after
+      NodeIdentifierMap.stop(node_id_map)
+    end
+  end
+
+  def node_map(input, node_id_map) do
+    generate_node_map(input, %{"@default" => %{}}, node_id_map)
+  end
 
   @doc """
   Node Map Generation

@@ -9,6 +9,7 @@ defmodule JSON.LD.Options do
             compact_arrays: true,
             document_loader: nil,
             expand_context: nil,
+            produce_generalized_rdf: false,
             processing_mode: "json-ld-1.0"
 
   def new(), do: %JSON.LD.Options{}

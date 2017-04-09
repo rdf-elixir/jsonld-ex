@@ -10,7 +10,7 @@ defmodule JSON.LD.Utils do
   Characters additionally allowed in IRI references are treated in the same way that unreserved
   characters are treated in URI references, per [section 6.5 of RFC3987](http://tools.ietf.org/html/rfc3987#section-6.5)
   """
-#  TODO: This should be part of a dedicated URI/IRI implementation and properly tested.
+# TODO: This should be part of a dedicated RDF.IRI implementation and properly tested.
   def absolute_iri(value, base_iri)
 
   def absolute_iri(value, nil), do: value
@@ -26,7 +26,6 @@ defmodule JSON.LD.Utils do
     |> to_string
   end
 
-
   @doc """
   Checks if the given value is an absolute IRI.
 
@@ -35,8 +34,12 @@ defmodule JSON.LD.Utils do
 
   see <https://www.w3.org/TR/json-ld-api/#dfn-absolute-iri>
   """
-#  TODO: This should be part of a dedicated URI/IRI implementation and properly tested.
+# TODO: This should be part of a dedicated RDF.IRI implementation and properly tested.
   def absolute_iri?(value), do: RDF.uri?(value)
+
+# TODO: This should be part of a dedicated RDF.IRI implementation and properly tested.
+  def relative_iri?(value),
+    do: not (JSON.LD.keyword?(value) or absolute_iri?(value) or blank_node_id?(value))
 
   def compact_iri_parts(compact_iri, exclude_bnode \\ true) do
     with [prefix, suffix] when not(binary_part(suffix, 0, 2) == "//") and
