@@ -1,7 +1,7 @@
-defmodule JSON.LD.ReaderTest do
+defmodule JSON.LD.DecoderTest do
   use ExUnit.Case, async: false
 
-  doctest JSON.LD.Reader
+  doctest JSON.LD.Decoder
 
   alias RDF.{Dataset, Graph}
   alias RDF.NS
@@ -19,7 +19,7 @@ defmodule JSON.LD.ReaderTest do
 
 
   test "an empty JSON document is deserialized to an empty graph" do
-    assert JSON.LD.Reader.read!("{}") == Dataset.new(Graph.new)
+    assert JSON.LD.Decoder.decode!("{}") == Dataset.new(Graph.new)
   end
 
   describe "unnamed nodes" do
@@ -48,7 +48,7 @@ defmodule JSON.LD.ReaderTest do
     |> Enum.each(fn ({title, data}) ->
          @tag data: data
          test title, %{data: {input, output}} do
-           assert JSON.LD.Reader.read_string!(input) == RDF.Dataset.new(output)
+           assert JSON.LD.Decoder.decode!(input) == RDF.Dataset.new(output)
          end
        end)
   end
@@ -66,7 +66,7 @@ defmodule JSON.LD.ReaderTest do
     |> Enum.each(fn ({title, data}) ->
          @tag data: data
          test title, %{data: {input, output}} do
-           assert JSON.LD.Reader.read_string!(input) == RDF.Dataset.new(output)
+           assert JSON.LD.Decoder.decode!(input) == RDF.Dataset.new(output)
          end
        end)
 
@@ -96,7 +96,7 @@ defmodule JSON.LD.ReaderTest do
     |> Enum.each(fn ({title, data}) ->
          @tag data: data
          test "when relative IRIs #{title}", %{data: {input, output}} do
-           assert JSON.LD.Reader.read_string!(input, base: "http://example.org/") == 
+           assert JSON.LD.Decoder.decode!(input, base: "http://example.org/") ==
                     RDF.Dataset.new(output)
          end
        end)
@@ -129,7 +129,7 @@ defmodule JSON.LD.ReaderTest do
     |> Enum.each(fn ({title, data}) ->
          @tag data: data
          test title, %{data: {input, output}} do
-           assert JSON.LD.Reader.read_string!(input) == RDF.Dataset.new(output)
+           assert JSON.LD.Decoder.decode!(input) == RDF.Dataset.new(output)
          end
        end)
   end
@@ -170,7 +170,7 @@ defmodule JSON.LD.ReaderTest do
     |> Enum.each(fn ({title, data}) ->
          @tag data: data
          test title, %{data: {input, output}} do
-           assert JSON.LD.Reader.read_string!(input) == RDF.Dataset.new(output)
+           assert JSON.LD.Decoder.decode!(input) == RDF.Dataset.new(output)
          end
        end)
   end
@@ -218,7 +218,7 @@ defmodule JSON.LD.ReaderTest do
     |> Enum.each(fn ({title, data}) ->
          @tag data: data
          test title, %{data: {input, output}} do
-           assert JSON.LD.Reader.read_string!(input) == RDF.Dataset.new(output)
+           assert JSON.LD.Decoder.decode!(input) == RDF.Dataset.new(output)
          end
        end)
   end
@@ -243,7 +243,7 @@ defmodule JSON.LD.ReaderTest do
          if title == "empty suffix", do: @tag :skip
          @tag data: data
          test title, %{data: {input, output}} do
-            assert JSON.LD.Reader.read_string!(input) == RDF.Dataset.new(output)
+            assert JSON.LD.Decoder.decode!(input) == RDF.Dataset.new(output)
          end
        end)
   end
@@ -266,7 +266,7 @@ defmodule JSON.LD.ReaderTest do
     |> Enum.each(fn ({title, data}) ->
          @tag data: data
          test title, %{data: {input, output}} do
-           assert JSON.LD.Reader.read_string!(input) == RDF.Dataset.new(output)
+           assert JSON.LD.Decoder.decode!(input) == RDF.Dataset.new(output)
          end
        end)
   end
@@ -306,7 +306,7 @@ defmodule JSON.LD.ReaderTest do
     |> Enum.each(fn ({title, data}) ->
          @tag data: data
          test title, %{data: {input, output}} do
-           assert JSON.LD.Reader.read_string!(input) == RDF.Dataset.new(output)
+           assert JSON.LD.Decoder.decode!(input) == RDF.Dataset.new(output)
          end
        end)
   end
@@ -329,7 +329,7 @@ defmodule JSON.LD.ReaderTest do
     |> Enum.each(fn ({title, data}) ->
          @tag data: data
          test title, %{data: {input, output}} do
-           assert JSON.LD.Reader.read_string!(input) == RDF.Dataset.new(output)
+           assert JSON.LD.Decoder.decode!(input) == RDF.Dataset.new(output)
          end
        end)
   end
@@ -389,7 +389,7 @@ defmodule JSON.LD.ReaderTest do
     |> Enum.each(fn ({title, data}) ->
          @tag data: data
          test title, %{data: {input, output}} do
-           assert JSON.LD.Reader.read_string!(input) == RDF.Dataset.new(output)
+           assert JSON.LD.Decoder.decode!(input) == RDF.Dataset.new(output)
          end
        end)
   end
@@ -497,7 +497,7 @@ defmodule JSON.LD.ReaderTest do
     |> Enum.each(fn ({title, data}) ->
          @tag data: data
          test title, %{data: {input, output}} do
-           assert JSON.LD.Reader.read_string!(input) == RDF.Dataset.new(output)
+           assert JSON.LD.Decoder.decode!(input) == RDF.Dataset.new(output)
          end
        end)
 
@@ -540,7 +540,7 @@ defmodule JSON.LD.ReaderTest do
     |> Enum.each(fn ({title, data}) ->
          @tag data: data
          test "term def with @id + @type coercion: #{title}", %{data: {input, output}} do
-           assert JSON.LD.Reader.read_string!(input) == RDF.Dataset.new(output)
+           assert JSON.LD.Decoder.decode!(input) == RDF.Dataset.new(output)
          end
        end)
 
@@ -576,7 +576,7 @@ defmodule JSON.LD.ReaderTest do
     |> Enum.each(fn ({title, data}) ->
          @tag data: data
          test "term def with @id + @type + @container list: #{title}", %{data: {input, output}} do
-           assert JSON.LD.Reader.read_string!(input) == RDF.Dataset.new(output)
+           assert JSON.LD.Decoder.decode!(input) == RDF.Dataset.new(output)
          end
        end)
   end
@@ -588,13 +588,13 @@ defmodule JSON.LD.ReaderTest do
 
     test "outputs statements with blank node predicates if :produceGeneralizedRdf is true",
       %{input: input} do
-       dataset = JSON.LD.Reader.read_string!(input, produce_generalized_rdf: true)
+       dataset = JSON.LD.Decoder.decode!(input, produce_generalized_rdf: true)
        assert RDF.Dataset.statement_count(dataset) == 1
     end
 
     test "rejects statements with blank node predicates if :produceGeneralizedRdf is false",
       %{input: input} do
-       dataset = JSON.LD.Reader.read_string!(input, produce_generalized_rdf: false)
+       dataset = JSON.LD.Decoder.decode!(input, produce_generalized_rdf: false)
        assert RDF.Dataset.statement_count(dataset) == 0
     end
   end
@@ -665,7 +665,7 @@ defmodule JSON.LD.ReaderTest do
          end
          @tag data: data
          test title, %{data: {input, output}} do
-           assert JSON.LD.Reader.read_string!(input) == RDF.Dataset.new(output)
+           assert JSON.LD.Decoder.decode!(input) == RDF.Dataset.new(output)
          end
        end)
   end

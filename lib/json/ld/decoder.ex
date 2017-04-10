@@ -1,8 +1,8 @@
-defmodule JSON.LD.Reader do
+defmodule JSON.LD.Decoder do
   @moduledoc """
   """
 
-  use RDF.Reader
+  use RDF.Serialization.Decoder
 
   import JSON.LD.{NodeIdentifierMap, Utils}
   alias JSON.LD.NodeIdentifierMap
@@ -10,7 +10,7 @@ defmodule JSON.LD.Reader do
   alias RDF.NS.{XSD}
 
 
-  def read_string(content, opts \\ []) do
+  def decode(content, opts \\ []) do
     with {:ok, json_ld_object} <- parse_json(content),
          dataset                = to_rdf(json_ld_object, opts) do
       {:ok, dataset}

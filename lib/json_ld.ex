@@ -1,5 +1,15 @@
 defmodule JSON.LD do
 
+  use RDF.Serialization
+
+  import RDF.Sigils
+
+  @id           ~I<http://www.w3.org/ns/formats/JSON-LD>
+  @extension    "jsonld"
+  @content_type "application/ld+json"
+
+  def options,      do: JSON.LD.Options.new
+
   @keywords ~w[
     @base
     @container
