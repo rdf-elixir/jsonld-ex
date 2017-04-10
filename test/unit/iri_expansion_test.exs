@@ -2,6 +2,7 @@ defmodule JSON.LD.IRIExpansionTest do
   use ExUnit.Case, async: false
 
   import JSON.LD.IRIExpansion
+  import RDF.Sigils
 
   setup do
     context = JSON.LD.context(%{
@@ -21,18 +22,18 @@ defmodule JSON.LD.IRIExpansionTest do
   describe "relative IRI with no options" do
 # TODO: Test this with RDF.URIs and RDF.BlankNodes
 #    %{
-#      "absolute IRI" =>  ["http://example.org/", RDF.uri("http://example.org/"],
-#      "term" =>          ["ex",                  RDF.uri("ex")],
-#      "prefix:suffix" => ["ex:suffix",           RDF.uri("http://example.org/suffix")],
+#      "absolute IRI" =>  ["http://example.org/", ~I<http://example.org/>],
+#      "term" =>          ["ex",                  ~I<ex>],
+#      "prefix:suffix" => ["ex:suffix",           ~I<http://example.org/suffix>],
 #      "keyword" =>       ["@type",               "@type"],
-#      "empty" =>         [":suffix",             RDF.uri("http://empty/suffix")],
-#      "unmapped" =>      ["foo",                 RDF.uri("foo")],
-#      "empty term" =>    ["",                    RDF.uri("")],
-#      "another abs IRI"=>["ex://foo",            RDF.uri("ex://foo")],
+#      "empty" =>         [":suffix",             ~I<http://empty/suffix>],
+#      "unmapped" =>      ["foo",                 ~I<foo>],
+#      "empty term" =>    ["",                    ~I<>],
+#      "another abs IRI"=>["ex://foo",            ~I<ex://foo>],
 #      "absolute IRI looking like a curie" =>
-#                         ["foo:bar",             RDF.uri("foo:bar")],
+#                         ["foo:bar",             ~I<foo:bar>],
 #      "bnode" =>         ["_:t0",                RDF.bnode("t0")],
-#      "_" =>             ["_",                   RDF.uri("_")],
+#      "_" =>             ["_",                   ~I<_>],
 #    }
     %{
       "absolute IRI" =>  ["http://example.org/", "http://example.org/"],
@@ -59,18 +60,18 @@ defmodule JSON.LD.IRIExpansionTest do
   describe "relative IRI with base IRI" do
 # TODO: Test this with RDF.URIs and RDF.BlankNodes
 #    %{
-#      "absolute IRI" =>  ["http://example.org/", RDF.uri("http://example.org/")],
-#      "term" =>          ["ex",                  RDF.uri("http://base/ex")],
-#      "prefix:suffix" => ["ex:suffix",           RDF.uri("http://example.org/suffix")],
+#      "absolute IRI" =>  ["http://example.org/", ~I<http://example.org/>],
+#      "term" =>          ["ex",                  ~I<http://base/ex>],
+#      "prefix:suffix" => ["ex:suffix",           ~I<http://example.org/suffix>],
 #      "keyword" =>       ["@type",               "@type"],
-#      "empty" =>         [":suffix",             RDF.uri("http://empty/suffix")],
-#      "unmapped" =>      ["foo",                 RDF.uri("http://base/foo")],
-#      "empty term" =>    ["",                    RDF.uri("http://base/")],
-#      "another abs IRI"=>["ex://foo",            RDF.uri("ex://foo")],
+#      "empty" =>         [":suffix",             ~I<http://empty/suffix>],
+#      "unmapped" =>      ["foo",                 ~I<http://base/foo>],
+#      "empty term" =>    ["",                    ~I<http://base/>],
+#      "another abs IRI"=>["ex://foo",            ~I<ex://foo>],
 #      "absolute IRI looking like a curie" =>
-#                         ["foo:bar",             RDF.uri("foo:bar")],
+#                         ["foo:bar",             ~I<foo:bar>],
 #      "bnode" =>         ["_:t0",                RDF.bnode("t0")],
-#      "_" =>             ["_",                   RDF.uri("http://base/_")],
+#      "_" =>             ["_",                   ~I<http://base/_>],
 #    }
     %{
       "absolute IRI" =>  ["http://example.org/", "http://example.org/"],
@@ -97,18 +98,18 @@ defmodule JSON.LD.IRIExpansionTest do
   describe "relative IRI @vocab" do
 # TODO: Test this with RDF.URIs and RDF.BlankNodes
 #    %{
-#      "absolute IRI" =>  ["http://example.org/", RDF.uri("http://example.org/")],
-#      "term" =>          ["ex",                  RDF.uri("http://example.org/")],
-#      "prefix:suffix" => ["ex:suffix",           RDF.uri("http://example.org/suffix")],
+#      "absolute IRI" =>  ["http://example.org/", ~I<http://example.org/>],
+#      "term" =>          ["ex",                  ~I<http://example.org/>],
+#      "prefix:suffix" => ["ex:suffix",           ~I<http://example.org/suffix>],
 #      "keyword" =>       ["@type",               "@type"],
-#      "empty" =>         [":suffix",             RDF.uri("http://empty/suffix")],
-#      "unmapped" =>      ["foo",                 RDF.uri("http://vocab/foo")],
-#      "empty term" =>    ["",                    RDF.uri("http://empty/")],
-#      "another abs IRI"=>["ex://foo",            RDF.uri("ex://foo")],
+#      "empty" =>         [":suffix",             ~I<http://empty/suffix>],
+#      "unmapped" =>      ["foo",                 ~I<http://vocab/foo>],
+#      "empty term" =>    ["",                    ~I<http://empty/>],
+#      "another abs IRI"=>["ex://foo",            ~I<ex://foo>],
 #      "absolute IRI looking like a curie" =>
-#                         ["foo:bar",             RDF.uri("foo:bar")],
+#                         ["foo:bar",             ~I<foo:bar>],
 #      "bnode" =>         ["_:t0",                RDF.bode("t0")],
-#      "_" =>             ["_",                   RDF.uri("http://underscore/")],
+#      "_" =>             ["_",                   ~I<http://underscore/>],
 #    }
     %{
       "absolute IRI" =>  ["http://example.org/", "http://example.org/"],

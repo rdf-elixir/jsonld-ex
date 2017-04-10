@@ -7,6 +7,7 @@ defmodule JSON.LD.ReaderTest do
   alias RDF.NS
   alias RDF.NS.{XSD, RDFS}
 
+  import RDF.Sigils
 
   defmodule TestNS do
     use RDF.Vocabulary.Namespace
@@ -27,21 +28,21 @@ defmodule JSON.LD.ReaderTest do
         ~s({
           "http://example.com/foo": "bar"
         }),
-        {RDF.bnode("b0"), RDF.uri("http://example.com/foo"), RDF.literal("bar")}
+        {RDF.bnode("b0"), ~I<http://example.com/foo>, RDF.literal("bar")}
       },
       "@id with _:a" => {
         ~s({
           "@id": "_:a",
           "http://example.com/foo": "bar"
         }),
-        {RDF.bnode("b0"), RDF.uri("http://example.com/foo"), RDF.literal("bar")}
+        {RDF.bnode("b0"), ~I<http://example.com/foo>, RDF.literal("bar")}
       },
       "@id with _:a and reference" => {
         ~s({
           "@id": "_:a",
           "http://example.com/foo": {"@id": "_:a"}
         }),
-        {RDF.bnode("b0"), RDF.uri("http://example.com/foo"), RDF.bnode("b0")}
+        {RDF.bnode("b0"), ~I<http://example.com/foo>, RDF.bnode("b0")}
       },
     }
     |> Enum.each(fn ({title, data}) ->
@@ -59,7 +60,7 @@ defmodule JSON.LD.ReaderTest do
           "@id": "http://example.com/a",
           "http://example.com/foo": "bar"
         }),
-        {RDF.uri("http://example.com/a"), RDF.uri("http://example.com/foo"), RDF.literal("bar")}
+        {~I<http://example.com/a>, ~I<http://example.com/foo>, RDF.literal("bar")}
       },
     }
     |> Enum.each(fn ({title, data}) ->
@@ -75,21 +76,21 @@ defmodule JSON.LD.ReaderTest do
           "@id": "",
           "@type": "#{RDF.uri(RDFS.Resource)}"
         }),
-        {RDF.uri("http://example.org/"), NS.RDF.type, RDF.uri(RDFS.Resource)}
+        {~I<http://example.org/>, NS.RDF.type, RDF.uri(RDFS.Resource)}
       },
        "relative" => {
         ~s({
           "@id": "a/b",
           "@type": "#{RDF.uri(RDFS.Resource)}"
         }),
-        {RDF.uri("http://example.org/a/b"), NS.RDF.type, RDF.uri(RDFS.Resource)}
+        {~I<http://example.org/a/b>, NS.RDF.type, RDF.uri(RDFS.Resource)}
       },
       "hash" => {
         ~s({
           "@id": "#a",
           "@type": "#{RDF.uri(RDFS.Resource)}"
         }),
-        {RDF.uri("http://example.org/#a"), NS.RDF.type, RDF.uri(RDFS.Resource)}
+        {~I<http://example.org/#a>, NS.RDF.type, RDF.uri(RDFS.Resource)}
       },
     }
     |> Enum.each(fn ({title, data}) ->
@@ -107,15 +108,15 @@ defmodule JSON.LD.ReaderTest do
         ~s({
           "@type": "http://example.com/foo"
         }),
-        {RDF.bnode("b0"), NS.RDF.type, RDF.uri("http://example.com/foo")}
+        {RDF.bnode("b0"), NS.RDF.type, ~I<http://example.com/foo>}
       },
       "two types" => {
         ~s({
           "@type": ["http://example.com/foo", "http://example.com/baz"]
         }),
         [
-          {RDF.bnode("b0"), NS.RDF.type, RDF.uri("http://example.com/foo")},
-          {RDF.bnode("b0"), NS.RDF.type, RDF.uri("http://example.com/baz")},
+          {RDF.bnode("b0"), NS.RDF.type, ~I<http://example.com/foo>},
+          {RDF.bnode("b0"), NS.RDF.type, ~I<http://example.com/baz>},
         ]
       },
       "blank node type" => {
@@ -139,30 +140,30 @@ defmodule JSON.LD.ReaderTest do
         ~s({
           "http://example.com/foo": "bar"
         }),
-        {RDF.bnode("b0"), RDF.uri("http://example.com/foo"), RDF.literal("bar")}
+        {RDF.bnode("b0"), ~I<http://example.com/foo>, RDF.literal("bar")}
       },
       "strings" => {
         ~s({
           "http://example.com/foo": ["bar", "baz"]
         }),
         [
-          {RDF.bnode("b0"), RDF.uri("http://example.com/foo"), RDF.literal("bar")},
-          {RDF.bnode("b0"), RDF.uri("http://example.com/foo"), RDF.literal("baz")},
+          {RDF.bnode("b0"), ~I<http://example.com/foo>, RDF.literal("bar")},
+          {RDF.bnode("b0"), ~I<http://example.com/foo>, RDF.literal("baz")},
         ]
       },
       "IRI" => {
         ~s({
           "http://example.com/foo": {"@id": "http://example.com/bar"}
         }),
-        {RDF.bnode("b0"), RDF.uri("http://example.com/foo"), RDF.uri("http://example.com/bar")}
+        {RDF.bnode("b0"), ~I<http://example.com/foo>, ~I<http://example.com/bar>}
       },
       "IRIs" => {
         ~s({
           "http://example.com/foo": [{"@id": "http://example.com/bar"}, {"@id": "http://example.com/baz"}]
         }),
         [
-          {RDF.bnode("b0"), RDF.uri("http://example.com/foo"), RDF.uri("http://example.com/bar")},
-          {RDF.bnode("b0"), RDF.uri("http://example.com/foo"), RDF.uri("http://example.com/baz")},
+          {RDF.bnode("b0"), ~I<http://example.com/foo>, ~I<http://example.com/bar>},
+          {RDF.bnode("b0"), ~I<http://example.com/foo>, ~I<http://example.com/baz>},
         ]
       },
     }
@@ -179,12 +180,12 @@ defmodule JSON.LD.ReaderTest do
       "plain literal" =>
       {
         ~s({"@id": "http://greggkellogg.net/foaf#me", "http://xmlns.com/foaf/0.1/name": "Gregg Kellogg"}),
-        {RDF.uri("http://greggkellogg.net/foaf#me"), RDF.uri("http://xmlns.com/foaf/0.1/name"), RDF.literal("Gregg Kellogg")},
+        {~I<http://greggkellogg.net/foaf#me>, ~I<http://xmlns.com/foaf/0.1/name>, RDF.literal("Gregg Kellogg")},
       },
       "explicit plain literal" =>
       {
         ~s({"http://xmlns.com/foaf/0.1/name": {"@value": "Gregg Kellogg"}}),
-        {RDF.bnode("b0"), RDF.uri("http://xmlns.com/foaf/0.1/name"), RDF.literal("Gregg Kellogg")}
+        {RDF.bnode("b0"), ~I<http://xmlns.com/foaf/0.1/name>, RDF.literal("Gregg Kellogg")}
       },
       "language tagged literal" =>
       {
@@ -201,8 +202,8 @@ defmodule JSON.LD.ReaderTest do
           "http://xmlns.com/foaf/0.1/name": {"@value": "Herman Iván", "@language": "hu"}
         }]),
         [
-           {RDF.uri("http://greggkellogg.net/foaf#me"), RDF.uri("http://xmlns.com/foaf/0.1/knows"), RDF.uri("http://www.ivan-herman.net/foaf#me")},
-           {RDF.uri("http://www.ivan-herman.net/foaf#me"), RDF.uri("http://xmlns.com/foaf/0.1/name"), RDF.literal("Herman Iv\u00E1n", language: "hu")},
+           {~I<http://greggkellogg.net/foaf#me>, ~I<http://xmlns.com/foaf/0.1/knows>, ~I<http://www.ivan-herman.net/foaf#me>},
+           {~I<http://www.ivan-herman.net/foaf#me>, ~I<http://xmlns.com/foaf/0.1/name>, RDF.literal("Herman Iv\u00E1n", language: "hu")},
         ]
       },
       "explicit datatyped literal" =>
@@ -211,7 +212,7 @@ defmodule JSON.LD.ReaderTest do
           "@id":  "http://greggkellogg.net/foaf#me",
           "http://purl.org/dc/terms/created":  {"@value": "1957-02-27", "@type": "http://www.w3.org/2001/XMLSchema#date"}
         }),
-        {RDF.uri("http://greggkellogg.net/foaf#me"), RDF.uri("http://purl.org/dc/terms/created"), RDF.literal("1957-02-27", datatype: XSD.date)},
+        {~I<http://greggkellogg.net/foaf#me>, ~I<http://purl.org/dc/terms/created>, RDF.literal("1957-02-27", datatype: XSD.date)},
       },
     }
     |> Enum.each(fn ({title, data}) ->
@@ -226,16 +227,16 @@ defmodule JSON.LD.ReaderTest do
     %{
        "empty prefix" => {
          ~s({"@context": {"": "http://example.com/default#"}, ":foo": "bar"}),
-         {RDF.bnode("b0"), RDF.uri("http://example.com/default#foo"), RDF.literal("bar")}
+         {RDF.bnode("b0"), ~I<http://example.com/default#foo>, RDF.literal("bar")}
        },
        # TODO:
        "empty suffix" => {
          ~s({"@context": {"prefix": "http://example.com/default#"}, "prefix:": "bar"}),
-         {RDF.bnode("b0"), RDF.uri("http://example.com/default#"), RDF.literal("bar")}
+         {RDF.bnode("b0"), ~I<http://example.com/default#>, RDF.literal("bar")}
        },
        "prefix:suffix" => {
          ~s({"@context": {"prefix": "http://example.com/default#"}, "prefix:foo": "bar"}),
-         {RDF.bnode("b0"), RDF.uri("http://example.com/default#foo"), RDF.literal("bar")}
+         {RDF.bnode("b0"), ~I<http://example.com/default#foo>, RDF.literal("bar")}
        }
     }
     |> Enum.each(fn ({title, data}) ->
@@ -257,8 +258,8 @@ defmodule JSON.LD.ReaderTest do
           "name": "Gregg Kellogg"
         }),
         [
-           {RDF.uri("http://example.com/about#gregg"), NS.RDF.type, RDF.uri("http://schema.org/Person")},
-           {RDF.uri("http://example.com/about#gregg"), RDF.uri("http://schema.org/name"), RDF.literal("Gregg Kellogg")},
+           {~I<http://example.com/about#gregg>, NS.RDF.type, ~I<http://schema.org/Person>},
+           {~I<http://example.com/about#gregg>, ~I<http://schema.org/name>, RDF.literal("Gregg Kellogg")},
         ]
       },
     }
@@ -283,8 +284,8 @@ defmodule JSON.LD.ReaderTest do
           }
         }),
         [
-           {RDF.uri("http://greggkellogg.net/foaf#me"), RDF.uri("http://xmlns.com/foaf/0.1/knows"), RDF.uri("http://www.ivan-herman.net/foaf#me")},
-           {RDF.uri("http://www.ivan-herman.net/foaf#me"), RDF.uri("http://xmlns.com/foaf/0.1/name"), RDF.literal("Ivan Herman")},
+           {~I<http://greggkellogg.net/foaf#me>, ~I<http://xmlns.com/foaf/0.1/knows>, ~I<http://www.ivan-herman.net/foaf#me>},
+           {~I<http://www.ivan-herman.net/foaf#me>, ~I<http://xmlns.com/foaf/0.1/name>, RDF.literal("Ivan Herman")},
         ]
       },
       "implicit subject" =>
@@ -297,8 +298,8 @@ defmodule JSON.LD.ReaderTest do
           }
         }),
         [
-           {RDF.uri("http://greggkellogg.net/foaf#me"), RDF.uri("http://xmlns.com/foaf/0.1/knows"), RDF.bnode("b0")},
-           {RDF.bnode("b0"), RDF.uri("http://xmlns.com/foaf/0.1/name"), RDF.literal("Manu Sporny")},
+           {~I<http://greggkellogg.net/foaf#me>, ~I<http://xmlns.com/foaf/0.1/knows>, RDF.bnode("b0")},
+           {RDF.bnode("b0"), ~I<http://xmlns.com/foaf/0.1/name>, RDF.literal("Manu Sporny")},
         ]
       },
     }
@@ -320,8 +321,8 @@ defmodule JSON.LD.ReaderTest do
           "foaf:knows": ["Manu Sporny", "Ivan Herman"]
         }),
         [
-           {RDF.uri("http://greggkellogg.net/foaf#me"), RDF.uri("http://xmlns.com/foaf/0.1/knows"), RDF.literal("Manu Sporny")},
-           {RDF.uri("http://greggkellogg.net/foaf#me"), RDF.uri("http://xmlns.com/foaf/0.1/knows"), RDF.literal("Ivan Herman")},
+           {~I<http://greggkellogg.net/foaf#me>, ~I<http://xmlns.com/foaf/0.1/knows>, RDF.literal("Manu Sporny")},
+           {~I<http://greggkellogg.net/foaf#me>, ~I<http://xmlns.com/foaf/0.1/knows>, RDF.literal("Ivan Herman")},
         ]
       },
     }
@@ -341,7 +342,7 @@ defmodule JSON.LD.ReaderTest do
           "@id": "http://greggkellogg.net/foaf#me",
           "foaf:knows": {"@list": []}
         }),
-        {RDF.uri("http://greggkellogg.net/foaf#me"), RDF.uri("http://xmlns.com/foaf/0.1/knows"), NS.RDF.nil}
+        {~I<http://greggkellogg.net/foaf#me>, ~I<http://xmlns.com/foaf/0.1/knows>, NS.RDF.nil}
       },
      "single value" => {
        ~s({
@@ -350,7 +351,7 @@ defmodule JSON.LD.ReaderTest do
          "foaf:knows": {"@list": ["Manu Sporny"]}
        }),
        [
-          {RDF.uri("http://greggkellogg.net/foaf#me"), RDF.uri("http://xmlns.com/foaf/0.1/knows"), RDF.bnode("b0")},
+          {~I<http://greggkellogg.net/foaf#me>, ~I<http://xmlns.com/foaf/0.1/knows>, RDF.bnode("b0")},
           {RDF.bnode("b0"), NS.RDF.first, RDF.literal("Manu Sporny")},
           {RDF.bnode("b0"), NS.RDF.rest, NS.RDF.nil},
        ]
@@ -365,7 +366,7 @@ defmodule JSON.LD.ReaderTest do
          "foaf:knows": ["Manu Sporny"]
        }),
        [
-          {RDF.uri("http://greggkellogg.net/foaf#me"), RDF.uri("http://xmlns.com/foaf/0.1/knows"), RDF.bnode("b0")},
+          {~I<http://greggkellogg.net/foaf#me>, ~I<http://xmlns.com/foaf/0.1/knows>, RDF.bnode("b0")},
           {RDF.bnode("b0"), NS.RDF.first, RDF.literal("Manu Sporny")},
           {RDF.bnode("b0"), NS.RDF.rest, NS.RDF.nil},
        ]
@@ -377,7 +378,7 @@ defmodule JSON.LD.ReaderTest do
          "foaf:knows": {"@list": ["Manu Sporny", "Dave Longley"]}
        }),
        [
-          {RDF.uri("http://greggkellogg.net/foaf#me"), RDF.uri("http://xmlns.com/foaf/0.1/knows"), RDF.bnode("b1")},
+          {~I<http://greggkellogg.net/foaf#me>, ~I<http://xmlns.com/foaf/0.1/knows>, RDF.bnode("b1")},
           {RDF.bnode("b1"), NS.RDF.first, RDF.literal("Manu Sporny")},
           {RDF.bnode("b1"), NS.RDF.rest, RDF.bnode("b0")},
           {RDF.bnode("b0"), NS.RDF.first, RDF.literal("Dave Longley")},
@@ -404,7 +405,7 @@ defmodule JSON.LD.ReaderTest do
           "@id":  "http://greggkellogg.net/foaf#me",
           "knows":  "http://www.ivan-herman.net/foaf#me"
         }),
-        {RDF.uri("http://greggkellogg.net/foaf#me"), RDF.uri("http://xmlns.com/foaf/0.1/knows"), RDF.uri("http://www.ivan-herman.net/foaf#me")},
+        {~I<http://greggkellogg.net/foaf#me>, ~I<http://xmlns.com/foaf/0.1/knows>, ~I<http://www.ivan-herman.net/foaf#me>},
       },
       "datatype coersion" =>
       {
@@ -417,7 +418,7 @@ defmodule JSON.LD.ReaderTest do
           "@id":  "http://greggkellogg.net/foaf#me",
           "created":  "1957-02-27"
         }),
-        {RDF.uri("http://greggkellogg.net/foaf#me"), RDF.uri("http://purl.org/dc/terms/created"), RDF.literal("1957-02-27", datatype: XSD.date)},
+        {~I<http://greggkellogg.net/foaf#me>, ~I<http://purl.org/dc/terms/created>, RDF.literal("1957-02-27", datatype: XSD.date)},
       },
       "sub-objects with context" => {
         ~s({
@@ -428,8 +429,8 @@ defmodule JSON.LD.ReaderTest do
           }
         }),
        [
-          {RDF.bnode("b0"), RDF.uri("http://example.com/foo"), RDF.bnode("b1")},
-          {RDF.bnode("b1"), RDF.uri("http://example.org/foo"), RDF.literal("bar")},
+          {RDF.bnode("b0"), ~I<http://example.com/foo>, RDF.bnode("b1")},
+          {RDF.bnode("b1"), ~I<http://example.org/foo>, RDF.literal("bar")},
        ]
       },
       "contexts with a list processed in order" => {
@@ -440,7 +441,7 @@ defmodule JSON.LD.ReaderTest do
           ],
           "foo":  "bar"
         }),
-        {RDF.bnode("b0"), RDF.uri("http://example.org/foo"), RDF.literal("bar")},
+        {RDF.bnode("b0"), ~I<http://example.org/foo>, RDF.literal("bar")},
       },
       "term definition resolves term as IRI" => {
         ~s({
@@ -450,7 +451,7 @@ defmodule JSON.LD.ReaderTest do
           ],
           "bar":  "bar"
         }),
-        {RDF.bnode("b0"), RDF.uri("http://example.com/foo"), RDF.literal("bar")},
+        {RDF.bnode("b0"), ~I<http://example.com/foo>, RDF.literal("bar")},
       },
       "term definition resolves prefix as IRI" => {
         ~s({
@@ -460,7 +461,7 @@ defmodule JSON.LD.ReaderTest do
           ],
           "bar":  "bar"
         }),
-        {RDF.bnode("b0"), RDF.uri("http://example.com/foo#bar"), RDF.literal("bar")},
+        {RDF.bnode("b0"), ~I<http://example.com/foo#bar>, RDF.literal("bar")},
       },
       "@language" => {
         ~s({
@@ -470,7 +471,7 @@ defmodule JSON.LD.ReaderTest do
           },
           "foo:bar":  "baz"
         }),
-        {RDF.bnode("b0"), RDF.uri("http://example.com/foo#bar"), RDF.literal("baz", language: "en")},
+        {RDF.bnode("b0"), ~I<http://example.com/foo#bar>, RDF.literal("baz", language: "en")},
       },
       "@language with override" => {
         ~s({
@@ -480,7 +481,7 @@ defmodule JSON.LD.ReaderTest do
           },
           "foo:bar":  {"@value": "baz", "@language": "fr"}
         }),
-        {RDF.bnode("b0"), RDF.uri("http://example.com/foo#bar"), RDF.literal("baz", language: "fr")},
+        {RDF.bnode("b0"), ~I<http://example.com/foo#bar>, RDF.literal("baz", language: "fr")},
       },
       "@language with plain" => {
         ~s({
@@ -490,7 +491,7 @@ defmodule JSON.LD.ReaderTest do
           },
           "foo:bar":  {"@value": "baz"}
         }),
-        {RDF.bnode("b0"), RDF.uri("http://example.com/foo#bar"), RDF.literal("baz")},
+        {RDF.bnode("b0"), ~I<http://example.com/foo#bar>, RDF.literal("baz")},
       },
     }
     |> Enum.each(fn ({title, data}) ->
@@ -509,7 +510,7 @@ defmodule JSON.LD.ReaderTest do
           ],
           "foo": "bar"
         }),
-        {RDF.bnode("b0"), RDF.uri("http://example.org/foo#"), RDF.literal("bar", datatype: XSD.date)},
+        {RDF.bnode("b0"), ~I<http://example.org/foo#>, RDF.literal("bar", datatype: XSD.date)},
       },
       "@id with term" => {
         ~s({
@@ -518,7 +519,7 @@ defmodule JSON.LD.ReaderTest do
           ],
           "foo": "http://example.org/foo#bar"
         }),
-        {RDF.bnode("b0"), RDF.uri("http://example.org/foo#bar"), RDF.uri("http://example.org/foo#bar")},
+        {RDF.bnode("b0"), ~I<http://example.org/foo#bar>, ~I<http://example.org/foo#bar>},
       },
       "coercion without term definition" => {
         ~s({
@@ -533,7 +534,7 @@ defmodule JSON.LD.ReaderTest do
           ],
           "dc:date": "2011-11-23"
         }),
-        {RDF.bnode("b0"), RDF.uri("http://purl.org/dc/terms/date"), RDF.literal("2011-11-23", datatype: XSD.date)},
+        {RDF.bnode("b0"), ~I<http://purl.org/dc/terms/date>, RDF.literal("2011-11-23", datatype: XSD.date)},
       },
     }
     |> Enum.each(fn ({title, data}) ->
@@ -553,7 +554,7 @@ defmodule JSON.LD.ReaderTest do
           "foo": ["bar"]
         }),
         [
-          {RDF.bnode("b0"), RDF.uri("http://example.org/foo#"), RDF.bnode("b1")},
+          {RDF.bnode("b0"), ~I<http://example.org/foo#>, RDF.bnode("b1")},
           {RDF.bnode("b1"), NS.RDF.first, RDF.literal("bar", datatype: XSD.date)},
           {RDF.bnode("b1"), NS.RDF.rest, NS.RDF.nil},
         ]
@@ -566,8 +567,8 @@ defmodule JSON.LD.ReaderTest do
           "foo": ["http://example.org/foo#bar"]
         }),
         [
-          {RDF.bnode("b0"), RDF.uri("http://example.org/foo#bar"), RDF.bnode("b1")},
-          {RDF.bnode("b1"), NS.RDF.first, RDF.uri("http://example.org/foo#bar")},
+          {RDF.bnode("b0"), ~I<http://example.org/foo#bar>, RDF.bnode("b1")},
+          {RDF.bnode("b1"), NS.RDF.first, ~I<http://example.org/foo#bar>},
           {RDF.bnode("b1"), NS.RDF.rest, NS.RDF.nil},
         ]
       },
@@ -604,23 +605,23 @@ defmodule JSON.LD.ReaderTest do
       "number syntax (decimal)" =>
       {
         ~s({"@context": { "measure": "http://example/measure#"}, "measure:cups": 5.3}),
-        {RDF.bnode("b0"), RDF.uri("http://example/measure#cups"), RDF.literal("5.3E0", datatype: XSD.double)}
+        {RDF.bnode("b0"), ~I<http://example/measure#cups>, RDF.literal("5.3E0", datatype: XSD.double)}
       },
       # TODO:
       "number syntax (double)" =>
       {
         ~s({"@context": { "measure": "http://example/measure#"}, "measure:cups": 5.3e0}),
-        {RDF.bnode("b0"), RDF.uri("http://example/measure#cups"), RDF.literal("5.3E0", datatype: XSD.double)}
+        {RDF.bnode("b0"), ~I<http://example/measure#cups>, RDF.literal("5.3E0", datatype: XSD.double)}
       },
      "number syntax (integer)" =>
      {
        ~s({"@context": { "chem": "http://example/chem#"}, "chem:protons": 12}),
-       {RDF.bnode("b0"), RDF.uri("http://example/chem#protons"), RDF.literal("12", datatype: XSD.integer)}
+       {RDF.bnode("b0"), ~I<http://example/chem#protons>, RDF.literal("12", datatype: XSD.integer)}
      },
      "boolan syntax" =>
      {
        ~s({"@context": { "sensor": "http://example/sensor#"}, "sensor:active": true}),
-       {RDF.bnode("b0"), RDF.uri("http://example/sensor#active"), RDF.literal("true", datatype: XSD.boolean)}
+       {RDF.bnode("b0"), ~I<http://example/sensor#active>, RDF.literal("true", datatype: XSD.boolean)}
      },
      "Array top element" =>
      {
@@ -629,8 +630,8 @@ defmodule JSON.LD.ReaderTest do
          {"@id":   "http://example.com/#you", "@type": "http://xmlns.com/foaf/0.1/Person"}
        ]),
        [
-         {RDF.uri("http://example.com/#me"), NS.RDF.type, RDF.uri("http://xmlns.com/foaf/0.1/Person")},
-         {RDF.uri("http://example.com/#you"), NS.RDF.type, RDF.uri("http://xmlns.com/foaf/0.1/Person")}
+         {~I<http://example.com/#me>, NS.RDF.type, ~I<http://xmlns.com/foaf/0.1/Person>},
+         {~I<http://example.com/#you>, NS.RDF.type, ~I<http://xmlns.com/foaf/0.1/Person>}
        ]
      },
      "@graph with array of objects value" =>
@@ -643,8 +644,8 @@ defmodule JSON.LD.ReaderTest do
          ]
        }),
        [
-         {RDF.uri("http://example.com/#me"), NS.RDF.type, RDF.uri("http://xmlns.com/foaf/0.1/Person")},
-         {RDF.uri("http://example.com/#you"), NS.RDF.type, RDF.uri("http://xmlns.com/foaf/0.1/Person")}
+         {~I<http://example.com/#me>, NS.RDF.type, ~I<http://xmlns.com/foaf/0.1/Person>},
+         {~I<http://example.com/#you>, NS.RDF.type, ~I<http://xmlns.com/foaf/0.1/Person>}
        ]
      },
      "XMLLiteral" =>
@@ -655,7 +656,7 @@ defmodule JSON.LD.ReaderTest do
            "@type": "http://www.w3.org/1999/02/22-rdf-syntax-ns#XMLLiteral"
          }
        }),
-       {RDF.bnode("b0"), RDF.uri("http://rdfs.org/sioc/ns#content"), RDF.literal("foo", datatype: "http://www.w3.org/1999/02/22-rdf-syntax-ns#XMLLiteral")}
+       {RDF.bnode("b0"), ~I<http://rdfs.org/sioc/ns#content>, RDF.literal("foo", datatype: "http://www.w3.org/1999/02/22-rdf-syntax-ns#XMLLiteral")}
      }
     }
     |> Enum.each(fn ({title, data}) ->
