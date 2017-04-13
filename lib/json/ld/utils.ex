@@ -42,12 +42,12 @@ defmodule JSON.LD.Utils do
     do: not (JSON.LD.keyword?(value) or absolute_iri?(value) or blank_node_id?(value))
 
   def compact_iri_parts(compact_iri, exclude_bnode \\ true) do
-    with [prefix, suffix] when not(binary_part(suffix, 0, 2) == "//") and
-                               not(exclude_bnode and prefix == "_") <-
-            String.split(compact_iri, ":", parts: 2) do
-      [prefix, suffix]
+    with [prefix, suffix] <- String.split(compact_iri, ":", parts: 2) do
+      if not(String.starts_with?(suffix, "//")) and
+         not(exclude_bnode and prefix == "_"),
+      do: [prefix, suffix]
     else
-     _ -> nil
+      _ -> nil
     end
   end
 
