@@ -3,7 +3,7 @@ defmodule JSON.LD.DecoderTest do
 
   doctest JSON.LD.Decoder
 
-  alias RDF.{Dataset, Graph}
+  alias RDF.Dataset
   alias RDF.NS
   alias RDF.NS.{XSD, RDFS}
 
@@ -19,7 +19,7 @@ defmodule JSON.LD.DecoderTest do
 
 
   test "an empty JSON document is deserialized to an empty graph" do
-    assert JSON.LD.Decoder.decode!("{}") == Dataset.new(Graph.new)
+    assert JSON.LD.Decoder.decode!("{}") == Dataset.new
   end
 
   describe "unnamed nodes" do
@@ -378,11 +378,11 @@ defmodule JSON.LD.DecoderTest do
          "foaf:knows": {"@list": ["Manu Sporny", "Dave Longley"]}
        }),
        [
-          {~I<http://greggkellogg.net/foaf#me>, ~I<http://xmlns.com/foaf/0.1/knows>, RDF.bnode("b1")},
-          {RDF.bnode("b1"), NS.RDF.first, RDF.literal("Manu Sporny")},
-          {RDF.bnode("b1"), NS.RDF.rest, RDF.bnode("b0")},
-          {RDF.bnode("b0"), NS.RDF.first, RDF.literal("Dave Longley")},
-          {RDF.bnode("b0"), NS.RDF.rest, NS.RDF.nil},
+          {~I<http://greggkellogg.net/foaf#me>, ~I<http://xmlns.com/foaf/0.1/knows>, RDF.bnode("b0")},
+          {RDF.bnode("b0"), NS.RDF.first, RDF.literal("Manu Sporny")},
+          {RDF.bnode("b0"), NS.RDF.rest, RDF.bnode("b1")},
+          {RDF.bnode("b1"), NS.RDF.first, RDF.literal("Dave Longley")},
+          {RDF.bnode("b1"), NS.RDF.rest, NS.RDF.nil},
        ]
      },
     }

@@ -70,8 +70,12 @@ defmodule JSON.LD.Decoder do
                        rdf_graph
                      end
                    end)
-               Dataset.add(dataset, rdf_graph,
+               if Enum.empty?(rdf_graph) do
+                 dataset
+               else
+                 Dataset.add(dataset, rdf_graph,
                             if(graph_name == "@default", do: nil, else: graph_name))
+               end
             else
               dataset
             end
@@ -134,21 +138,56 @@ defmodule JSON.LD.Decoder do
   end
 
   defp list_to_rdf(list, node_id_map) do
-   list
-   |> Enum.reverse
-   |> Enum.reduce({[], RDF.NS.RDF.nil}, fn (item, {list_triples, last}) ->
-        case object_to_rdf(item) do
-          nil    -> {list_triples, last}
-          object ->
-            with bnode = node_to_rdf(generate_blank_node_id(node_id_map)) do
-              {
-                [{bnode, RDF.NS.RDF.first, object}, 
-                 {bnode, RDF.NS.RDF.rest,  last  } | list_triples],
-                bnode
-              }
-            end
-        end
-      end)
+    {list_triples, first, last} = 
+      list
+      |> Enum.reduce({[], nil, nil}, fn (item, {list_triples, first, last}) ->
+          case object_to_rdf(item) do
+            nil    -> {list_triples, first, last}
+            object ->
+              with bnode = node_to_rdf(generate_blank_node_id(node_id_map)) do
+                if last do
+                  {
+                    list_triples ++ 
+                      [{last, RDF.NS.RDF.rest,  bnode},
+                       {bnode, RDF.NS.RDF.first, object}],
+                    first,
+                    bnode
+                  }
+                else
+                  {
+                    list_triples ++ [{bnode, RDF.NS.RDF.first, object}],
+                    bnode,
+                    bnode
+                  }
+                end
+              end
+          end
+         end)
+    if last do
+      {list_triples ++ [{last, RDF.NS.RDF.rest, RDF.NS.RDF.nil}], first}
+    else
+      {[], RDF.NS.RDF.nil}
+    end
   end
+
+# This is a much nicer and faster version, but the blank node numbering is reversed.
+# Although this isn't relevant, I prefer to be more spec conform (for now).
+# defp list_to_rdf(list, node_id_map) do
+#   list
+#   |> Enum.reverse
+#   |> Enum.reduce({[], RDF.NS.RDF.nil}, fn (item, {list_triples, last}) ->
+#        case object_to_rdf(item) do
+#          nil    -> {list_triples, last}
+#          object ->
+#            with bnode = node_to_rdf(generate_blank_node_id(node_id_map)) do
+#              {
+#                [{bnode, RDF.NS.RDF.first, object},
+#                 {bnode, RDF.NS.RDF.rest,  last  } | list_triples],
+#                bnode
+#              }
+#            end
+#        end
+#      end)
+# end
 
 end
