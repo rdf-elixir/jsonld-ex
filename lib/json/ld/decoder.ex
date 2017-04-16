@@ -134,7 +134,7 @@ defmodule JSON.LD.Decoder do
           end
       true ->
     end
-    RDF.Literal.new(value, datatype: datatype, language: item["@language"])
+    RDF.Literal.new(value, %{datatype: datatype, language: item["@language"]})
   end
 
   defp list_to_rdf(list, node_id_map) do
