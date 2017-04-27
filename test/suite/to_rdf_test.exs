@@ -9,10 +9,8 @@ defmodule JSON.LD.TestSuite.ToRdfTest do
   end
 
   test_cases("toRdf")
-# TODO: finish literal implementation
-#  |> Enum.filter(fn %{"@id" => id} -> id in ~w[#t0022] end)
+# TODO: JSON-LD Data Round Tripping
 #  |> Enum.filter(fn %{"@id" => id} -> id in ~w[#t0035] end)
-#  |> Enum.filter(fn %{"@id" => id} -> id in ~w[#t0071] end)
 #  |> Enum.filter(fn %{"@id" => id} -> id in ~w[#t0101] end)
 # TODO: Ordering problems
 #  |> Enum.filter(fn %{"@id" => id} -> id in ~w[#t0118] end)
@@ -20,8 +18,8 @@ defmodule JSON.LD.TestSuite.ToRdfTest do
 #  |> Enum.filter(fn %{"@id" => id} -> id in ~w[#t0069] end)
 #  |> Enum.filter(fn %{"@id" => id} -> id in ~w[#t0102] end)
   |> Enum.each(fn %{"name" => name, "input" => input} = test_case ->
-      if input in ~w[toRdf-0022-in.jsonld toRdf-0035-in.jsonld toRdf-0071-in.jsonld toRdf-0101-in.jsonld] do
-        @tag skip: "finish literal implementation"
+      if input in ~w[toRdf-0035-in.jsonld toRdf-0101-in.jsonld] do
+        @tag skip: "finish JSON-LD Data Round Tripping"
       end
       if input in ~w[toRdf-0069-in.jsonld toRdf-0102-in.jsonld] do
         @tag skip: """
@@ -41,23 +39,25 @@ defmodule JSON.LD.TestSuite.ToRdfTest do
       test "#{input}: #{name}",
           %{data: %{"input" => input, "expect" => output} = test_case, base_iri: base_iri} do
         # This requires a special handling, since the N-Quad ouput file is not valid, by using blank nodes as predicates
-        if input == "toRdf-0118-in.jsonld" do
-          assert JSON.LD.read_file!(file(input), test_case_options(test_case, base_iri)) ==
-                  RDF.Dataset.new([
-                    {RDF.bnode("b0"), ~I<http://www.w3.org/1999/02/22-rdf-syntax-ns#type>, RDF.bnode("b0")},
-                    {RDF.bnode("b0"), RDF.bnode("b0"), "plain value"},
-                    {RDF.bnode("b0"), RDF.bnode("b0"), ~I<http://json-ld.org/test-suite/tests/relativeIri>},
-                    {RDF.bnode("b0"), RDF.bnode("b0"), RDF.bnode("b0")},
-                    {RDF.bnode("b0"), RDF.bnode("b0"), RDF.bnode("b1")},
-                    {RDF.bnode("b0"), RDF.bnode("b0"), RDF.bnode("b2")},
-                    {RDF.bnode("b0"), RDF.bnode("b0"), RDF.bnode("b3")},
-                    {RDF.bnode("b1"), RDF.bnode("b0"), "term"},
-                    {RDF.bnode("b2"), RDF.bnode("b0"), "termId"},
-                  ])
-        else
-          assert JSON.LD.read_file!(file(input), test_case_options(test_case, base_iri)) ==
-                  RDF.NQuads.read_file!(file(output))
-        end
-      end
+        dataset = if input == "toRdf-0118-in.jsonld",
+                    do: toRdf_0118_dataset(),
+                  else: RDF.NQuads.read_file!(file(output))
+
+        assert JSON.LD.read_file!(file(input), test_case_options(test_case, base_iri)) == dataset
+    end
     end)
+
+  def toRdf_0118_dataset do
+    RDF.Dataset.new([
+      {RDF.bnode("b0"), ~I<http://www.w3.org/1999/02/22-rdf-syntax-ns#type>, RDF.bnode("b0")},
+      {RDF.bnode("b0"), RDF.bnode("b0"), "plain value"},
+      {RDF.bnode("b0"), RDF.bnode("b0"), ~I<http://json-ld.org/test-suite/tests/relativeIri>},
+      {RDF.bnode("b0"), RDF.bnode("b0"), RDF.bnode("b0")},
+      {RDF.bnode("b0"), RDF.bnode("b0"), RDF.bnode("b1")},
+      {RDF.bnode("b0"), RDF.bnode("b0"), RDF.bnode("b2")},
+      {RDF.bnode("b0"), RDF.bnode("b0"), RDF.bnode("b3")},
+      {RDF.bnode("b1"), RDF.bnode("b0"), "term"},
+      {RDF.bnode("b2"), RDF.bnode("b0"), "termId"},
+    ])
+  end
 end

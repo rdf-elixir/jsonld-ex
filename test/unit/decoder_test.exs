@@ -601,13 +601,11 @@ defmodule JSON.LD.DecoderTest do
 
   describe "advanced features" do
     %{
-      # TODO:
       "number syntax (decimal)" =>
       {
         ~s({"@context": { "measure": "http://example/measure#"}, "measure:cups": 5.3}),
         {RDF.bnode("b0"), ~I<http://example/measure#cups>, RDF.literal("5.3E0", datatype: XSD.double)}
       },
-      # TODO:
       "number syntax (double)" =>
       {
         ~s({"@context": { "measure": "http://example/measure#"}, "measure:cups": 5.3e0}),
@@ -660,9 +658,6 @@ defmodule JSON.LD.DecoderTest do
      }
     }
     |> Enum.each(fn ({title, data}) ->
-         if title in ["number syntax (decimal)", "number syntax (double)"] do
-           @tag skip: "support float literals with exponential notation"
-         end
          @tag data: data
          test title, %{data: {input, output}} do
            assert JSON.LD.Decoder.decode!(input) == RDF.Dataset.new(output)
