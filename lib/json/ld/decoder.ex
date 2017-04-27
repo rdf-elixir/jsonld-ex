@@ -117,13 +117,13 @@ defmodule JSON.LD.Decoder do
     datatype = item["@type"]
     cond do
       is_boolean(value) ->
-        value = to_string(value)
+        value = value |> RDF.Boolean.new |> RDF.Literal.canonical |> RDF.Literal.lexical
         datatype = if is_nil(datatype), do: XSD.boolean, else: datatype
       is_float(value) or (is_number(value) and datatype == to_string(XSD.double)) ->
-        value = to_string(value) # TODO: canonicalize according to Data Round Tripping
+        value = value |> RDF.Double.new |> RDF.Literal.canonical |> RDF.Literal.lexical
         datatype = if is_nil(datatype), do: XSD.double, else: datatype
       is_integer(value) or (is_number(value) and datatype == to_string(XSD.integer)) ->
-        value = to_string(value) # TODO: canonicalize according to Data Round Tripping
+        value = value |> RDF.Integer.new |> RDF.Literal.canonical |> RDF.Literal.lexical
         datatype = if is_nil(datatype), do: XSD.integer, else: datatype
       is_nil(datatype) ->
         datatype =

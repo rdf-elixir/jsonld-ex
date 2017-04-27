@@ -9,18 +9,12 @@ defmodule JSON.LD.TestSuite.ToRdfTest do
   end
 
   test_cases("toRdf")
-# TODO: JSON-LD Data Round Tripping
-#  |> Enum.filter(fn %{"@id" => id} -> id in ~w[#t0035] end)
-#  |> Enum.filter(fn %{"@id" => id} -> id in ~w[#t0101] end)
 # TODO: Ordering problems
 #  |> Enum.filter(fn %{"@id" => id} -> id in ~w[#t0118] end)
 # TODO: Fixed in Elixir 1.5
 #  |> Enum.filter(fn %{"@id" => id} -> id in ~w[#t0069] end)
 #  |> Enum.filter(fn %{"@id" => id} -> id in ~w[#t0102] end)
   |> Enum.each(fn %{"name" => name, "input" => input} = test_case ->
-      if input in ~w[toRdf-0035-in.jsonld toRdf-0101-in.jsonld] do
-        @tag skip: "finish JSON-LD Data Round Tripping"
-      end
       if input in ~w[toRdf-0069-in.jsonld toRdf-0102-in.jsonld] do
         @tag skip: """
           probably caused by a bug in Elixirs URI.merge which should be fixed with Elixir 1.5
