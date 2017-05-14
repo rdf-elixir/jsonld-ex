@@ -38,7 +38,7 @@ defmodule JSON.LD.TestSuite.ToRdfTest do
                   else: RDF.NQuads.read_file!(file(output))
 
         assert JSON.LD.read_file!(file(input), test_case_options(test_case, base_iri)) == dataset
-    end
+      end
     end)
 
   def toRdf_0118_dataset do
