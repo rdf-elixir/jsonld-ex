@@ -10,6 +10,8 @@ defmodule JSON.LD.Options do
             document_loader: nil,
             expand_context: nil,
             produce_generalized_rdf: false,
+            use_rdf_type: false,
+            use_native_types: false,
             processing_mode: "json-ld-1.0"
 
   def new(), do: %JSON.LD.Options{}

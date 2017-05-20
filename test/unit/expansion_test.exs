@@ -937,10 +937,11 @@ defmodule JSON.LD.ExpansionTest do
       "native boolean" => ["foo", true,                           %{"@value" => true}],
       "native integer" => ["foo", 1,                              %{"@value" => 1}],
       "native double" =>  ["foo", 1.1e1,                          %{"@value" => 1.1E1}],
-# TODO:
-#      "native date" =>    ["foo", Date.parse("2011-12-27"),       %{"@value" => "2011-12-27", "@type" => XSD.date |> to_string}],
-#      "native time" =>    ["foo", Time.parse("10:11:12Z"),        %{"@value" => "10:11:12Z", "@type" => XSD.time |> to_string}],
-#      "native dateTime" =>["foo", DateTime.parse("2011-12-27T10:11:12Z"), {"@value" => "2011-12-27T10:11:12Z", "@type" => XSD.dateTime |> to_string}],
+# TODO: Do we really want to support the following? RDF.rb has another implementation and uses this function
+#       for its implementation of fromRdf, instead of the  RDF to Object Conversion algorithm in the spec ...
+#      "native date" =>    ["foo", ~D[2011-12-27],       %{"@value" => "2011-12-27", "@type" => XSD.date |> to_string}],
+#      "native time" =>    ["foo", ~T[10:11:12Z],        %{"@value" => "10:11:12Z", "@type" => XSD.time |> to_string}],
+#      "native dateTime" =>["foo", DateTime.from_iso8601("2011-12-27T10:11:12Z") |> elem(1), %{"@value" => "2011-12-27T10:11:12Z", "@type" => XSD.dateTime |> to_string}],
 #      "rdf boolean" =>    ["foo", RDF::Literal(true),             %{"@value" => "true", "@type" => RDF::XSD.boolean.to_s}],
 #      "rdf integer" =>    ["foo", RDF::Literal(1),                %{"@value" => "1", "@type" => XSD.integer |> to_string],
 #      "rdf decimal" =>    ["foo", RDF::Literal::Decimal.new(1.1), %{"@value" => "1.1", "@type" => XSD.decimal |> to_string}],
@@ -969,8 +970,8 @@ defmodule JSON.LD.ExpansionTest do
     }
     |> Enum.each(fn ({title, data}) ->
         # TODO
-#         @tag skip: "Do these errors from the differing context setup?"
-        @tag skip: "Why does this produce @language tags, although no term definition of foo exists? Is this also RDF.rb specific?"
+#         @tag skip: "Do these errors originate from the differing context setup?"
+        @tag skip: "Why does this produce @language tags in RDF.rb, although no term definition of foo exists? Is this also RDF.rb specific?"
          @tag data: data
          test "@language #{title}", %{data: [key, compacted, expanded], example_context: context} do
            assert expand_value(context, key, compacted) == expanded
@@ -998,141 +999,5 @@ defmodule JSON.LD.ExpansionTest do
          end
        end)
   end
-
-#  describe "#container" do
-#    subject {
-#      ctx = context.parse({
-#        "ex" => "http://example.org/",
-#        "list" => {"@id" => "ex:list", "@container" => "@list"},
-#        "set" => {"@id" => "ex:set", "@container" => "@set"},
-#        "ndx" => {"@id" => "ex:ndx", "@container" => "@index"},
-#      })
-#      logger.clear
-#      ctx
-#    }
-#    it "uses TermDefinition" do
-#      expect(subject.container(subject.term_definitions['ex'])).to be_nil
-#      expect(subject.container(subject.term_definitions['list'])).to eq '@list'
-#      expect(subject.container(subject.term_definitions['set'])).to eq '@set'
-#      expect(subject.container(subject.term_definitions['ndx'])).to eq '@index'
-#    end
-#
-#    it "uses string" do
-#      expect(subject.container('ex')).to be_nil
-#      expect(subject.container('list')).to eq '@list'
-#      expect(subject.container('set')).to eq '@set'
-#      expect(subject.container('ndx')).to eq '@index'
-#    end
-#  end
-#
-#  describe "#language" do
-#    subject {
-#      ctx = context.parse({
-#        "ex" => "http://example.org/",
-#        "nil" => {"@id" => "ex:nil", "@language" => nil},
-#        "en" => {"@id" => "ex:en", "@language" => "en"},
-#      })
-#      logger.clear
-#      ctx
-#    }
-#    it "uses TermDefinition" do
-#      expect(subject.language(subject.term_definitions['ex'])).to be_falsey
-#      expect(subject.language(subject.term_definitions['nil'])).to be_falsey
-#      expect(subject.language(subject.term_definitions['en'])).to eq 'en'
-#    end
-#
-#    it "uses string" do
-#      expect(subject.language('ex')).to be_falsey
-#      expect(subject.language('nil')).to be_falsey
-#      expect(subject.language('en')).to eq 'en'
-#    end
-#  end
-#
-#  describe "#reverse?" do
-#    subject {
-#      ctx = context.parse({
-#        "ex" => "http://example.org/",
-#        "reverse" => {"@reverse" => "ex:reverse"},
-#      })
-#      logger.clear
-#      ctx
-#    }
-#    it "uses TermDefinition" do
-#      expect(subject.reverse?(subject.term_definitions['ex'])).to be_falsey
-#      expect(subject.reverse?(subject.term_definitions['reverse'])).to be_truthy
-#    end
-#
-#    it "uses string" do
-#      expect(subject.reverse?('ex')).to be_falsey
-#      expect(subject.reverse?('reverse')).to be_truthy
-#    end
-#  end
-#
-#  describe "#reverse_term" do
-#    subject {
-#      ctx = context.parse({
-#        "ex" => "http://example.org/",
-#        "reverse" => {"@reverse" => "ex"},
-#      })
-#      logger.clear
-#      ctx
-#    }
-#    it "uses TermDefinition" do
-#      expect(subject.reverse_term(subject.term_definitions['ex'])).to eql subject.term_definitions['reverse']
-#      expect(subject.reverse_term(subject.term_definitions['reverse'])).to eql subject.term_definitions['ex']
-#    end
-#
-#    it "uses string" do
-#      expect(subject.reverse_term('ex')).to eql subject.term_definitions['reverse']
-#      expect(subject.reverse_term('reverse')).to eql subject.term_definitions['ex']
-#    end
-#  end
-#
-#  describe JSON::LD::Context::TermDefinition do
-#    context "with nothing" do
-#      subject {described_class.new("term")}
-#      its(:term) {is_expected.to eq "term"}
-#      its(:id) {is_expected.to be_nil}
-#      its(:to_rb) {is_expected.to eq %(TermDefinition.new("term"))}
-#    end
-#
-#    context "with id" do
-#      subject {described_class.new("term", id: "http://example.org/term")}
-#      its(:term) {is_expected.to eq "term"}
-#      its(:id) {is_expected.to eq "http://example.org/term"}
-#      its(:to_rb) {is_expected.to eq %(TermDefinition.new("term", id: "http://example.org/term"))}
-#    end
-#
-#    context "with type_mapping" do
-#      subject {described_class.new("term", type_mapping: "http://example.org/type")}
-#      its(:type_mapping) {is_expected.to eq "http://example.org/type"}
-#      its(:to_rb) {is_expected.to eq %(TermDefinition.new("term", type_mapping: "http://example.org/type"))}
-#    end
-#
-#    context "with container_mapping" do
-#      subject {described_class.new("term", container_mapping: "@set")}
-#      its(:container_mapping) {is_expected.to eq "@set"}
-#      its(:to_rb) {is_expected.to eq %(TermDefinition.new("term", container_mapping: "@set"))}
-#    end
-#
-#    context "with language_mapping" do
-#      subject {described_class.new("term", language_mapping: "en")}
-#      its(:language_mapping) {is_expected.to eq "en"}
-#      its(:to_rb) {is_expected.to eq %(TermDefinition.new("term", language_mapping: "en"))}
-#    end
-#
-#    context "with reverse_property" do
-#      subject {described_class.new("term", reverse_property: true)}
-#      its(:reverse_property) {is_expected.to be_truthy}
-#      its(:to_rb) {is_expected.to eq %(TermDefinition.new("term", reverse_property: true))}
-#    end
-#
-#    context "with simple" do
-#      subject {described_class.new("term", simple: true)}
-#      its(:simple) {is_expected.to be_truthy}
-#      its(:to_rb) {is_expected.to eq %(TermDefinition.new("term", simple: true))}
-#    end
-#  end
-
 
 end
