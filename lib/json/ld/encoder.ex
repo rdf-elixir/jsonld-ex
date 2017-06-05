@@ -39,9 +39,9 @@ defmodule JSON.LD.Encoder do
     with options = JSON.LD.Options.new(options) do
       graph_map =
         Enum.reduce RDF.Dataset.graphs(dataset), %{},
-          fn ({name, graph}, graph_map) ->
+          fn graph, graph_map ->
             # 3.1)
-            name = to_string(name || "@default")
+            name = to_string(graph.name || "@default")
 
             # 3.3)
             graph_map =
