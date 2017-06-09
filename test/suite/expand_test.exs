@@ -12,14 +12,13 @@ defmodule JSON.LD.TestSuite.ExpandTest do
 #  |> Enum.filter(fn %{"@id" => id} -> id in ~w[#t0034] end)
 #  |> Enum.filter(fn %{"@id" => id} -> id in ~w[#t0035] end)
 #  |> Enum.filter(fn %{"@id" => id} -> id in ~w[#t0038] end)
-# TODO: Fixed in Elixir 1.5
-#  |> Enum.filter(fn %{"@id" => id} -> id in ~w[#t0029] end)
+# TODO: Fixed in next Elixir release
 #  |> Enum.filter(fn %{"@id" => id} -> id in ~w[#t0062] end)
   |> Enum.each(fn %{"name" => name, "input" => input} = test_case ->
-      if input in ~w[expand-0062-in.jsonld expand-0029-in.jsonld] do
+      if input in ~w[expand-0062-in.jsonld] do
         @tag skip: """
-          probably caused by a bug in Elixirs URI.merge which should be fixed with Elixir 1.5
-          https://github.com/elixir-lang/elixir/pull/5780
+          caused by a another problem in Elixirs URI.merge which should be fixed with next Elixir release
+          https://github.com/elixir-lang/elixir/pull/6208
         """
       end
       if input in ~w[expand-0034-in.jsonld expand-0035-in.jsonld expand-0038-in.jsonld] do

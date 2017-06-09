@@ -12,15 +12,7 @@ defmodule JSON.LD.TestSuite.FlattenTest do
 #  |> Enum.filter(fn %{"@id" => id} -> id in ~w[#t0034] end)
 #  |> Enum.filter(fn %{"@id" => id} -> id in ~w[#t0035] end)
 #  |> Enum.filter(fn %{"@id" => id} -> id in ~w[#t0038] end)
-# TODO: Fixed in Elixir 1.5
-#  |> Enum.filter(fn %{"@id" => id} -> id in ~w[#t0029] end)
   |> Enum.each(fn %{"name" => name, "input" => input} = test_case ->
-      if input in ~w[flatten-0029-in.jsonld] do
-        @tag skip: """
-          probably caused by a bug in Elixirs URI.merge which should be fixed with Elixir 1.5
-          https://github.com/elixir-lang/elixir/pull/5780
-        """
-      end
       if input in ~w[flatten-0034-in.jsonld flatten-0035-in.jsonld flatten-0038-in.jsonld] do
         @tag skip: "TODO: Actually correct values are expanded, but the ordering is different."
       end
