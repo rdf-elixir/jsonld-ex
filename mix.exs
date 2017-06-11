@@ -8,10 +8,6 @@ defmodule JSON.LD.Mixfile do
       app: :json_ld,
       version: @version,
       description: "An implementation of the JSON-LD standard",
-      build_path: "../../_build",
-      config_path: "../../config/config.exs",
-      deps_path: "../../deps",
-      lockfile: "../../mix.lock",
       elixir: "~> 1.4", # TODO: "~> 1.5" for the fix of URI.merge
       build_embedded: Mix.env == :prod,
       start_permanent: Mix.env == :prod,
@@ -37,7 +33,7 @@ defmodule JSON.LD.Mixfile do
 
   defp deps do
     [
-      {:rdf_core, in_umbrella: true},
+      {:rdf, path: "../rdf"},
       {:poison, "~> 3.0"},
       {:dialyxir, "~> 0.4", only: [:dev, :test]},
       {:credo, "~> 0.6", only: [:dev, :test]},
