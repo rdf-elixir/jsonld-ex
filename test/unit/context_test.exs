@@ -229,11 +229,11 @@ defmodule JSON.LD.ContextTest do
        end)
   end
 
-  # TODO: "To avoid forward-compatibility issues, a term should not start with an @ character as future versions of JSON-LD may introduce additional keywords." -- https://www.w3.org/TR/json-ld/#terms
+  # TODO: "Furthermore, the term must not be an empty string ("") as not all programming languages are able to handle empty JSON keys." -- https://www.w3.org/TR/json-ld/#terms
   @tag :skip
   test "an empty string is not a valid term"
 
-  # TODO: "Furthermore, the term must not be an empty string ("") as not all programming languages are able to handle empty JSON keys." -- https://www.w3.org/TR/json-ld/#terms
+  # TODO: "To avoid forward-compatibility issues, a term should not start with an @ character as future versions of JSON-LD may introduce additional keywords." -- https://www.w3.org/TR/json-ld/#terms
   @tag :skip
   test "warn on terms starting with a @"
 
