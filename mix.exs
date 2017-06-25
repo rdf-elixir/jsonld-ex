@@ -1,29 +1,46 @@
 defmodule JSON.LD.Mixfile do
   use Mix.Project
 
-  @version "0.0.1"
+  @repo_url "https://github.com/marcelotto/jsonld-ex"
+
+  @version "0.1.0"
 
   def project do
     [
       app: :json_ld,
       version: @version,
-      description: "An implementation of the JSON-LD standard",
       elixir: "~> 1.4", # TODO: "~> 1.5" for the fix of URI.merge
       build_embedded: Mix.env == :prod,
       start_permanent: Mix.env == :prod,
+      deps: deps(),
+
+      # Hex
       package: package(),
-      deps: deps()
+      description: description(),
+
+      # Docs
+      name: "JSON-LD.ex",
+      docs: [
+        main: "JSON.LD",
+        source_url: @repo_url,
+        source_ref: "v#{@version}",
+        extras: ["README.md"],
+      ]
     ]
+  end
+
+  defp description do
+    """
+    An implementation of JSON-LD for Elixir and RDF.ex.
+    """
   end
 
   defp package do
     [
-      name: :json_ld,
       maintainers: ["Marcel Otto"],
       licenses: ["MIT"],
-      links: %{"GitHub" => "https://github.com/rdfex/json_ld",
-               "Docs" => "http://rdfex.github.io/json_ld)/"},
-      files: ["lib", "priv", "mix.exs", "README*", "readme*", "LICENSE*", "license*"]
+      links: %{"GitHub" => @repo_url},
+      files: ~w[lib mix.exs README.md LICENSE.md]
     ]
   end
 
@@ -33,12 +50,12 @@ defmodule JSON.LD.Mixfile do
 
   defp deps do
     [
-      {:rdf, path: "../rdf"},
+      {:rdf, "~> 0.1"},
       {:poison, "~> 3.0"},
-      {:dialyxir, "~> 0.4", only: [:dev, :test]},
-      {:credo, "~> 0.6", only: [:dev, :test]},
-      {:ex_doc, "~> 0.14", only: :dev},
-      {:mix_test_watch, "~> 0.3", only: :dev},
+      {:dialyxir, "~> 0.4",       only: [:dev, :test], runtime: false},
+      {:credo, "~> 0.6",          only: [:dev, :test], runtime: false},
+      {:ex_doc, "~> 0.14",        only: :dev, runtime: false},
+      {:mix_test_watch, "~> 0.3", only: :dev, runtime: false},
     ]
   end
 end
