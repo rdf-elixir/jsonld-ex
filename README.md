@@ -1,5 +1,8 @@
 # JSON-LD.ex
 
+[![Travis](https://img.shields.io/travis/marcelotto/jsonld-ex.svg?style=flat-square)](https://travis-ci.org/marcelotto/jsonld-ex)
+[![Hex.pm](https://img.shields.io/hexpm/v/json_ld.svg?style=flat-square)](https://hex.pm/packages/json_ld)
+
 An implementation of the [JSON-LD] standard for Elixir and [RDF.ex].
 
 
