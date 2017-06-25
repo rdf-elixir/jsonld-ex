@@ -7,7 +7,7 @@ An implementation of the [JSON-LD] standard for Elixir and [RDF.ex].
 
 - fully conforming JSON-LD API processor
 - JSON-LD reader/writer for [RDF.ex]
-- tests of the [JSON-LD test suite][] (see [here](https://github.com/marcelotto/jsonld-ex/wiki/JSON-LD-status-report) for a detailed status report)
+- tests of the [JSON-LD test suite][] (see [here](https://github.com/marcelotto/jsonld-ex/wiki/JSON-LD.ex-implementation-report) for a detailed status report)
 
 
 ## TODO
