@@ -22,23 +22,14 @@ An implementation of the [JSON-LD] standard for Elixir and [RDF.ex].
 
 ## Installation
 
-[JSON-LD.ex](https://hex.pm/packages/json_ld) can be installed as usual:
-
-1. Add `json_ld` to your list of dependencies in `mix.exs`:
+The [JSON-LD.ex](https://hex.pm/packages/json_ld) Hex package can be installed as usual, by adding `json_ld` to your list of dependencies in `mix.exs`:
 
 ```elixir
 def deps do
-  [{:json_ld, "~> 0.1.0"}]
+  [{:json_ld, "~> 0.1"}]
 end
 ```
 
-2. Ensure `rdf` is started before your application:
-
-```elixir
-def application do
-  [applications: [:json_ld]]
-end
-```
 
 ## Usage
 
