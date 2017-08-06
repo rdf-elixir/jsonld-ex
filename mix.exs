@@ -3,7 +3,7 @@ defmodule JSON.LD.Mixfile do
 
   @repo_url "https://github.com/marcelotto/jsonld-ex"
 
-  @version "0.1.0"
+  @version File.read!("VERSION") |> String.trim
 
   def project do
     [
@@ -40,7 +40,7 @@ defmodule JSON.LD.Mixfile do
       maintainers: ["Marcel Otto"],
       licenses: ["MIT"],
       links: %{"GitHub" => @repo_url},
-      files: ~w[lib mix.exs README.md LICENSE.md]
+      files: ~w[lib mix.exs README.md LICENSE.md VERSION]
     ]
   end
 
