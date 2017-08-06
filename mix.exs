@@ -9,7 +9,7 @@ defmodule JSON.LD.Mixfile do
     [
       app: :json_ld,
       version: @version,
-      elixir: "~> 1.4", # TODO: "~> 1.5" for the fix of URI.merge
+      elixir: "~> 1.5",
       build_embedded: Mix.env == :prod,
       start_permanent: Mix.env == :prod,
       deps: deps(),

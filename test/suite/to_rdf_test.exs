@@ -11,15 +11,7 @@ defmodule JSON.LD.TestSuite.ToRdfTest do
   test_cases("toRdf")
 # TODO: Ordering problems
 #  |> Enum.filter(fn %{"@id" => id} -> id in ~w[#t0118] end)
-# TODO: Fixed in next Elixir release
-#  |> Enum.filter(fn %{"@id" => id} -> id in ~w[#t0102] end)
   |> Enum.each(fn %{"name" => name, "input" => input} = test_case ->
-      if input in ~w[toRdf-0102-in.jsonld] do
-        @tag skip: """
-          caused by a another problem in Elixirs URI.merge which should be fixed with next Elixir release
-          https://github.com/elixir-lang/elixir/pull/6208
-        """
-      end
       if input in ~w[toRdf-0118-in.jsonld] do
         @tag skip: """
           Actually an isomorphic graph is generated, but due to different ordering
