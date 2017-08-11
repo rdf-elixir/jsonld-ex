@@ -2,6 +2,7 @@
 
 [![Travis](https://img.shields.io/travis/marcelotto/jsonld-ex.svg?style=flat-square)](https://travis-ci.org/marcelotto/jsonld-ex)
 [![Hex.pm](https://img.shields.io/hexpm/v/json_ld.svg?style=flat-square)](https://hex.pm/packages/json_ld)
+[![Coverage Status](https://coveralls.io/repos/github/marcelotto/json_ld.svg/badge.svg?branch=master)](https://coveralls.io/github/marcelotto/json_ld.svg?branch=master)
 
 An implementation of the [JSON-LD] standard for Elixir and [RDF.ex].
 

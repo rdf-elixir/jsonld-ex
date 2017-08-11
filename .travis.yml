@@ -6,3 +6,5 @@ otp_release:
   - 20.0
   - 19.3
 sudo: false
+script:
+  - MIX_ENV=test mix coveralls.travis
