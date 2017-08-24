@@ -5,14 +5,14 @@ This project adheres to [Semantic Versioning](http://semver.org/) and
 [Keep a CHANGELOG](http://keepachangelog.com).
 
 
-## Unreleased
+## 0.2.0 - 2017-08-24
 
 ### Changed
 
 - Upgrade to RDF.ex 0.3
 
 
-[Compare v0.1.0...HEAD](https://github.com/marcelotto/jsonld-ex/compare/v0.1.0...HEAD)
+[Compare v0.1.1...v0.2.0](https://github.com/marcelotto/jsonld-ex/compare/v0.1.1...v0.2.0)
 
 
 
