@@ -1,5 +1,7 @@
 defmodule JSON.LD.Utils do
 
+  alias RDF.IRI
+
   @doc """
   Resolves a relative IRI against a base IRI.
 
@@ -10,36 +12,17 @@ defmodule JSON.LD.Utils do
   Characters additionally allowed in IRI references are treated in the same way that unreserved
   characters are treated in URI references, per [section 6.5 of RFC3987](http://tools.ietf.org/html/rfc3987#section-6.5)
   """
-# TODO: This should be part of a dedicated RDF.IRI implementation and properly tested.
   def absolute_iri(value, base_iri)
 
-  def absolute_iri(value, nil), do: value
+  def absolute_iri(value, nil),
+    do: value
+  def absolute_iri(value, base_iri),
+    do: value |> RDF.IRI.absolute(base_iri) |> to_string
 
-  def absolute_iri(value, base_iri) do
-    case URI.parse(value) do
-      # absolute?
-      uri = %URI{scheme: scheme} when not is_nil(scheme) -> uri
-      # relative
-      _ ->
-        URI.merge(base_iri, value)
-    end
-    |> to_string
-  end
-
-  @doc """
-  Checks if the given value is an absolute IRI.
-
-  An absolute IRI is defined in [RFC3987](http://www.ietf.org/rfc/rfc3987.txt)
-  containing a scheme along with a path and optional query and fragment segments.
-
-  see <https://www.w3.org/TR/json-ld-api/#dfn-absolute-iri>
-  """
-# TODO: This should be part of a dedicated RDF.IRI implementation and properly tested.
-  def absolute_iri?(value), do: RDF.uri?(value)
 
 # TODO: This should be part of a dedicated RDF.IRI implementation and properly tested.
   def relative_iri?(value),
-    do: not (JSON.LD.keyword?(value) or absolute_iri?(value) or blank_node_id?(value))
+    do: not (JSON.LD.keyword?(value) or IRI.absolute?(value) or blank_node_id?(value))
 
   def compact_iri_parts(compact_iri, exclude_bnode \\ true) do
     with [prefix, suffix] <- String.split(compact_iri, ":", parts: 2) do

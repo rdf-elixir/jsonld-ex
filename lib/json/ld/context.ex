@@ -9,6 +9,7 @@ defmodule JSON.LD.Context do
   import JSON.LD.Utils
 
   alias JSON.LD.Context.TermDefinition
+  alias RDF.IRI
 
 
   def base(%JSON.LD.Context{base_iri: false, api_base_iri: api_base_iri}),
@@ -74,7 +75,7 @@ defmodule JSON.LD.Context do
   defp set_base(active, base, _) do
     cond do
       # TODO: this slightly differs from the spec, due to our false special value for base_iri; add more tests
-      is_nil(base) or absolute_iri?(base) ->
+      is_nil(base) or IRI.absolute?(base) ->
         %JSON.LD.Context{active | base_iri: base}
       active.base_iri ->
         %JSON.LD.Context{active | base_iri: absolute_iri(base, active.base_iri)}
@@ -86,7 +87,7 @@ defmodule JSON.LD.Context do
 
   defp set_vocab(active, false), do: active
   defp set_vocab(active, vocab) do
-    if is_nil(vocab) or absolute_iri?(vocab) or blank_node_id?(vocab) do
+    if is_nil(vocab) or IRI.absolute?(vocab) or blank_node_id?(vocab) do
       %JSON.LD.Context{active | vocab: vocab}
     else
       raise JSON.LD.InvalidVocabMappingError,
@@ -190,7 +191,7 @@ defmodule JSON.LD.Context do
   defp do_create_type_definition(definition, active, local, %{"@type" => type}, defined) do
     {expanded_type, active, defined} =
       expand_iri(type, active, false, true, local, defined)
-    if absolute_iri?(expanded_type) or expanded_type in ~w[@id @vocab] do
+    if IRI.absolute?(expanded_type) or expanded_type in ~w[@id @vocab] do
       {%TermDefinition{definition | type_mapping: expanded_type}, active, defined}
     else
       raise JSON.LD.InvalidTypeMappingError,
@@ -214,7 +215,7 @@ defmodule JSON.LD.Context do
       true ->                               # 11.3)
         {expanded_reverse, active, defined} =
           expand_iri(reverse, active, false, true, local, defined)
-        if absolute_iri?(expanded_reverse) or blank_node_id?(expanded_reverse) do
+        if IRI.absolute?(expanded_reverse) or blank_node_id?(expanded_reverse) do
           definition = %TermDefinition{definition | iri_mapping: expanded_reverse}
         else
           raise JSON.LD.InvalidIRIMappingError,
@@ -249,7 +250,7 @@ defmodule JSON.LD.Context do
           raise JSON.LD.InvalidKeywordAliasError,
                   message: "cannot alias @context"
         JSON.LD.keyword?(expanded_id) or
-        absolute_iri?(expanded_id) or
+        IRI.absolute?(expanded_id) or
         blank_node_id?(expanded_id) ->
           {%TermDefinition{definition | iri_mapping: expanded_id}, active, defined}
         true ->

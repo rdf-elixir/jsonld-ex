@@ -114,12 +114,12 @@ defmodule JSON.LD.CompactionTest do
         "http://example.com/b" => %{"@value" => "2012-01-04", "@type" => to_string(XSD.date)}
       },
       context: %{
-        "xsd" => XSD.__base_uri__,
+        "xsd" => XSD.__base_iri__,
         "b" => %{"@id" => "http://example.com/b", "@type" => "xsd:date"}
       },
       output: %{
         "@context" => %{
-          "xsd" => XSD.__base_uri__,
+          "xsd" => XSD.__base_iri__,
           "b" => %{"@id" => "http://example.com/b", "@type" => "xsd:date"}
         },
         "b" => "2012-01-04"

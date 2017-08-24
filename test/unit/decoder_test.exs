@@ -11,8 +11,8 @@ defmodule JSON.LD.DecoderTest do
 
   defmodule TestNS do
     use RDF.Vocabulary.Namespace
-    defvocab EX, base_uri: "http://example.org/#", terms: [], strict: false
-    defvocab S,  base_uri: "http://schema.org/", terms: [], strict: false
+    defvocab EX, base_iri: "http://example.org/#", terms: [], strict: false
+    defvocab S,  base_iri: "http://schema.org/", terms: [], strict: false
   end
 
   alias TestNS.{EX, S}

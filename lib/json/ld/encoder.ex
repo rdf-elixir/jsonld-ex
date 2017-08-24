@@ -6,7 +6,7 @@ defmodule JSON.LD.Encoder do
 
   import JSON.LD.Utils
 
-  alias RDF.{Dataset, Graph, BlankNode, Literal}
+  alias RDF.{Dataset, Graph, IRI, BlankNode, Literal}
   alias RDF.NS.{XSD}
 
   @rdf_type  to_string(RDF.NS.RDF.type)
@@ -107,7 +107,7 @@ defmodule JSON.LD.Encoder do
       {subject, predicate, node_object} =
         {to_string(subject), to_string(predicate), nil}
       node = Map.get(node_map, subject, %{"@id" => subject})
-      if is_node_object = (match?(%URI{}, object) || match?(%BlankNode{}, object)) do
+      if is_node_object = (match?(%IRI{}, object) || match?(%BlankNode{}, object)) do
         node_object = to_string(object)
         node_map = Map.put_new(node_map, node_object, %{"@id" => node_object})
       end
@@ -260,8 +260,8 @@ defmodule JSON.LD.Encoder do
     do: {list, list_nodes, [subject, property], head}
 
 
-  defp rdf_to_object(%URI{} = uri, _use_native_types) do
-    %{"@id" => to_string(uri)}
+  defp rdf_to_object(%IRI{} = iri, _use_native_types) do
+    %{"@id" => to_string(iri)}
   end
 
   defp rdf_to_object(%BlankNode{} = bnode, _use_native_types) do

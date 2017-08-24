@@ -10,7 +10,7 @@ defmodule JSON.LD.ValueCompactionTest do
         "dc"         => "http://purl.org/dc/terms/",   # TODO: RDF::Vocab::DC.to_uri.to_s,
         "ex"         => "http://example.org/",
         "foaf"       => "http://xmlns.com/foaf/0.1/",  # TODO: RDF::Vocab::FOAF.to_uri.to_s,
-        "xsd"        => to_string(XSD.__base_uri__),
+        "xsd"        => to_string(XSD.__base_iri__),
         "langmap"    => %{"@id" => "http://example.com/langmap", "@container" => "@language"},
         "list"       => %{"@id" => "http://example.org/list", "@container" => "@list"},
         "nolang"     => %{"@id" => "http://example.org/nolang", "@language" => nil},

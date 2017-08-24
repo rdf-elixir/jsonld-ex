@@ -96,7 +96,7 @@ defmodule JSON.LD.IRICompactionTest do
   describe "with value" do
     setup do
       context = JSON.LD.context(%{
-        "xsd" => XSD.__base_uri__,
+        "xsd" => XSD.__base_iri__,
         "plain" => "http://example.com/plain",
         "lang" => %{"@id" => "http://example.com/lang", "@language" => "en"},
         "bool" => %{"@id" => "http://example.com/bool", "@type" => "xsd:boolean"},
