@@ -46,7 +46,12 @@ defmodule JSON.LD.Context do
 
   # 3.2) If context is a string, [it's interpreted as a remote context]
   defp do_update(%JSON.LD.Context{} = active, local, remote, options) when is_binary(local) do
-    # TODO: fetch remote context and call recursively with remote updated
+    result = apply(options.document_loader, [local, options])
+    remote = case Enum.member?(remote, local) do
+      false -> remote ++ [local]
+      true -> remote
+    end
+    do_update(active, result["@context"], remote, options)
   end
 
   # 3.4) - 3.8)
