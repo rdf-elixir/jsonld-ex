@@ -48,7 +48,7 @@ defmodule JSON.LD.Context do
   defp do_update(%JSON.LD.Context{} = active, local, remote, options) when is_binary(local) do
     result = apply(options.document_loader, [local, options])
     remote = case Enum.member?(remote, local) do
-      false -> remote ++ [local]
+      false -> [local | remote]
       true -> remote
     end
     do_update(active, result["@context"], remote, options)
