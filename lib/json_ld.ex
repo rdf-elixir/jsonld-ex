@@ -39,7 +39,7 @@ defmodule JSON.LD do
   Returns if the given value is a JSON-LD keyword.
   """
   def keyword?(value) when is_binary(value) and value in @keywords, do: true
-  def keyword?(value), do: false
+  def keyword?(_value), do: false
 
 
   @doc """

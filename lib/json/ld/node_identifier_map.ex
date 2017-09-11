@@ -3,8 +3,6 @@ defmodule JSON.LD.NodeIdentifierMap do
 
   use GenServer
 
-  import JSON.LD
-
   # Client API
 
   def start_link(opts \\ []) do

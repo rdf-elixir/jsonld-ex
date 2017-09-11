@@ -196,32 +196,30 @@ defmodule JSON.LD.Compaction do
                     unless is_list(compacted_item),
                       do: [compacted_item], else: compacted_item
                   # 7.6.4.2)
-                  compacted_item =
-                    unless container == "@list" do
-                      # 7.6.4.2.1)
-                      compacted_item = %{
+                  unless container == "@list" do
+                    # 7.6.4.2.1)
+                    compacted_item = %{
+                      # TODO: Spec fixme? We're setting vocab to true, as other implementations do it, but this is not mentioned in the spec
+                      compact_iri("@list", active_context, inverse_context, nil, true) =>
+                        compacted_item}
+                    # 7.6.4.2.2)
+                    if Map.has_key?(expanded_item, "@index") do
+                      Map.put(compacted_item,
                         # TODO: Spec fixme? We're setting vocab to true, as other implementations do it, but this is not mentioned in the spec
-                        compact_iri("@list", active_context, inverse_context, nil, true) =>
-                          compacted_item}
-                      # 7.6.4.2.2)
-                      compacted_item =
-                        if Map.has_key?(expanded_item, "@index") do
-                          Map.put(compacted_item,
-                            # TODO: Spec fixme? We're setting vocab to true, as other implementations do it, but this is not mentioned in the spec
-                            compact_iri("@index", active_context, inverse_context, nil, true),
-                            expanded_item["@index"])
-                        else
-                          compacted_item
-                        end
-                    # 7.6.4.3)
+                        compact_iri("@index", active_context, inverse_context, nil, true),
+                        expanded_item["@index"])
                     else
-                      if Map.has_key?(result, item_active_property) do
-                        raise JSON.LD.CompactionToListOfListsError,
-                              message: "The compacted document contains a list of lists as multiple lists have been compacted to the same term."
-                      else
-                        compacted_item
-                      end
+                      compacted_item
                     end
+                  # 7.6.4.3)
+                  else
+                    if Map.has_key?(result, item_active_property) do
+                      raise JSON.LD.CompactionToListOfListsError,
+                            message: "The compacted document contains a list of lists as multiple lists have been compacted to the same term."
+                    else
+                      compacted_item
+                    end
+                  end
                 else
                   compacted_item
                 end
@@ -281,7 +279,7 @@ defmodule JSON.LD.Compaction do
     # 2) If vocab is true and iri is a key in inverse context:
     term = if vocab && Map.has_key?(inverse_context, iri) do
       # 2.1) Initialize default language to active context's default language, if it has one, otherwise to @none.
-      default_language = active_context.default_language || "@none"
+      # default_language = active_context.default_language || "@none"
       # 2.3) Initialize type/language to @language, and type/language value to @null. These two variables will keep track of the preferred type mapping or language mapping for a term, based on what is compatible with value.
       type_language = "@language"
       type_language_value = "@null"
@@ -306,10 +304,10 @@ defmodule JSON.LD.Compaction do
             list = value["@list"]
             # 2.6.3) Initialize common type and common language to null. If list is empty, set common language to default language.
             {common_type, common_language} = {nil, nil}
-            {common_language, type_language, type_language_value} =
+            {type_language, type_language_value} =
               if Enum.empty?(list) do
-                common_language = default_language
-                {common_language, type_language, type_language_value}
+                # common_language = default_language
+                {type_language, type_language_value}
               else
                 # 2.6.4) For each item in list:
                 {common_type, common_language} = Enum.reduce_while list, {common_type, common_language},
@@ -371,11 +369,11 @@ defmodule JSON.LD.Compaction do
                 if common_type != "@none" do
                   type_language = "@type"
                   type_language_value = common_type
-                  {common_language, type_language, type_language_value}
+                  {type_language, type_language_value}
                 # 2.6.8) Otherwise, set type/language value to common language.
                 else
                   type_language_value = common_language
-                  {common_language, type_language, type_language_value}
+                  {type_language, type_language_value}
                 end
               end
             {containers, type_language, type_language_value}

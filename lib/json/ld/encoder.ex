@@ -4,9 +4,7 @@ defmodule JSON.LD.Encoder do
 
   use RDF.Serialization.Encoder
 
-  import JSON.LD.Utils
-
-  alias RDF.{Dataset, Graph, IRI, BlankNode, Literal}
+  alias RDF.{IRI, BlankNode, Literal}
   alias RDF.NS.{XSD}
 
   @rdf_type  to_string(RDF.NS.RDF.type)
@@ -76,7 +74,7 @@ defmodule JSON.LD.Encoder do
                Map.put node, "@graph",
                  graph_map[subject]
                  |> Enum.sort_by(fn {s, _} -> s end)
-                 |> Enum.reduce([], fn ({s, n}, graph_nodes) ->
+                 |> Enum.reduce([], fn ({_s, n}, graph_nodes) ->
                       n = Map.delete(n, "usages")
                       if Map.size(n) == 1 and Map.has_key?(n, "@id") do
                         graph_nodes
@@ -161,7 +159,7 @@ defmodule JSON.LD.Encoder do
   # node member of the usage maps with later enhanced usages
   defp update_node_usages(node_map) do
     Enum.reduce node_map, node_map, fn
-      ({subject, %{"usages" => usages} = node}, node_map) ->
+      ({subject, %{"usages" => _usages} = _node}, node_map) ->
         update_in node_map, [subject, "usages"], fn usages ->
           Enum.map usages, fn usage ->
             Map.update! usage, "node", fn %{"@id" => subject} ->

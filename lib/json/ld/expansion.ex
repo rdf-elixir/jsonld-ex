@@ -36,7 +36,7 @@ defmodule JSON.LD.Expansion do
   defp do_expand(_, _, nil, _), do: nil
 
   # 2) If element is a scalar, ...
-  defp do_expand(active_context, active_property, element, options)
+  defp do_expand(active_context, active_property, element, _options)
         when is_binary(element) or is_number(element) or is_boolean(element) do
     if active_property in [nil, "@graph"] do
       nil

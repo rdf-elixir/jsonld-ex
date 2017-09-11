@@ -40,7 +40,7 @@ defmodule JSON.LD.Context do
 
 
   # 3.1) If context is null, set result to a newly-initialized active context and continue with the next context. The base IRI of the active context is set to the IRI of the currently being processed document (which might be different from the currently being processed context), if available; otherwise to null. If set, the base option of a JSON-LD API Implementation overrides the base IRI.
-  defp do_update(%JSON.LD.Context{}, nil, remote, options) do
+  defp do_update(%JSON.LD.Context{}, nil, _remote, options) do
     new(options)
   end
 

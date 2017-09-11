@@ -92,9 +92,6 @@ defmodule JSON.LD.Flattening do
   # 2)
   def generate_node_map(element, node_map, node_id_map, active_graph, active_subject,
                         active_property, list) when is_map(element) do
-    identifier_map = %{}
-    counter = 1
-
     node_map = Map.put_new(node_map, active_graph, %{})
     node = node_map[active_graph][active_subject]
 
@@ -294,7 +291,7 @@ defmodule JSON.LD.Flattening do
         |> Enum.reduce(node_map, fn ({property, value}, node_map) ->
              property =
                if blank_node_id?(property) do
-                 property = generate_blank_node_id(node_id_map, property)
+                 generate_blank_node_id(node_id_map, property)
                else
                  property
                end
