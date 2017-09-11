@@ -136,7 +136,7 @@ defmodule JSON.LD.Flattening do
 
       # 5)
       Map.has_key?(element, "@list") ->
-        {:ok, result_list} = new_list
+        {:ok, result_list} = new_list()
         {node_map, result} =
           try do
             {
