@@ -37,8 +37,8 @@ defmodule JSON.LD.Decoder do
                        |> Enum.reduce(rdf_graph, fn ({property, values}, rdf_graph) ->
                             cond do
                               property == "@type" ->
-                                Graph.add rdf_graph, 
-                                  node_to_rdf(subject), RDF.NS.RDF.type, 
+                                Graph.add rdf_graph,
+                                  node_to_rdf(subject), RDF.NS.RDF.type,
                                     Enum.map(values, &node_to_rdf/1)
                               JSON.LD.keyword?(property) ->
                                 rdf_graph
@@ -50,7 +50,7 @@ defmodule JSON.LD.Decoder do
                               true ->
                                 Enum.reduce values, rdf_graph, fn
                                   (%{"@list" => list}, rdf_graph) ->
-                                    with {list_triples, first} <- 
+                                    with {list_triples, first} <-
                                           list_to_rdf(list, node_id_map) do
                                       rdf_graph
                                       |> Graph.add({node_to_rdf(subject), node_to_rdf(property), first})
@@ -115,31 +115,37 @@ defmodule JSON.LD.Decoder do
 
   defp object_to_rdf(%{"@value" => value} = item) do
     datatype = item["@type"]
-    cond do
-      is_boolean(value) ->
-        value = value |> RDF.Boolean.new |> RDF.Literal.canonical |> RDF.Literal.lexical
-        datatype = if is_nil(datatype), do: XSD.boolean, else: datatype
-      is_float(value) or (is_number(value) and datatype == to_string(XSD.double)) ->
-        value = value |> RDF.Double.new |> RDF.Literal.canonical |> RDF.Literal.lexical
-        datatype = if is_nil(datatype), do: XSD.double, else: datatype
-      is_integer(value) or (is_number(value) and datatype == to_string(XSD.integer)) ->
-        value = value |> RDF.Integer.new |> RDF.Literal.canonical |> RDF.Literal.lexical
-        datatype = if is_nil(datatype), do: XSD.integer, else: datatype
-      is_nil(datatype) ->
-        datatype =
-          if Map.has_key?(item, "@language") do
-            RDF.langString
-          else
-            XSD.string
-          end
-      true ->
-    end
+    {value, datatype} =
+      cond do
+        is_boolean(value) ->
+          value = value |> RDF.Boolean.new |> RDF.Literal.canonical |> RDF.Literal.lexical
+          datatype = if is_nil(datatype), do: XSD.boolean, else: datatype
+          {value, datatype}
+        is_float(value) or (is_number(value) and datatype == to_string(XSD.double)) ->
+          value = value |> RDF.Double.new |> RDF.Literal.canonical |> RDF.Literal.lexical
+          datatype = if is_nil(datatype), do: XSD.double, else: datatype
+          {value, datatype}
+        is_integer(value) or (is_number(value) and datatype == to_string(XSD.integer)) ->
+          value = value |> RDF.Integer.new |> RDF.Literal.canonical |> RDF.Literal.lexical
+          datatype = if is_nil(datatype), do: XSD.integer, else: datatype
+          {value, datatype}
+        is_nil(datatype) ->
+          datatype =
+            if Map.has_key?(item, "@language") do
+              RDF.langString
+            else
+              XSD.string
+            end
+          {value, datatype}
+        true ->
+          {value, datatype}
+      end
     RDF.Literal.new(value,
       %{datatype: datatype, language: item["@language"], canonicalize: true})
   end
 
   defp list_to_rdf(list, node_id_map) do
-    {list_triples, first, last} = 
+    {list_triples, first, last} =
       list
       |> Enum.reduce({[], nil, nil}, fn (item, {list_triples, first, last}) ->
           case object_to_rdf(item) do
@@ -148,7 +154,7 @@ defmodule JSON.LD.Decoder do
               with bnode = node_to_rdf(generate_blank_node_id(node_id_map)) do
                 if last do
                   {
-                    list_triples ++ 
+                    list_triples ++
                       [{last, RDF.NS.RDF.rest,  bnode},
                        {bnode, RDF.NS.RDF.first, object}],
                     first,

@@ -165,12 +165,16 @@ defmodule JSON.LD.Context do
       do_create_type_definition(definition, active, local, value, defined)
     {done, definition, active, defined} =
         do_create_reverse_definition(definition, active, local, value, defined)
-    unless done do
-      {definition, active, defined} =
-        do_create_id_definition(definition, active, local, term, value, defined)
-      definition = do_create_container_definition(definition, value)
-      definition = do_create_language_definition(definition, value)
-    end
+    {definition, active, defined} =
+      unless done do
+        {definition, active, defined} =
+          do_create_id_definition(definition, active, local, term, value, defined)
+        definition = do_create_container_definition(definition, value)
+        definition = do_create_language_definition(definition, value)
+        {definition, active, defined}
+      else
+        {definition, active, defined}
+      end
     # 18 / 11.6) Set the term definition of term in active context to definition and set the value associated with defined's key term to true.
     {%JSON.LD.Context{active | term_defs: Map.put(active.term_defs, term, definition)},
       Map.put(defined, term, true)}
@@ -215,20 +219,23 @@ defmodule JSON.LD.Context do
       true ->                               # 11.3)
         {expanded_reverse, active, defined} =
           expand_iri(reverse, active, false, true, local, defined)
-        if IRI.absolute?(expanded_reverse) or blank_node_id?(expanded_reverse) do
-          definition = %TermDefinition{definition | iri_mapping: expanded_reverse}
-        else
-          raise JSON.LD.InvalidIRIMappingError,
-                  message: "Non-absolute @reverse IRI: #{inspect reverse}"
-        end
-        case Map.get(value, "@container", {false}) do  # 11.4)
-          {false} -> nil
-          container when is_nil(container) or container in ~w[@set @index] ->
-            definition = %TermDefinition{definition | container_mapping: container}
-          _ ->
-            raise JSON.LD.InvalidReversePropertyError,
-              message: "#{inspect reverse} is not a valid reverse property; reverse properties only support set- and index-containers"
-        end
+        definition =
+          if IRI.absolute?(expanded_reverse) or blank_node_id?(expanded_reverse) do
+            %TermDefinition{definition | iri_mapping: expanded_reverse}
+          else
+            raise JSON.LD.InvalidIRIMappingError,
+                    message: "Non-absolute @reverse IRI: #{inspect reverse}"
+          end
+        definition =
+          case Map.get(value, "@container", {false}) do  # 11.4)
+            {false} ->
+              definition
+            container when is_nil(container) or container in ~w[@set @index] ->
+              %TermDefinition{definition | container_mapping: container}
+            _ ->
+              raise JSON.LD.InvalidReversePropertyError,
+                message: "#{inspect reverse} is not a valid reverse property; reverse properties only support set- and index-containers"
+          end
         # 11.5) & 11.6)
         {true, %TermDefinition{definition | reverse_property: true}, active, defined}
     end
@@ -270,9 +277,13 @@ defmodule JSON.LD.Context do
     if String.contains?(term, ":") do
       case compact_iri_parts(term) do
         [prefix, suffix] ->
-          if prefix_mapping = local[prefix] do
-            {active, defined} = do_create_term_definition(active, local, prefix, prefix_mapping, defined)
-          end
+          prefix_mapping = local[prefix]
+          {active, defined} =
+            if prefix_mapping do
+              do_create_term_definition(active, local, prefix, prefix_mapping, defined)
+            else
+              {active, defined}
+            end
           if prefix_def = active.term_defs[prefix] do
             {%TermDefinition{definition | iri_mapping: prefix_def.iri_mapping <> suffix}, active, defined}
           else
@@ -343,25 +354,27 @@ defmodule JSON.LD.Context do
            type_map     = get_in(result, [iri, container, "@type"]) || %{}
            language_map = get_in(result, [iri, container, "@language"]) || %{}
 
-           case term_def do
-             # 3.8) If the term definition indicates that the term represents a reverse property
-             %TermDefinition{reverse_property: true} ->
-               type_map = Map.put_new(type_map, "@reverse", term)
-             # 3.9) Otherwise, if term definition has a type mapping
-             %TermDefinition{type_mapping: type_mapping}
-                              when type_mapping != false ->
-               type_map = Map.put_new(type_map, type_mapping, term)
-             # 3.10) Otherwise, if term definition has a language mapping (might be null)
-             %TermDefinition{language_mapping: language_mapping}
-                              when language_mapping != false ->
-               language = language_mapping || "@null"
-               language_map = Map.put_new(language_map, language, term)
-             # 3.11) Otherwise
-             _ ->
-               language_map = Map.put_new(language_map, default_language, term)
-               language_map = Map.put_new(language_map, "@none", term)
-               type_map = Map.put_new(type_map, "@none", term)
-           end
+           {type_map, language_map} =
+             case term_def do
+               # 3.8) If the term definition indicates that the term represents a reverse property
+               %TermDefinition{reverse_property: true} ->
+                 {Map.put_new(type_map, "@reverse", term), language_map}
+               # 3.9) Otherwise, if term definition has a type mapping
+               %TermDefinition{type_mapping: type_mapping}
+                                when type_mapping != false ->
+                 {Map.put_new(type_map, type_mapping, term), language_map}
+               # 3.10) Otherwise, if term definition has a language mapping (might be null)
+               %TermDefinition{language_mapping: language_mapping}
+                                when language_mapping != false ->
+                 language = language_mapping || "@null"
+                 {type_map, Map.put_new(language_map, language, term)}
+               # 3.11) Otherwise
+               _ ->
+                 language_map = Map.put_new(language_map, default_language, term)
+                 language_map = Map.put_new(language_map, "@none", term)
+                 type_map = Map.put_new(type_map, "@none", term)
+                 {type_map, language_map}
+             end
 
            result
            |> Map.put_new(iri, %{})

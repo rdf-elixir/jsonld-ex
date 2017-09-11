@@ -71,7 +71,7 @@ defmodule JSON.LD.Encoder do
       |> Enum.sort_by(fn {subject, _} -> subject end)
       |> Enum.reduce([], fn ({subject, node}, result) ->
            # 6.1)
-           node = 
+           node =
              if Map.has_key?(graph_map, subject) do
                Map.put node, "@graph",
                  graph_map[subject]
@@ -107,19 +107,24 @@ defmodule JSON.LD.Encoder do
       {subject, predicate, node_object} =
         {to_string(subject), to_string(predicate), nil}
       node = Map.get(node_map, subject, %{"@id" => subject})
-      if is_node_object = (match?(%IRI{}, object) || match?(%BlankNode{}, object)) do
-        node_object = to_string(object)
-        node_map = Map.put_new(node_map, node_object, %{"@id" => node_object})
-      end
-      node =
+      {node_object, node_map} =
+        if is_node_object = (match?(%IRI{}, object) || match?(%BlankNode{}, object)) do
+          node_object = to_string(object)
+          node_map = Map.put_new(node_map, node_object, %{"@id" => node_object})
+          {node_object, node_map}
+        else
+          {node_object, node_map}
+        end
+      {node, node_map} =
         if is_node_object and !use_rdf_type and predicate == @rdf_type do
-          Map.update(node, "@type", [node_object], fn types ->
+          node = Map.update(node, "@type", [node_object], fn types ->
             if node_object in types do
               types
             else
               types ++ [node_object]
             end
           end)
+          {node, node_map}
         else
           value = rdf_to_object(object, use_native_types)
           node =
@@ -130,20 +135,22 @@ defmodule JSON.LD.Encoder do
                 objects ++ [value]
               end
             end)
-          if is_node_object do
-            usage = %{
-              "node"        => node,
-              "property"    => predicate,
-              "value"       => value,
-            }
-            node_map =
+          node_map =
+            if is_node_object do
+              usage = %{
+                "node"        => node,
+                "property"    => predicate,
+                "value"       => value,
+              }
               Map.update(node_map, node_object, %{"usages" => [usage]}, fn object_node ->
                 Map.update(object_node, "usages", [usage], fn usages ->
                   usages ++ [usage]
                 end)
               end)
-          end
-          node
+            else
+              node_map
+            end
+          {node, node_map}
         end
       Map.put(node_map, subject, node)
     end)
@@ -187,11 +194,11 @@ defmodule JSON.LD.Encoder do
           extract_list(usage)
 
         # 4.3.4)
-        skip =
+        {skip, list, list_nodes, head_path, head} =
           if property == @rdf_first do
             # 4.3.4.1)
             if subject == @rdf_nil do
-              true
+              {true, list, list_nodes, head_path, head}
             else
               # 4.3.4.3-5)
               head_path = [head["@id"], @rdf_rest]
@@ -199,10 +206,10 @@ defmodule JSON.LD.Encoder do
               # 4.3.4.6)
               [_ | list] = list
               [_ | list_nodes] = list_nodes
-              false
+              {false, list, list_nodes, head_path, head}
             end
           else
-            false
+            {false, list, list_nodes, head_path, head}
           end
         if skip do
           graph_object
@@ -272,33 +279,36 @@ defmodule JSON.LD.Encoder do
     result = %{}
     converted_value = literal
     type = nil
-    if use_native_types do
-      cond do
-        datatype == XSD.string ->
-          converted_value = value
-        datatype == XSD.boolean ->
-          if RDF.Boolean.valid?(literal) do
-            converted_value = value
-          else
-            type = XSD.boolean
-          end
-        datatype in [XSD.integer, XSD.double] ->
-          if RDF.Literal.valid?(literal) do
-            converted_value = value
-          end
-        true ->
-          type = datatype
+    {converted_value, type, result} =
+      if use_native_types do
+        cond do
+          datatype == XSD.string ->
+            {value, type, result}
+          datatype == XSD.boolean ->
+            if RDF.Boolean.valid?(literal) do
+              {value, type, result}
+            else
+              {converted_value, XSD.boolean, result}
+            end
+          datatype in [XSD.integer, XSD.double] ->
+            if RDF.Literal.valid?(literal) do
+              {value, type, result}
+            else
+              {converted_value, type, result}
+            end
+          true ->
+            {converted_value, datatype, result}
+        end
+      else
+        cond do
+          datatype == RDF.langString ->
+            {converted_value, type, Map.put(result, "@language", literal.language)}
+          datatype == XSD.string ->
+            {converted_value, type, result}
+          true ->
+            {converted_value, datatype, result}
+        end
       end
-    else
-      cond do
-        datatype == RDF.langString ->
-          result = Map.put(result, "@language", literal.language)
-        datatype == XSD.string ->
-          nil  # no-op
-        true ->
-          type = datatype
-      end
-    end
 
     result = type && Map.put(result, "@type", to_string(type)) || result
     Map.put(result, "@value",
