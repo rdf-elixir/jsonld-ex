@@ -279,6 +279,7 @@ defmodule JSON.LD.Compaction do
     # 2) If vocab is true and iri is a key in inverse context:
     term = if vocab && Map.has_key?(inverse_context, iri) do
       # 2.1) Initialize default language to active context's default language, if it has one, otherwise to @none.
+      # TODO: Spec fixme: This step is effectively useless; see Spec fixme on step 2.6.3
       # default_language = active_context.default_language || "@none"
       # 2.3) Initialize type/language to @language, and type/language value to @null. These two variables will keep track of the preferred type mapping or language mapping for a term, based on what is compatible with value.
       type_language = "@language"
@@ -303,10 +304,10 @@ defmodule JSON.LD.Compaction do
             # 2.6.2) Initialize list to the array associated with the key @list in value.
             list = value["@list"]
             # 2.6.3) Initialize common type and common language to null. If list is empty, set common language to default language.
+            # TODO: Spec fixme: Setting common language to default language is effectively useless, since the only place it is used is the follow loop in 2.6.4, which is immediately left when the list is empty
             {common_type, common_language} = {nil, nil}
             {type_language, type_language_value} =
               if Enum.empty?(list) do
-                # common_language = default_language
                 {type_language, type_language_value}
               else
                 # 2.6.4) For each item in list:
