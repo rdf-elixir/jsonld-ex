@@ -22,47 +22,60 @@ defmodule JSON.LD.IRIExpansion do
 
   def expand_iri(value, active_context, doc_relative, vocab, local_context, defined) do
     # 2)
-    if local_context && (local_def = local_context[value]) && defined[value] != true do
-      {active_context, defined} =
+    {active_context, defined} =
+      if local_context && local_context[value] && defined[value] != true do
+        local_def = local_context[value]
         JSON.LD.Context.create_term_definition(
           active_context, local_context, value, local_def, defined)
-    end
+      else
+        {active_context, defined}
+      end
 
-    result = cond do
-      # 3) If vocab is true and the active context has a term definition for value, return the associated IRI mapping.
-      vocab && Map.has_key?(active_context.term_defs, value) ->
-        (term_def = active_context.term_defs[value]) && term_def.iri_mapping
-      # 4) If value contains a colon (:), it is either an absolute IRI, a compact IRI, or a blank node identifier
-      String.contains?(value, ":") ->
-        case compact_iri_parts(value) do
-          [prefix, suffix] ->
-            # 4.3)
-            if local_context && (local_def = local_context[prefix]) && defined[prefix] != true do
+    {result, active_context, defined} =
+      cond do
+        # 3) If vocab is true and the active context has a term definition for value, return the associated IRI mapping.
+        vocab && Map.has_key?(active_context.term_defs, value) ->
+          result = (term_def = active_context.term_defs[value]) && term_def.iri_mapping
+          {result, active_context, defined}
+        # 4) If value contains a colon (:), it is either an absolute IRI, a compact IRI, or a blank node identifier
+        String.contains?(value, ":") ->
+          case compact_iri_parts(value) do
+            [prefix, suffix] ->
+              # 4.3)
               {active_context, defined} =
-                JSON.LD.Context.create_term_definition(
-                  active_context, local_context, prefix, local_def, defined)
-            end
-            # 4.4)
-            if prefix_def = active_context.term_defs[prefix] do
-              prefix_def.iri_mapping <> suffix
-            else
-              value    # 4.5)
-            end
-          nil -> value # 4.2)
-        end
-      # 5) If vocab is true, and active context has a vocabulary mapping, return the result of concatenating the vocabulary mapping with value.
-      vocab && (vocabulary_mapping = active_context.vocab) ->
-       vocabulary_mapping <> value
-      # 6) Otherwise, if document relative is true, set value to the result of resolving value against the base IRI. Only the basic algorithm in section 5.2 of [RFC3986] is used; neither Syntax-Based Normalization nor Scheme-Based Normalization are performed. Characters additionally allowed in IRI references are treated in the same way that unreserved characters are treated in URI references, per section 6.5 of [RFC3987].
-      doc_relative ->
-        absolute_iri(value, JSON.LD.Context.base(active_context))
+                if local_context && local_context[prefix] && defined[prefix] != true do
+                  local_def = local_context[prefix]
+                  JSON.LD.Context.create_term_definition(
+                    active_context, local_context, prefix, local_def, defined)
+                else
+                  {active_context, defined}
+                end
+              # 4.4)
+              result =
+                if prefix_def = active_context.term_defs[prefix] do
+                  prefix_def.iri_mapping <> suffix
+                else
+                  value    # 4.5)
+                end
+              {result, active_context, defined}
+            nil ->
+              {value, active_context, defined} # 4.2)
+          end
+        # 5) If vocab is true, and active context has a vocabulary mapping, return the result of concatenating the vocabulary mapping with value.
+        vocab && active_context.vocab ->
+          vocabulary_mapping = active_context.vocab
+          {vocabulary_mapping <> value, active_context, defined}
+        # 6) Otherwise, if document relative is true, set value to the result of resolving value against the base IRI. Only the basic algorithm in section 5.2 of [RFC3986] is used; neither Syntax-Based Normalization nor Scheme-Based Normalization are performed. Characters additionally allowed in IRI references are treated in the same way that unreserved characters are treated in URI references, per section 6.5 of [RFC3987].
+        doc_relative ->
+          {absolute_iri(value, JSON.LD.Context.base(active_context)), active_context, defined}
 # TODO: RDF.rb's implementation differs from the spec here, by checking if base_iri is actually present in the previous clause and adding the following additional clause. Another Spec error?
 #      if local_context && RDF::URI(value).relative?
 #        # If local context is not null and value is not an absolute IRI, an invalid IRI mapping error has been detected and processing is aborted.
 #        raise JSON.LD.InvalidIRIMappingError, message: "not an absolute IRI: #{value}"
-      # 7) Return value as is.
-      true -> value
-    end
+        # 7) Return value as is.
+        true ->
+          {value, active_context, defined}
+      end
 
     if local_context do
       {result, active_context, defined}

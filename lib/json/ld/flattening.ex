@@ -92,26 +92,26 @@ defmodule JSON.LD.Flattening do
   # 2)
   def generate_node_map(element, node_map, node_id_map, active_graph, active_subject,
                         active_property, list) when is_map(element) do
-    identifier_map = %{}
-    counter = 1
-
     node_map = Map.put_new(node_map, active_graph, %{})
     node = node_map[active_graph][active_subject]
 
     # 3)
-    if old_types = Map.get(element, "@type") do
-      new_types = Enum.reduce(List.wrap(old_types), [],
-        fn (item, types) ->
-          if blank_node_id?(item) do
-            identifier = generate_blank_node_id(node_id_map, item)
-            types ++ [identifier]
-          else
-            types ++ [item]
-          end
-        end)
-      element = Map.put(element, "@type",
-        if(is_list(old_types), do: new_types, else: List.first(new_types)))
-    end
+    element =
+      if old_types = Map.get(element, "@type") do
+        new_types = Enum.reduce(List.wrap(old_types), [],
+          fn (item, types) ->
+            if blank_node_id?(item) do
+              identifier = generate_blank_node_id(node_id_map, item)
+              types ++ [identifier]
+            else
+              types ++ [item]
+            end
+          end)
+        Map.put(element, "@type",
+          if(is_list(old_types), do: new_types, else: List.first(new_types)))
+      else
+        element
+      end
 
     cond do
 
@@ -136,7 +136,7 @@ defmodule JSON.LD.Flattening do
 
       # 5)
       Map.has_key?(element, "@list") ->
-        {:ok, result_list} = new_list
+        {:ok, result_list} = new_list()
         {node_map, result} =
           try do
             {
@@ -173,19 +173,22 @@ defmodule JSON.LD.Flattening do
           end
 
         # 6.3)
-        unless Map.has_key?(node_map[active_graph], id) do
-          node_map = Map.update!(node_map, active_graph, fn graph ->
-            Map.put_new(graph, id, %{"@id" => id})
-          end)
-        end
+        node_map =
+          unless Map.has_key?(node_map[active_graph], id) do
+            Map.update!(node_map, active_graph, fn graph ->
+              Map.put_new(graph, id, %{"@id" => id})
+            end)
+          else
+            node_map
+          end
 
         # 6.4) TODO: Spec fixme: "this line is asked for by the spec, but it breaks various tests" (according to Java and Go implementation, which perform this step before 6.7) instead)
         node = node_map[active_graph][id]
 
         # 6.5)
-        if is_map(active_subject) do
-          unless Map.has_key?(node, active_property) do
-            node_map =
+        node_map =
+          if is_map(active_subject) do
+            unless Map.has_key?(node, active_property) do
               update_in(node_map, [active_graph, id, active_property], fn
                 nil -> [active_subject]
                 items ->
@@ -193,13 +196,14 @@ defmodule JSON.LD.Flattening do
                     do: items ++ [active_subject],
                   else: items
               end)
-          end
-        # 6.6)
-        else
-          unless is_nil(active_property) do
-            reference = %{"@id" => id}
-            if is_nil(list) do
-              node_map =
+            else
+              node_map
+            end
+          # 6.6)
+          else
+            unless is_nil(active_property) do
+              reference = %{"@id" => id}
+              if is_nil(list) do
                 update_in(node_map, [active_graph, active_subject, active_property], fn
                   nil -> [reference]
                   items ->
@@ -207,75 +211,98 @@ defmodule JSON.LD.Flattening do
                       do: items ++ [reference],
                     else: items
                 end)
-            # 6.6.3) TODO: Spec fixme: specs says to add ELEMENT to @list member, should be REFERENCE
+              # 6.6.3) TODO: Spec fixme: specs says to add ELEMENT to @list member, should be REFERENCE
+              else
+                append_to_list(list, reference)
+                node_map
+              end
             else
-              append_to_list(list, reference)
+              node_map
             end
           end
-        end
 
         # 6.7)
-        if Map.has_key?(element, "@type") do
-          node_map =
-            Enum.reduce element["@type"], node_map, fn (type, node_map) ->
-              update_in(node_map, [active_graph, id, "@type"], fn
-                nil -> [type]
-                items ->
-                  unless type in items,
-                    do: items ++ [type],
-                  else: items
-              end)
-            end
-          element = Map.delete(element, "@type")
-        end
+        {node_map, element} =
+          if Map.has_key?(element, "@type") do
+            node_map =
+              Enum.reduce element["@type"], node_map, fn (type, node_map) ->
+                update_in(node_map, [active_graph, id, "@type"], fn
+                  nil -> [type]
+                  items ->
+                    unless type in items,
+                      do: items ++ [type],
+                    else: items
+                end)
+              end
+            element = Map.delete(element, "@type")
+            {node_map, element}
+          else
+            {node_map, element}
+          end
 
         # 6.8)
-        if Map.has_key?(element, "@index") do
-          {element_index, element} = Map.pop(element, "@index")
-          if node_index = get_in(node_map, [active_graph, id, "@index"]) do
-            if not deep_compare(node_index, element_index) do
-              raise JSON.LD.ConflictingIndexesError,
-                message: "Multiple conflicting indexes have been found for the same node."
-            end
-          else
+        {node_map, element} =
+          if Map.has_key?(element, "@index") do
+            {element_index, element} = Map.pop(element, "@index")
             node_map =
-              update_in node_map, [active_graph, id], fn node ->
-                Map.put(node, "@index", element_index)
+              if node_index = get_in(node_map, [active_graph, id, "@index"]) do
+                if not deep_compare(node_index, element_index) do
+                  raise JSON.LD.ConflictingIndexesError,
+                    message: "Multiple conflicting indexes have been found for the same node."
+                end
+              else
+                update_in node_map, [active_graph, id], fn node ->
+                  Map.put(node, "@index", element_index)
+                end
               end
+            {node_map, element}
+          else
+            {node_map, element}
           end
-        end
 
         # 6.9)
-        if Map.has_key?(element, "@reverse") do
-          referenced_node = %{"@id" => id}
-          {reverse_map, element} = Map.pop(element, "@reverse")
-          node_map =
-            Enum.reduce reverse_map, node_map, fn ({property, values}, node_map) ->
+        {node_map, element} =
+          if Map.has_key?(element, "@reverse") do
+            referenced_node = %{"@id" => id}
+            {reverse_map, element} = Map.pop(element, "@reverse")
+            node_map = Enum.reduce reverse_map, node_map, fn ({property, values}, node_map) ->
               Enum.reduce values, node_map, fn (value, node_map) ->
                 generate_node_map(value, node_map, node_id_map, active_graph,
                                   referenced_node, property)
               end
             end
-        end
+            {node_map, element}
+          else
+            {node_map, element}
+          end
 
         # 6.10)
-        if Map.has_key?(element, "@graph") do
-          {graph, element} = Map.pop(element, "@graph")
-          node_map = generate_node_map(graph, node_map, node_id_map, id)
-        end
+        {node_map, element} =
+          if Map.has_key?(element, "@graph") do
+            {graph, element} = Map.pop(element, "@graph")
+            {generate_node_map(graph, node_map, node_id_map, id), element}
+          else
+            {node_map, element}
+          end
 
         # 6.11)
         element
         |> Enum.sort_by(fn {property, _} -> property end)
         |> Enum.reduce(node_map, fn ({property, value}, node_map) ->
-             if blank_node_id?(property) do
-               property = generate_blank_node_id(node_id_map, property)
-             end
-             unless Map.has_key?(node_map[active_graph][id], property) do
-               node_map = update_in node_map, [active_graph, id], fn node ->
-                 Map.put(node, property, [])
+             property =
+               if blank_node_id?(property) do
+                 generate_blank_node_id(node_id_map, property)
+               else
+                 property
                end
-             end
+             node_map =
+               unless Map.has_key?(node_map[active_graph][id], property) do
+                 update_in node_map, [active_graph, id], fn node ->
+                   Map.put(node, property, [])
+                 end
+               else
+                 node_map
+               end
              generate_node_map(value, node_map, node_id_map, active_graph, id, property)
            end)
     end

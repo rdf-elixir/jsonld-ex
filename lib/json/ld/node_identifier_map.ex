@@ -3,8 +3,6 @@ defmodule JSON.LD.NodeIdentifierMap do
 
   use GenServer
 
-  import JSON.LD
-
   # Client API
 
   def start_link(opts \\ []) do
@@ -32,8 +30,8 @@ defmodule JSON.LD.NodeIdentifierMap do
   end
 
   def handle_call({:generate_id, identifier}, _, %{map: map, counter: counter} = state) do
-    if identifier && (mapped_identifier = map[identifier]) do
-      {:reply, mapped_identifier, state}
+    if identifier && map[identifier] do
+      {:reply, map[identifier], state}
     else
       blank_node_id = "_:b#{counter}"
       {:reply, blank_node_id, %{
