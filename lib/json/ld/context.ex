@@ -50,11 +50,11 @@ defmodule JSON.LD.Context do
     local = absolute_iri(local, base(active))
 
     # 3.2.2)
-    remote = case Enum.member?(remote, local) do
-      false -> [local | remote]
-      true -> raise JSON.LD.RecursiveContextInclusionError,
+    if local in remote do
+      raise JSON.LD.RecursiveContextInclusionError,
         message: "Recursive context inclusion: #{local}"
     end
+    remote = remote ++ [local]
 
     # 3.2.3)
     document_loader = options.document_loader || JSON.LD.DocumentLoader.Default
