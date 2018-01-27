@@ -2,7 +2,6 @@ defmodule JSON.LD.IRIExpansionTest do
   use ExUnit.Case, async: false
 
   import JSON.LD.IRIExpansion
-  import RDF.Sigils
 
   setup do
     context = JSON.LD.context(%{
