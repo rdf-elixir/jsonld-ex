@@ -9,9 +9,6 @@ defmodule JSON.LD.TestSuite.ErrorTest do
 
   test_cases("error")
   |> Enum.each(fn %{"name" => name, "input" => input} = test_case ->
-      if input in ~w[error-0002-in.jsonld error-0003-in.jsonld error-0004-in.jsonld error-0005-in.jsonld] do
-        @tag skip: "TODO: remote contexts not implemented yet"
-      end
       @tag :test_suite
       @tag :flatten_test_suite
       @tag :error_test
