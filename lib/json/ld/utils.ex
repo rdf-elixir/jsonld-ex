@@ -20,7 +20,6 @@ defmodule JSON.LD.Utils do
     do: value |> RDF.IRI.absolute(base_iri) |> to_string
 
 
-# TODO: This should be part of a dedicated RDF.IRI implementation and properly tested.
   def relative_iri?(value),
     do: not (JSON.LD.keyword?(value) or IRI.absolute?(value) or blank_node_id?(value))
 

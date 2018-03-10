@@ -1,12 +1,13 @@
 defmodule JSON.LD do
 
-  use RDF.Serialization
+  use RDF.Serialization.Format
 
   import RDF.Sigils
 
-  @id           ~I<http://www.w3.org/ns/formats/JSON-LD>
-  @extension    "jsonld"
-  @content_type "application/ld+json"
+  @id         ~I<http://www.w3.org/ns/formats/JSON-LD>
+  @name       :jsonld
+  @extension  "jsonld"
+  @media_type "application/ld+json"
 
   def options,      do: JSON.LD.Options.new
 
