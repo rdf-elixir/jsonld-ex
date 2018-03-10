@@ -64,7 +64,6 @@ defmodule JSON.LD.Mixfile do
       {:dialyxir, "~> 0.4",       only: [:dev, :test], runtime: false},
       {:credo, "~> 0.6",          only: [:dev, :test], runtime: false},
       {:ex_doc, "~> 0.14",        only: :dev, runtime: false},
-      {:mix_test_watch, "~> 0.3", only: :dev, runtime: false},
       {:excoveralls, "~> 0.7",    only: :test},
     ]
   end
