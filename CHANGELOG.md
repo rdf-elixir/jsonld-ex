@@ -5,6 +5,17 @@ This project adheres to [Semantic Versioning](http://semver.org/) and
 [Keep a CHANGELOG](http://keepachangelog.com).
 
 
+## Unreleased
+
+### Added
+
+- JSON-LD encoder can handle `RDF.Graph`s and `RDF.Description`s 
+
+
+[Compare v0.2.1...HEAD](https://github.com/marcelotto/jsonld-ex/compare/v0.2.1...HEAD)
+
+
+
 ## 0.2.1 - 2018-03-10
 
 ### Changed

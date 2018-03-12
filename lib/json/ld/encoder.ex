@@ -33,7 +33,9 @@ defmodule JSON.LD.Encoder do
     end
   end
 
-  def from_rdf!(dataset, options \\ %JSON.LD.Options{}) do
+  def from_rdf!(rdf_data, options \\ %JSON.LD.Options{})
+
+  def from_rdf!(%RDF.Dataset{} = dataset, options) do
     with options = JSON.LD.Options.new(options) do
       graph_map =
         Enum.reduce RDF.Dataset.graphs(dataset), %{},
@@ -98,6 +100,9 @@ defmodule JSON.LD.Encoder do
       |> Enum.reverse
     end
   end
+
+  def from_rdf!(rdf_data, options),
+    do: rdf_data |> RDF.Dataset.new() |> from_rdf!(options)
 
   # 3.5)
   defp node_map_from_graph(graph, current, use_native_types, use_rdf_type) do
