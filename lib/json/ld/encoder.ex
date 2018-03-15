@@ -319,14 +319,12 @@ defmodule JSON.LD.Encoder do
   end
 
 
-  # TODO: This should not be dependent on Poison as a JSON encoder in general,
-  #   but determine available JSON encoders and use one heuristically or by configuration
   defp encode_json(value, opts \\ []) do
-    Poison.encode(value)
+    Jason.encode(value)
   end
 
   defp encode_json!(value, opts \\ []) do
-    Poison.encode!(value)
+    Jason.encode!(value)
   end
 
 end

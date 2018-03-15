@@ -86,14 +86,12 @@ defmodule JSON.LD.Decoder do
     end
   end
 
-  # TODO: This should not be dependent on Poison as a JSON parser in general,
-  #   but determine available JSON parsers and use one heuristically or by configuration
   def parse_json(content, _opts \\ []) do
-    Poison.Parser.parse(content)
+    Jason.decode(content)
   end
 
   def parse_json!(content, _opts \\ []) do
-    Poison.Parser.parse!(content)
+    Jason.decode!(content)
   end
 
   def node_to_rdf(nil), do: nil

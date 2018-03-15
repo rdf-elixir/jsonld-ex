@@ -60,7 +60,7 @@ defmodule JSON.LD.Mixfile do
   defp deps do
     [
       {:rdf, "~> 0.4"},
-      {:poison, "~> 3.0"},
+      {:jason, "~> 1.0"},
       {:dialyxir, "~> 0.4",       only: [:dev, :test], runtime: false},
       {:credo, "~> 0.6",          only: [:dev, :test], runtime: false},
       {:ex_doc, "~> 0.14",        only: :dev, runtime: false},

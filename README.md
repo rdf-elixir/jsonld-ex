@@ -53,7 +53,7 @@ end
  "homepage": "http://manu.sporny.org/"
 }
 """
-|> Poison.Parser.parse!
+|> Jason.decode!
 |> JSON.LD.expand
 ```
 
@@ -67,7 +67,7 @@ produces
 ### Compact a document
 
 ```elixir
-context = Poison.Parser.parse! """
+context = Jason.decode! """
   {
     "@context": {
       "name": "http://xmlns.com/foaf/0.1/name",
@@ -91,7 +91,7 @@ context = Poison.Parser.parse! """
   }
 ]
 """
-|> Poison.Parser.parse!
+|> Jason.decode!
 |> JSON.LD.compact(context)
 ```
 

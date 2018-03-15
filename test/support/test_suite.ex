@@ -7,7 +7,7 @@ defmodule JSON.LD.TestSuite do
 
   def parse_json_file!(file) do
     case File.read(file(file)) do
-      {:ok,   content} -> Poison.Parser.parse!(content)
+      {:ok,   content} -> Jason.decode!(content)
       {:error, reason} -> raise File.Error, path: file, action: "read", reason: reason
     end
   end

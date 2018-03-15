@@ -210,7 +210,7 @@ defmodule JSON.LD.IRICompactionTest do
 
   describe "compact-0018" do
     setup do
-      context = JSON.LD.context(Poison.Parser.parse! """
+      context = JSON.LD.context(Jason.decode! """
       {
         "id1": "http://example.com/id1",
         "type1": "http://example.com/t1",
@@ -324,7 +324,7 @@ defmodule JSON.LD.IRICompactionTest do
           do: [values],
           else: values
          Enum.each(values, fn value ->
-          value = Poison.Parser.parse!(value)
+          value = Jason.decode!(value)
            @tag data: {term, value}
            test "uses #{term} for #{inspect value, limit: 3}",
                 %{data: {term, value}, example_context: context,

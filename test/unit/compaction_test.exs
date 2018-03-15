@@ -4,7 +4,7 @@ defmodule JSON.LD.CompactionTest do
   alias RDF.NS.{RDFS, XSD}
 
   test "Flattened form of a JSON-LD document (EXAMPLES 57-59 of https://www.w3.org/TR/json-ld/#compacted-document-form)" do
-    input = Poison.Parser.parse! """
+    input = Jason.decode! """
       [
         {
           "http://xmlns.com/foaf/0.1/name": [ "Manu Sporny" ],
@@ -16,7 +16,7 @@ defmodule JSON.LD.CompactionTest do
         }
       ]
       """
-    context = Poison.Parser.parse! """
+    context = Jason.decode! """
       {
         "@context": {
           "name": "http://xmlns.com/foaf/0.1/name",
@@ -27,7 +27,7 @@ defmodule JSON.LD.CompactionTest do
         }
       }
       """
-    assert JSON.LD.compact(input, context) == Poison.Parser.parse! """
+    assert JSON.LD.compact(input, context) == Jason.decode! """
       {
         "@context": {
           "name": "http://xmlns.com/foaf/0.1/name",
@@ -324,16 +324,16 @@ defmodule JSON.LD.CompactionTest do
         }
       },
       "compact-0007" => %{
-        input: Poison.Parser.parse!("""
+        input: Jason.decode!("""
           {"http://example.org/vocab#contains": "this-is-not-an-IRI"}
         """),
-        context: Poison.Parser.parse!("""
+        context: Jason.decode!("""
           {
           "ex": "http://example.org/vocab#",
           "ex:contains": {"@type": "@id"}
           }
         """),
-        output: Poison.Parser.parse!("""
+        output: Jason.decode!("""
           {
             "@context": {
               "ex": "http://example.org/vocab#",
@@ -355,7 +355,7 @@ defmodule JSON.LD.CompactionTest do
   describe "@reverse" do
     %{
       "compact-0033" => %{
-        input: Poison.Parser.parse!("""
+        input: Jason.decode!("""
           [
             {
               "@id": "http://example.com/people/markus",
@@ -371,13 +371,13 @@ defmodule JSON.LD.CompactionTest do
             }
           ]
         """),
-        context: Poison.Parser.parse!("""
+        context: Jason.decode!("""
           {
             "name": "http://xmlns.com/foaf/0.1/name",
             "isKnownBy": { "@reverse": "http://xmlns.com/foaf/0.1/knows" }
           }
         """),
-        output: Poison.Parser.parse!("""
+        output: Jason.decode!("""
           {
             "@context": {
               "name": "http://xmlns.com/foaf/0.1/name",

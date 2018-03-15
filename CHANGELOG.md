@@ -11,6 +11,10 @@ This project adheres to [Semantic Versioning](http://semver.org/) and
 
 - JSON-LD encoder can handle `RDF.Graph`s and `RDF.Description`s 
 
+### Changed
+
+- Use Jason instead of Poison for JSON encoding and decoding, since it's faster and more standard conform
+
 
 [Compare v0.2.1...HEAD](https://github.com/marcelotto/jsonld-ex/compare/v0.2.1...HEAD)
 

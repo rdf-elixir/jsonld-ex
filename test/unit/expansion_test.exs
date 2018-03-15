@@ -6,7 +6,7 @@ defmodule JSON.LD.ExpansionTest do
   alias RDF.NS.{RDFS, XSD}
 
   test "Expanded form of a JSON-LD document (EXAMPLE 55 and 56 of https://www.w3.org/TR/json-ld/#expanded-document-form)" do
-    input = Poison.Parser.parse! """
+    input = Jason.decode! """
       {
          "@context":
          {
@@ -20,7 +20,7 @@ defmodule JSON.LD.ExpansionTest do
          "homepage": "http://manu.sporny.org/"
       }
       """
-    assert JSON.LD.expand(input) == Poison.Parser.parse! """
+    assert JSON.LD.expand(input) == Jason.decode! """
       [
         {
           "http://xmlns.com/foaf/0.1/name": [
@@ -540,7 +540,7 @@ defmodule JSON.LD.ExpansionTest do
         }]
       },
       "expand-0004" => %{
-        input: Poison.Parser.parse!(~s({
+        input: Jason.decode!(~s({
           "@context": {
             "mylist1": {"@id": "http://example.com/mylist1", "@container": "@list"},
             "mylist2": {"@id": "http://example.com/mylist2", "@container": "@list"},
@@ -549,7 +549,7 @@ defmodule JSON.LD.ExpansionTest do
           },
           "http://example.org/property": { "@list": "one item" }
         })),
-        output: Poison.Parser.parse!(~s([
+        output: Jason.decode!(~s([
           {
             "http://example.org/property": [
               {
@@ -700,7 +700,7 @@ defmodule JSON.LD.ExpansionTest do
   describe "@reverse" do
     %{
       "expand-0037" => %{
-        input: Poison.Parser.parse!(~s({
+        input: Jason.decode!(~s({
           "@context": {
             "name": "http://xmlns.com/foaf/0.1/name"
           },
@@ -713,7 +713,7 @@ defmodule JSON.LD.ExpansionTest do
             }
           }
         })),
-        output: Poison.Parser.parse!(~s([
+        output: Jason.decode!(~s([
           {
             "@id": "http://example.com/people/markus",
             "@reverse": {
@@ -737,7 +737,7 @@ defmodule JSON.LD.ExpansionTest do
         ]))
       },
       "expand-0043" => %{
-        input: Poison.Parser.parse!(~s({
+        input: Jason.decode!(~s({
           "@context": {
             "name": "http://xmlns.com/foaf/0.1/name",
             "isKnownBy": { "@reverse": "http://xmlns.com/foaf/0.1/knows" }
@@ -757,7 +757,7 @@ defmodule JSON.LD.ExpansionTest do
             ]
           }
         })),
-        output: Poison.Parser.parse!(~s([
+        output: Jason.decode!(~s([
           {
             "@id": "http://example.com/people/markus",
             "http://xmlns.com/foaf/0.1/knows": [
@@ -870,7 +870,7 @@ defmodule JSON.LD.ExpansionTest do
       },
 
       "@reverse object with an @id property" => %{
-        input: Poison.Parser.parse!(~s({
+        input: Jason.decode!(~s({
           "@id": "http://example/foo",
           "@reverse": {
             "@id": "http://example/bar"
@@ -879,7 +879,7 @@ defmodule JSON.LD.ExpansionTest do
         exception: JSON.LD.InvalidReversePropertyMapError,
       },
       "colliding keywords" => %{
-        input: Poison.Parser.parse!(~s({
+        input: Jason.decode!(~s({
           "@context": {
             "id": "@id",
             "ID": "@id"
