@@ -5,7 +5,7 @@ This project adheres to [Semantic Versioning](http://semver.org/) and
 [Keep a CHANGELOG](http://keepachangelog.com).
 
 
-## Unreleased
+## 0.2.2 - 2018-03-17
 
 ### Added
 
@@ -16,7 +16,7 @@ This project adheres to [Semantic Versioning](http://semver.org/) and
 - Use Jason instead of Poison for JSON encoding and decoding, since it's faster and more standard conform
 
 
-[Compare v0.2.1...HEAD](https://github.com/marcelotto/jsonld-ex/compare/v0.2.1...HEAD)
+[Compare v0.2.1...v0.2.2](https://github.com/marcelotto/jsonld-ex/compare/v0.2.1...v0.2.2)
 
 
 
