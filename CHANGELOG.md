@@ -5,6 +5,16 @@ This project adheres to [Semantic Versioning](http://semver.org/) and
 [Keep a CHANGELOG](http://keepachangelog.com).
 
 
+## Unreleased
+
+- Upgrade to Jason 1.1
+- Pass options to `JSON.LD.Encoder.encode/2` and `JSON.LD.Encoder.encode!/2` 
+  through to Jason; this allows to use the new Jason pretty printing options  
+
+[Compare v0.2.2...HEAD](https://github.com/marcelotto/jsonld-ex/compare/v0.2.2...HEAD)
+
+
+
 ## 0.2.2 - 2018-03-17
 
 ### Added

@@ -119,6 +119,16 @@ JSON.LD.write_file!(dataset, "file.jsonld")
 ```
 
 
+## Pretty printing
+
+Pretty printing is possible on all writer functions with all of the formatter options of [Jason](https://hexdocs.pm/jason/Jason.Formatter.html#pretty_print/2), the underlying JSON encoder, to which the given options are passed through.
+
+```elixir
+JSON.LD.write_file!(dataset, "file.jsonld", pretty: true)
+JSON.LD.write_string(dataset, "file.jsonld", pretty: [indent: "\t"])
+```
+
+
 ## Getting help
 
 - [Documentation](http://hexdocs.pm/json_ld)

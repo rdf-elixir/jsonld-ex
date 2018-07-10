@@ -15,14 +15,14 @@ defmodule JSON.LD.Encoder do
 
   def encode(data, opts \\ []) do
     with {:ok, json_ld_object} <- from_rdf(data, opts) do
-      encode_json(json_ld_object)
+      encode_json(json_ld_object, opts)
     end
   end
 
   def encode!(data, opts \\ []) do
     data
     |> from_rdf!(opts)
-    |> encode_json!
+    |> encode_json!(opts)
   end
 
   def from_rdf(dataset, options \\ %JSON.LD.Options{}) do
@@ -320,11 +320,11 @@ defmodule JSON.LD.Encoder do
 
 
   defp encode_json(value, opts \\ []) do
-    Jason.encode(value)
+    Jason.encode(value, opts)
   end
 
   defp encode_json!(value, opts \\ []) do
-    Jason.encode!(value)
+    Jason.encode!(value, opts)
   end
 
 end

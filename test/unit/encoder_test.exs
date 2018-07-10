@@ -25,6 +25,26 @@ defmodule JSON.LD.EncoderTest do
     end
   end
 
+  test "pretty printing" do
+    dataset = Dataset.new {~I<http://a/b>, ~I<http://a/c>, ~I<http://a/d>}
+
+    assert JSON.LD.Encoder.encode!(dataset) ==
+             "[{\"@id\":\"http://a/b\",\"http://a/c\":[{\"@id\":\"http://a/d\"}]}]"
+
+    assert JSON.LD.Encoder.encode!(dataset, pretty: true) ==
+            """
+            [
+              {
+                "@id": "http://a/b",
+                "http://a/c": [
+                  {
+                    "@id": "http://a/d"
+                  }
+                ]
+              }
+            ]
+            """ |> String.trim()
+  end
 
   test "an empty RDF.Dataset is serialized to an JSON array string" do
     assert JSON.LD.Encoder.encode!(Dataset.new) == "[]"
