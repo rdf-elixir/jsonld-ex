@@ -319,11 +319,11 @@ defmodule JSON.LD.Encoder do
   end
 
 
-  defp encode_json(value, opts \\ []) do
+  defp encode_json(value, opts) do
     Jason.encode(value, opts)
   end
 
-  defp encode_json!(value, opts \\ []) do
+  defp encode_json!(value, opts) do
     Jason.encode!(value, opts)
   end
 
