@@ -5,6 +5,15 @@ This project adheres to [Semantic Versioning](http://semver.org/) and
 [Keep a CHANGELOG](http://keepachangelog.com).
 
 
+## Unreleased
+
+No significant changes. Just some adoptions to work with RDF.ex 0.5, which drops
+support for Elixir versions < 1.6.
+
+[Compare v0.2.3...HEAD](https://github.com/marcelotto/jsonld-ex/compare/v0.2.3...HEAD)
+
+
+
 ## 0.2.3 - 2018-07-11
 
 - Upgrade to Jason 1.1

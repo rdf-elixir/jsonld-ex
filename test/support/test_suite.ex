@@ -49,7 +49,6 @@ defmodule JSON.LD.TestSuite do
         {:expand_context, file} -> {:expand_context, j(file)}
         option -> option
        end)
-    |> JSON.LD.Options.new
   end
 
   def exception(error) do

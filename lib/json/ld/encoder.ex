@@ -13,6 +13,7 @@ defmodule JSON.LD.Encoder do
   @rdf_rest  to_string(RDF.NS.RDF.rest)
   @rdf_list  to_string(RDF.uri(RDF.NS.RDF.List))
 
+  @impl RDF.Serialization.Encoder
   def encode(data, opts \\ []) do
     with {:ok, json_ld_object} <- from_rdf(data, opts) do
       encode_json(json_ld_object, opts)
