@@ -10,6 +10,7 @@ defmodule JSON.LD.Decoder do
   alias RDF.NS.{XSD}
 
 
+  @impl RDF.Serialization.Decoder
   def decode(content, opts \\ []) do
     with {:ok, json_ld_object} <- parse_json(content),
          dataset                = to_rdf(json_ld_object, opts) do
