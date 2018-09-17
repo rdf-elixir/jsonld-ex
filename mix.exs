@@ -59,8 +59,7 @@ defmodule JSON.LD.Mixfile do
 
   defp deps do
     [
-# TODO: {:rdf, "~> 0.5"},
-      {:rdf, git: "https://github.com/marcelotto/rdf-ex"},
+      {:rdf, "~> 0.5"},
       {:jason, "~> 1.1.1"},
       {:dialyxir, "~> 0.5",     only: [:dev, :test], runtime: false},
       {:credo, "~> 0.10",       only: [:dev, :test], runtime: false},
