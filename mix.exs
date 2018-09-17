@@ -62,10 +62,10 @@ defmodule JSON.LD.Mixfile do
 # TODO: {:rdf, "~> 0.5"},
       {:rdf, git: "https://github.com/marcelotto/rdf-ex"},
       {:jason, "~> 1.1.1"},
-      {:dialyxir, "~> 0.4",       only: [:dev, :test], runtime: false},
-      {:credo, "~> 0.6",          only: [:dev, :test], runtime: false},
-      {:ex_doc, "~> 0.14",        only: :dev, runtime: false},
-      {:excoveralls, "~> 0.7",    only: :test},
+      {:dialyxir, "~> 0.5",     only: [:dev, :test], runtime: false},
+      {:credo, "~> 0.10",       only: [:dev, :test], runtime: false},
+      {:ex_doc, "~> 0.19",      only: :dev, runtime: false},
+      {:excoveralls, "~> 0.10", only: :test},
     ]
   end
 end
