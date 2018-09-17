@@ -28,7 +28,7 @@ The [JSON-LD.ex](https://hex.pm/packages/json_ld) Hex package can be installed a
 
 ```elixir
 def deps do
-  [{:json_ld, "~> 0.2"}]
+  [{:json_ld, "~> 0.3"}]
 end
 ```
 

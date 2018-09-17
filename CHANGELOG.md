@@ -5,12 +5,12 @@ This project adheres to [Semantic Versioning](http://semver.org/) and
 [Keep a CHANGELOG](http://keepachangelog.com).
 
 
-## Unreleased
+## 0.3.0 - 2018-09-17
 
-No significant changes. Just some adoptions to work with RDF.ex 0.5, which drops
-support for Elixir versions < 1.6.
+No significant changes. Just some adoptions to work with RDF.ex 0.5. 
+But together with RDF.ex 0.5, Elixir versions < 1.6 are no longer supported.
 
-[Compare v0.2.3...HEAD](https://github.com/marcelotto/jsonld-ex/compare/v0.2.3...HEAD)
+[Compare v0.2.3...v0.3.0](https://github.com/marcelotto/jsonld-ex/compare/v0.2.3...v0.3.0)
 
 
 
