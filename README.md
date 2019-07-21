@@ -1,3 +1,5 @@
+<img style="border:0px;" width="64" src="https://json-ld.org/images/json-ld-logo-64.png" alt="JSON-LD-logo-64" align="right"/>
+
 # JSON-LD.ex
 
 [![Travis](https://img.shields.io/travis/marcelotto/jsonld-ex.svg?style=flat-square)](https://travis-ci.org/marcelotto/jsonld-ex)
