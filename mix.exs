@@ -63,9 +63,9 @@ defmodule JSON.LD.Mixfile do
       {:rdf, "~> 0.5"},
       {:jason, "~> 1.1.1"},
       {:dialyxir, "~> 0.5",     only: [:dev, :test], runtime: false},
-      {:credo, "~> 0.10",       only: [:dev, :test], runtime: false},
-      {:ex_doc, "~> 0.19",      only: :dev, runtime: false},
-      {:excoveralls, "~> 0.10", only: :test},
+      {:credo, "~> 1.1",        only: [:dev, :test], runtime: false},
+      {:ex_doc, "~> 0.21",      only: :dev, runtime: false},
+      {:excoveralls, "~> 0.11", only: :test},
     ]
   end
 
