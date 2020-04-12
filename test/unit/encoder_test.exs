@@ -17,6 +17,9 @@ defmodule JSON.LD.EncoderTest do
 
   alias TestNS.{EX, S}
 
+  @compile {:no_warn_undefined, JSON.LD.EncoderTest.TestNS.EX}
+  @compile {:no_warn_undefined, JSON.LD.EncoderTest.TestNS.S}
+
 
   def gets_serialized_to(input, output, opts \\ []) do
     data_structs = Keyword.get(opts, :data_structs, [Dataset, Graph])

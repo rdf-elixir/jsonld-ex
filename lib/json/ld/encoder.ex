@@ -79,7 +79,7 @@ defmodule JSON.LD.Encoder do
                  |> Enum.sort_by(fn {s, _} -> s end)
                  |> Enum.reduce([], fn ({_s, n}, graph_nodes) ->
                       n = Map.delete(n, "usages")
-                      if Map.size(n) == 1 and Map.has_key?(n, "@id") do
+                      if map_size(n) == 1 and Map.has_key?(n, "@id") do
                         graph_nodes
                       else
                         [n | graph_nodes]
@@ -92,7 +92,7 @@ defmodule JSON.LD.Encoder do
 
            # 6.2)
            node = Map.delete(node, "usages")
-           if Map.size(node) == 1 and Map.has_key?(node, "@id") do
+           if map_size(node) == 1 and Map.has_key?(node, "@id") do
              result
            else
              [node | result]
