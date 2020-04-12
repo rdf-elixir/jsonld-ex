@@ -5,7 +5,6 @@ defmodule JSON.LD.EncoderTest do
 
   alias RDF.{Dataset, Graph, Description}
   alias RDF.NS
-  alias RDF.NS.{XSD, RDFS}
 
   import RDF.Sigils
 
@@ -167,14 +166,14 @@ defmodule JSON.LD.EncoderTest do
       integer:            1,
       unsignedInt:        1,
       nonNegativeInteger: 1,
-      float:              1,
+      float:              1.0,
       nonPositiveInteger: -1,
       negativeInteger:    -1,
     }
     |> Enum.each(fn ({type, _} = data) ->
          @tag data: data
          test "#{type}", %{data: {type, value}} do
-           {EX.a, EX.b, RDF.literal(value, datatype: apply(XSD, type, []))}
+           {EX.a, EX.b, RDF.literal(value, datatype: apply(NS.XSD, type, []))}
            |> gets_serialized_to([%{
                 "@id"                   => "http://example.com/a",
                 "http://example.com/b"  => [%{"@value" => "#{value}", "@type" => "http://www.w3.org/2001/XMLSchema##{type}"}]
@@ -440,7 +439,7 @@ defmodule JSON.LD.EncoderTest do
   describe "problems" do
     %{
       "xsd:boolean as value" => {
-        {~I<http://data.wikia.com/terms#playable>, RDFS.range, XSD.boolean},
+        {~I<http://data.wikia.com/terms#playable>, NS.RDFS.range, NS.XSD.boolean},
         [%{
           "@id" => "http://data.wikia.com/terms#playable",
           "http://www.w3.org/2000/01/rdf-schema#range" => [

@@ -6,8 +6,7 @@ defmodule JSON.LD.Decoder do
 
   import JSON.LD.{NodeIdentifierMap, Utils}
   alias JSON.LD.NodeIdentifierMap
-  alias RDF.{Dataset, Graph}
-  alias RDF.NS.{XSD}
+  alias RDF.{Dataset, Graph, NS}
 
 
   @impl RDF.Serialization.Decoder
@@ -117,30 +116,34 @@ defmodule JSON.LD.Decoder do
     {value, datatype} =
       cond do
         is_boolean(value) ->
-          value = value |> RDF.Boolean.new |> RDF.Literal.canonical |> RDF.Literal.lexical
-          datatype = if is_nil(datatype), do: XSD.boolean, else: datatype
+          value = value |> RDF.XSD.Boolean.new() |> RDF.XSD.Boolean.canonical() |> RDF.XSD.Boolean.lexical()
+          datatype = if is_nil(datatype), do: NS.XSD.boolean, else: datatype
           {value, datatype}
-        is_float(value) or (is_number(value) and datatype == to_string(XSD.double)) ->
-          value = value |> RDF.Double.new |> RDF.Literal.canonical |> RDF.Literal.lexical
-          datatype = if is_nil(datatype), do: XSD.double, else: datatype
+        is_float(value) or (is_number(value) and datatype == to_string(NS.XSD.double)) ->
+          value = value |> RDF.XSD.Double.new() |> RDF.XSD.Double.canonical() |> RDF.XSD.Double.lexical()
+          datatype = if is_nil(datatype), do: NS.XSD.double, else: datatype
           {value, datatype}
-        is_integer(value) or (is_number(value) and datatype == to_string(XSD.integer)) ->
-          value = value |> RDF.Integer.new |> RDF.Literal.canonical |> RDF.Literal.lexical
-          datatype = if is_nil(datatype), do: XSD.integer, else: datatype
+        is_integer(value) or (is_number(value) and datatype == to_string(NS.XSD.integer)) ->
+          value = value |> RDF.XSD.Integer.new() |> RDF.XSD.Integer.canonical() |> RDF.XSD.Integer.lexical()
+          datatype = if is_nil(datatype), do: NS.XSD.integer, else: datatype
           {value, datatype}
         is_nil(datatype) ->
           datatype =
             if Map.has_key?(item, "@language") do
               RDF.langString
             else
-              XSD.string
+              NS.XSD.string
             end
           {value, datatype}
         true ->
           {value, datatype}
       end
-    RDF.Literal.new(value,
-      %{datatype: datatype, language: item["@language"], canonicalize: true})
+
+    if language = item["@language"] do
+      RDF.Literal.new(value, language: language, canonicalize: true)
+    else
+      RDF.Literal.new(value, datatype: datatype, canonicalize: true)
+    end
   end
 
   defp list_to_rdf(list, node_id_map) do

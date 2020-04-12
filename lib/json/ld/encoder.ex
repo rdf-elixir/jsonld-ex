@@ -4,8 +4,7 @@ defmodule JSON.LD.Encoder do
 
   use RDF.Serialization.Encoder
 
-  alias RDF.{IRI, BlankNode, Literal}
-  alias RDF.NS.{XSD}
+  alias RDF.{IRI, BlankNode, Literal, XSD, NS}
 
   @rdf_type  to_string(RDF.NS.RDF.type)
   @rdf_nil   to_string(RDF.NS.RDF.nil)
@@ -279,38 +278,39 @@ defmodule JSON.LD.Encoder do
     %{"@id" => to_string(bnode)}
   end
 
-  defp rdf_to_object(%Literal{value: value, datatype: datatype} = literal, use_native_types) do
+  defp rdf_to_object(%Literal{literal: %datatype{}} = literal, use_native_types) do
     result = %{}
+    value = Literal.value(literal)
     converted_value = literal
     type = nil
     {converted_value, type, result} =
       if use_native_types do
         cond do
-          datatype == XSD.string ->
+          datatype == XSD.String ->
             {value, type, result}
-          datatype == XSD.boolean ->
-            if RDF.Boolean.valid?(literal) do
+          datatype == XSD.Boolean ->
+            if RDF.XSD.Boolean.valid?(literal) do
               {value, type, result}
             else
-              {converted_value, XSD.boolean, result}
+              {converted_value, NS.XSD.boolean, result}
             end
-          datatype in [XSD.integer, XSD.double] ->
-            if RDF.Literal.valid?(literal) do
+          datatype in [XSD.Integer, XSD.Double] ->
+            if Literal.valid?(literal) do
               {value, type, result}
             else
               {converted_value, type, result}
             end
           true ->
-            {converted_value, datatype, result}
+            {converted_value, Literal.datatype(literal), result}
         end
       else
         cond do
-          datatype == RDF.langString ->
-            {converted_value, type, Map.put(result, "@language", literal.language)}
-          datatype == XSD.string ->
+          datatype == RDF.LangString ->
+            {converted_value, type, Map.put(result, "@language", Literal.language(literal))}
+          datatype == XSD.String ->
             {converted_value, type, result}
           true ->
-            {converted_value, datatype, result}
+            {Literal.lexical(literal), Literal.datatype(literal), result}
         end
       end
 
@@ -327,5 +327,4 @@ defmodule JSON.LD.Encoder do
   defp encode_json!(value, opts) do
     Jason.encode!(value, opts)
   end
-
 end
