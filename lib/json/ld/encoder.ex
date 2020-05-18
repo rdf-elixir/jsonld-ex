@@ -301,7 +301,7 @@ defmodule JSON.LD.Encoder do
               {converted_value, type, result}
             end
           true ->
-            {converted_value, Literal.datatype(literal), result}
+            {converted_value, Literal.datatype_id(literal), result}
         end
       else
         cond do
@@ -310,7 +310,7 @@ defmodule JSON.LD.Encoder do
           datatype == XSD.String ->
             {converted_value, type, result}
           true ->
-            {Literal.lexical(literal), Literal.datatype(literal), result}
+            {Literal.lexical(literal), Literal.datatype_id(literal), result}
         end
       end
 
