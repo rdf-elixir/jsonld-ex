@@ -60,12 +60,14 @@ defmodule JSON.LD.Mixfile do
 
   defp deps do
     [
-      {:rdf, "~> 0.5"},
-      {:jason, "~> 1.1.1"},
-      {:dialyxir, "~> 0.5",     only: [:dev, :test], runtime: false},
-      {:credo, "~> 1.1",        only: [:dev, :test], runtime: false},
-      {:ex_doc, "~> 0.21",      only: :dev, runtime: false},
-      {:excoveralls, "~> 0.11", only: :test},
+#      {:rdf, "~> 0.8"},
+      {:rdf, github: "marcelotto/rdf-ex"},
+      {:jason, "~> 1.2"},
+
+      {:credo, "~> 1.4",         only: [:dev, :test], runtime: false},
+      {:dialyxir, "~> 1.0",      only: :dev, runtime: false},
+      {:ex_doc, "~> 0.22",       only: :dev, runtime: false},
+      {:excoveralls, "~> 0.13",  only: :test},
     ]
   end
 
