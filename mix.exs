@@ -1,7 +1,7 @@
 defmodule JSON.LD.Mixfile do
   use Mix.Project
 
-  @repo_url "https://github.com/marcelotto/jsonld-ex"
+  @repo_url "https://github.com/rdf-elixir/jsonld-ex"
 
   @version File.read!("VERSION") |> String.trim
 
@@ -61,7 +61,7 @@ defmodule JSON.LD.Mixfile do
   defp deps do
     [
 #      {:rdf, "~> 0.8"},
-      {:rdf, github: "marcelotto/rdf-ex"},
+      {:rdf, github: "rdf-elixir/rdf-ex"},
       {:jason, "~> 1.2"},
 
       {:credo, "~> 1.4",         only: [:dev, :test], runtime: false},

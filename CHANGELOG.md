@@ -9,7 +9,7 @@ This project adheres to [Semantic Versioning](http://semver.org/) and
 
 This version just upgrades to RDF.ex 0.8. With that Elixir version < 1.8 are no longer supported.
 
-[Compare v0.3.0...HEAD](https://github.com/marcelotto/rdf-ex/compare/v0.3.0...HEAD)
+[Compare v0.3.0...HEAD](https://github.com/rdf-elixir/rdf-ex/compare/v0.3.0...HEAD)
 
 
 
@@ -18,7 +18,7 @@ This version just upgrades to RDF.ex 0.8. With that Elixir version < 1.8 are no 
 No significant changes. Just some adoptions to work with RDF.ex 0.5. 
 But together with RDF.ex 0.5, Elixir versions < 1.6 are no longer supported.
 
-[Compare v0.2.3...v0.3.0](https://github.com/marcelotto/jsonld-ex/compare/v0.2.3...v0.3.0)
+[Compare v0.2.3...v0.3.0](https://github.com/rdf-elixir/jsonld-ex/compare/v0.2.3...v0.3.0)
 
 
 
@@ -28,7 +28,7 @@ But together with RDF.ex 0.5, Elixir versions < 1.6 are no longer supported.
 - Pass options to `JSON.LD.Encoder.encode/2` and `JSON.LD.Encoder.encode!/2` 
   through to Jason; this allows to use the new Jason pretty printing options  
 
-[Compare v0.2.2...v0.2.3](https://github.com/marcelotto/jsonld-ex/compare/v0.2.2...v0.2.3)
+[Compare v0.2.2...v0.2.3](https://github.com/rdf-elixir/jsonld-ex/compare/v0.2.2...v0.2.3)
 
 
 
@@ -43,7 +43,7 @@ But together with RDF.ex 0.5, Elixir versions < 1.6 are no longer supported.
 - Use Jason instead of Poison for JSON encoding and decoding, since it's faster and more standard conform
 
 
-[Compare v0.2.1...v0.2.2](https://github.com/marcelotto/jsonld-ex/compare/v0.2.1...v0.2.2)
+[Compare v0.2.1...v0.2.2](https://github.com/rdf-elixir/jsonld-ex/compare/v0.2.1...v0.2.2)
 
 
 
@@ -55,7 +55,7 @@ But together with RDF.ex 0.5, Elixir versions < 1.6 are no longer supported.
 - Fixed all warnings ([@talklittle](https://github.com/talklittle)) 
 
 
-[Compare v0.2.0...v0.2.1](https://github.com/marcelotto/jsonld-ex/compare/v0.2.0...v0.2.1)
+[Compare v0.2.0...v0.2.1](https://github.com/rdf-elixir/jsonld-ex/compare/v0.2.0...v0.2.1)
 
 
 
@@ -66,7 +66,7 @@ But together with RDF.ex 0.5, Elixir versions < 1.6 are no longer supported.
 - Upgrade to RDF.ex 0.3.0
 
 
-[Compare v0.1.1...v0.2.0](https://github.com/marcelotto/jsonld-ex/compare/v0.1.1...v0.2.0)
+[Compare v0.1.1...v0.2.0](https://github.com/rdf-elixir/jsonld-ex/compare/v0.1.1...v0.2.0)
 
 
 
@@ -77,7 +77,7 @@ But together with RDF.ex 0.5, Elixir versions < 1.6 are no longer supported.
 - Don't support Elixir versions < 1.5, since `URI.merge` is broken in earlier versions  
 
 
-[Compare v0.1.0...v0.1.1](https://github.com/marcelotto/jsonld-ex/compare/v0.1.0...v0.1.1)
+[Compare v0.1.0...v0.1.1](https://github.com/rdf-elixir/jsonld-ex/compare/v0.1.0...v0.1.1)
 
 
 
