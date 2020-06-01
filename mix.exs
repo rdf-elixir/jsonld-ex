@@ -60,8 +60,7 @@ defmodule JSON.LD.Mixfile do
 
   defp deps do
     [
-#      {:rdf, "~> 0.8"},
-      {:rdf, github: "rdf-elixir/rdf-ex"},
+      {:rdf, "~> 0.8"},
       {:jason, "~> 1.2"},
 
       {:credo, "~> 1.4",         only: [:dev, :test], runtime: false},

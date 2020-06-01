@@ -5,11 +5,11 @@ This project adheres to [Semantic Versioning](http://semver.org/) and
 [Keep a CHANGELOG](http://keepachangelog.com).
 
 
-## Unreleased
+## 0.3.1 - 2020-06-01
 
 This version just upgrades to RDF.ex 0.8. With that Elixir version < 1.8 are no longer supported.
 
-[Compare v0.3.0...HEAD](https://github.com/rdf-elixir/rdf-ex/compare/v0.3.0...HEAD)
+[Compare v0.3.0...v0.3.1](https://github.com/rdf-elixir/rdf-ex/compare/v0.3.0...v0.3.1)
 
 
 

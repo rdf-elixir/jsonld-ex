@@ -144,7 +144,7 @@ see [CONTRIBUTING](CONTRIBUTING.md) for details.
 
 ## License and Copyright
 
-(c) 2017 Marcel Otto. MIT Licensed, see [LICENSE](LICENSE.md) for details.
+(c) 2017-2020 Marcel Otto. MIT Licensed, see [LICENSE](LICENSE.md) for details.
 
 
 [RDF.ex]:             https://hex.pm/packages/rdf
