@@ -3,9 +3,8 @@ defmodule JSON.LD.EncoderTest do
 
   doctest JSON.LD.Encoder
 
-  alias RDF.{Dataset}
+  alias RDF.{Dataset, Graph, Description}
   alias RDF.NS
-  alias RDF.NS.{XSD, RDFS}
 
   import RDF.Sigils
 
@@ -17,14 +16,37 @@ defmodule JSON.LD.EncoderTest do
 
   alias TestNS.{EX, S}
 
+  @compile {:no_warn_undefined, JSON.LD.EncoderTest.TestNS.EX}
+  @compile {:no_warn_undefined, JSON.LD.EncoderTest.TestNS.S}
+
 
   def gets_serialized_to(input, output, opts \\ []) do
-    data_structs = Keyword.get(opts, :only, [Dataset])
+    data_structs = Keyword.get(opts, :data_structs, [Dataset, Graph])
     Enum.each data_structs, fn data_struct ->
       assert JSON.LD.Encoder.from_rdf!(data_struct.new(input), opts) == output
     end
   end
 
+  test "pretty printing" do
+    dataset = Dataset.new {~I<http://a/b>, ~I<http://a/c>, ~I<http://a/d>}
+
+    assert JSON.LD.Encoder.encode!(dataset) ==
+             "[{\"@id\":\"http://a/b\",\"http://a/c\":[{\"@id\":\"http://a/d\"}]}]"
+
+    assert JSON.LD.Encoder.encode!(dataset, pretty: true) ==
+            """
+            [
+              {
+                "@id": "http://a/b",
+                "http://a/c": [
+                  {
+                    "@id": "http://a/d"
+                  }
+                ]
+              }
+            ]
+            """ |> String.trim()
+  end
 
   test "an empty RDF.Dataset is serialized to an JSON array string" do
     assert JSON.LD.Encoder.encode!(Dataset.new) == "[]"
@@ -36,7 +58,7 @@ defmodule JSON.LD.EncoderTest do
       |> gets_serialized_to([%{
             "@id"         => "http://a/b",
             "http://a/c"  => [%{"@id" => "http://a/d"}]
-          }])
+          }], data_structs: [Dataset, Graph, Description])
     end
 
     test "should generate object list" do
@@ -47,7 +69,7 @@ defmodule JSON.LD.EncoderTest do
               %{"@id" => "http://example.com/d"},
               %{"@id" => "http://example.com/e"}
             ]
-          }])
+          }], data_structs: [Dataset, Graph, Description])
     end
 
     test "should generate property list" do
@@ -56,7 +78,7 @@ defmodule JSON.LD.EncoderTest do
             "@id"                   => "http://example.com/b",
             "http://example.com/c"  => [%{"@id" => "http://example.com/d"}],
             "http://example.com/e"  => [%{"@id" => "http://example.com/f"}]
-          }])
+          }], data_structs: [Dataset, Graph, Description])
     end
 
     test "serializes multiple subjects" do
@@ -77,7 +99,7 @@ defmodule JSON.LD.EncoderTest do
       |> gets_serialized_to([%{
             "@id"                   => "http://example.com/a",
             "http://example.com/b"  => [%{"@value" => "foo", "@type" => "http://example.com/d"}]
-          }])
+          }], data_structs: [Dataset, Graph, Description])
     end
 
     test "integer" do
@@ -144,14 +166,14 @@ defmodule JSON.LD.EncoderTest do
       integer:            1,
       unsignedInt:        1,
       nonNegativeInteger: 1,
-      float:              1,
+      float:              1.0,
       nonPositiveInteger: -1,
       negativeInteger:    -1,
     }
     |> Enum.each(fn ({type, _} = data) ->
          @tag data: data
          test "#{type}", %{data: {type, value}} do
-           {EX.a, EX.b, RDF.literal(value, datatype: apply(XSD, type, []))}
+           {EX.a, EX.b, RDF.literal(value, datatype: apply(NS.XSD, type, []))}
            |> gets_serialized_to([%{
                 "@id"                   => "http://example.com/a",
                 "http://example.com/b"  => [%{"@value" => "#{value}", "@type" => "http://www.w3.org/2001/XMLSchema##{type}"}]
@@ -183,7 +205,7 @@ defmodule JSON.LD.EncoderTest do
       |> gets_serialized_to([%{
             "@id"                   => "_:a",
             "http://example.com/a"  => [%{"@id" => "http://example.com/b"}]
-          }])
+          }], data_structs: [Dataset, Graph, Description])
     end
 
     test "should generate blank nodes as object" do
@@ -409,7 +431,7 @@ defmodule JSON.LD.EncoderTest do
     |> Enum.each(fn ({title, data}) ->
          @tag data: data
          test title, %{data: %{input: input, output: output}} do
-            input |> gets_serialized_to(output, only: [Dataset])
+            input |> gets_serialized_to(output, data_structs: [Dataset])
          end
        end)
   end
@@ -417,7 +439,7 @@ defmodule JSON.LD.EncoderTest do
   describe "problems" do
     %{
       "xsd:boolean as value" => {
-        {~I<http://data.wikia.com/terms#playable>, RDFS.range, XSD.boolean},
+        {~I<http://data.wikia.com/terms#playable>, NS.RDFS.range, NS.XSD.boolean},
         [%{
           "@id" => "http://data.wikia.com/terms#playable",
           "http://www.w3.org/2000/01/rdf-schema#range" => [

@@ -1,8 +1,10 @@
+<img style="border:0px;" width="64" src="https://json-ld.org/images/json-ld-logo-64.png" alt="JSON-LD-logo-64" align="right"/>
+
 # JSON-LD.ex
 
-[![Travis](https://img.shields.io/travis/marcelotto/jsonld-ex.svg?style=flat-square)](https://travis-ci.org/marcelotto/jsonld-ex)
+[![Travis](https://img.shields.io/travis/rdf-elixir/jsonld-ex.svg?style=flat-square)](https://travis-ci.org/rdf-elixir/jsonld-ex)
 [![Hex.pm](https://img.shields.io/hexpm/v/json_ld.svg?style=flat-square)](https://hex.pm/packages/json_ld)
-[![Coverage Status](https://coveralls.io/repos/github/marcelotto/jsonld-ex/badge.svg?branch=master)](https://coveralls.io/github/marcelotto/jsonld-ex?branch=master)
+[![Coverage Status](https://coveralls.io/repos/github/rdf-elixir/jsonld-ex/badge.svg?branch=master)](https://coveralls.io/github/rdf-elixir/jsonld-ex?branch=master)
 
 
 An implementation of the [JSON-LD] standard for Elixir and [RDF.ex].
@@ -12,7 +14,7 @@ An implementation of the [JSON-LD] standard for Elixir and [RDF.ex].
 
 - fully conforming JSON-LD API processor
 - JSON-LD reader/writer for [RDF.ex]
-- tests of the [JSON-LD test suite][] (see [here](https://github.com/marcelotto/jsonld-ex/wiki/JSON-LD.ex-implementation-report) for a detailed status report)
+- tests of the [JSON-LD test suite][] (see [here](https://github.com/rdf-elixir/jsonld-ex/wiki/JSON-LD.ex-implementation-report) for a detailed status report)
 
 
 ## TODO
@@ -28,7 +30,7 @@ The [JSON-LD.ex](https://hex.pm/packages/json_ld) Hex package can be installed a
 
 ```elixir
 def deps do
-  [{:json_ld, "~> 0.2"}]
+  [{:json_ld, "~> 0.3"}]
 end
 ```
 
@@ -53,7 +55,7 @@ end
  "homepage": "http://manu.sporny.org/"
 }
 """
-|> Poison.Parser.parse!
+|> Jason.decode!
 |> JSON.LD.expand
 ```
 
@@ -67,7 +69,7 @@ produces
 ### Compact a document
 
 ```elixir
-context = Poison.Parser.parse! """
+context = Jason.decode! """
   {
     "@context": {
       "name": "http://xmlns.com/foaf/0.1/name",
@@ -91,7 +93,7 @@ context = Poison.Parser.parse! """
   }
 ]
 """
-|> Poison.Parser.parse!
+|> Jason.decode!
 |> JSON.LD.compact(context)
 ```
 
@@ -119,6 +121,16 @@ JSON.LD.write_file!(dataset, "file.jsonld")
 ```
 
 
+## Pretty printing
+
+Pretty printing is possible on all writer functions with all of the formatter options of [Jason](https://hexdocs.pm/jason/Jason.Formatter.html#pretty_print/2), the underlying JSON encoder, to which the given options are passed through.
+
+```elixir
+JSON.LD.write_file!(dataset, "file.jsonld", pretty: true)
+JSON.LD.write_string(dataset, "file.jsonld", pretty: [indent: "\t"])
+```
+
+
 ## Getting help
 
 - [Documentation](http://hexdocs.pm/json_ld)
@@ -132,7 +144,7 @@ see [CONTRIBUTING](CONTRIBUTING.md) for details.
 
 ## License and Copyright
 
-(c) 2017 Marcel Otto. MIT Licensed, see [LICENSE](LICENSE.md) for details.
+(c) 2017-2020 Marcel Otto. MIT Licensed, see [LICENSE](LICENSE.md) for details.
 
 
 [RDF.ex]:             https://hex.pm/packages/rdf

@@ -4,7 +4,7 @@ defmodule JSON.LD.FlatteningTest do
   alias RDF.NS.RDFS
 
   test "Flattened form of a JSON-LD document (EXAMPLE 60 and 61 of https://www.w3.org/TR/json-ld/#flattened-document-form)" do
-    input = Poison.Parser.parse! """
+    input = Jason.decode! """
       {
         "@context": {
           "name": "http://xmlns.com/foaf/0.1/name",
@@ -23,7 +23,7 @@ defmodule JSON.LD.FlatteningTest do
         ]
       }
       """
-    assert JSON.LD.flatten(input, input) == Poison.Parser.parse! """
+    assert JSON.LD.flatten(input, input) == Jason.decode! """
       {
         "@context": {
           "name": "http://xmlns.com/foaf/0.1/name",
@@ -107,7 +107,7 @@ defmodule JSON.LD.FlatteningTest do
       ]
     },
     "reverse properties" => %{
-      input: Poison.Parser.parse!("""
+      input: Jason.decode!("""
         [
           {
             "@id": "http://example.com/people/markus",
@@ -125,7 +125,7 @@ defmodule JSON.LD.FlatteningTest do
           }
         ]
       """),
-      output: Poison.Parser.parse!("""
+      output: Jason.decode!("""
         [
           {
             "@id": "http://example.com/people/dave",
@@ -155,7 +155,7 @@ defmodule JSON.LD.FlatteningTest do
       """)
     },
     "Simple named graph (Wikidata)" => %{
-      input: Poison.Parser.parse!("""
+      input: Jason.decode!("""
       {
         "@context": {
           "rdf": "http://www.w3.org/1999/02/22-rdf-syntax-ns#",
@@ -187,7 +187,7 @@ defmodule JSON.LD.FlatteningTest do
         ]
       }
       """),
-      output: Poison.Parser.parse!("""
+      output: Jason.decode!("""
         [{
         "@id": "http://example.org/ParisFact1",
         "@type": ["http://www.w3.org/1999/02/22-rdf-syntax-ns#Graph"],
@@ -212,7 +212,7 @@ defmodule JSON.LD.FlatteningTest do
       """)
     },
     "Test Manifest (shortened)" => %{
-      input: Poison.Parser.parse!("""
+      input: Jason.decode!("""
         {
           "@id": "",
           "http://example/sequence": {"@list": [
@@ -224,7 +224,7 @@ defmodule JSON.LD.FlatteningTest do
           ]}
         }
       """),
-      output: Poison.Parser.parse!("""
+      output: Jason.decode!("""
         [{
           "@id": "",
           "http://example/sequence": [{"@list": [{"@id": "#t0001"}]}]
@@ -237,7 +237,7 @@ defmodule JSON.LD.FlatteningTest do
       options: %{}
     },
     "@reverse bnode issue (0045)" => %{
-      input: Poison.Parser.parse!("""
+      input: Jason.decode!("""
         {
           "@context": {
             "foo": "http://example.org/foo",
@@ -247,7 +247,7 @@ defmodule JSON.LD.FlatteningTest do
           "bar": [ "http://example.org/origin", "_:b0" ]
         }
       """),
-      output: Poison.Parser.parse!("""
+      output: Jason.decode!("""
         [
           {
             "@id": "_:b0",

@@ -4,8 +4,7 @@ defmodule JSON.LD.Encoder do
 
   use RDF.Serialization.Encoder
 
-  alias RDF.{IRI, BlankNode, Literal}
-  alias RDF.NS.{XSD}
+  alias RDF.{IRI, BlankNode, Literal, XSD, NS}
 
   @rdf_type  to_string(RDF.NS.RDF.type)
   @rdf_nil   to_string(RDF.NS.RDF.nil)
@@ -13,16 +12,17 @@ defmodule JSON.LD.Encoder do
   @rdf_rest  to_string(RDF.NS.RDF.rest)
   @rdf_list  to_string(RDF.uri(RDF.NS.RDF.List))
 
+  @impl RDF.Serialization.Encoder
   def encode(data, opts \\ []) do
     with {:ok, json_ld_object} <- from_rdf(data, opts) do
-      encode_json(json_ld_object)
+      encode_json(json_ld_object, opts)
     end
   end
 
   def encode!(data, opts \\ []) do
     data
     |> from_rdf!(opts)
-    |> encode_json!
+    |> encode_json!(opts)
   end
 
   def from_rdf(dataset, options \\ %JSON.LD.Options{}) do
@@ -33,7 +33,9 @@ defmodule JSON.LD.Encoder do
     end
   end
 
-  def from_rdf!(dataset, options \\ %JSON.LD.Options{}) do
+  def from_rdf!(rdf_data, options \\ %JSON.LD.Options{})
+
+  def from_rdf!(%RDF.Dataset{} = dataset, options) do
     with options = JSON.LD.Options.new(options) do
       graph_map =
         Enum.reduce RDF.Dataset.graphs(dataset), %{},
@@ -76,7 +78,7 @@ defmodule JSON.LD.Encoder do
                  |> Enum.sort_by(fn {s, _} -> s end)
                  |> Enum.reduce([], fn ({_s, n}, graph_nodes) ->
                       n = Map.delete(n, "usages")
-                      if Map.size(n) == 1 and Map.has_key?(n, "@id") do
+                      if map_size(n) == 1 and Map.has_key?(n, "@id") do
                         graph_nodes
                       else
                         [n | graph_nodes]
@@ -89,7 +91,7 @@ defmodule JSON.LD.Encoder do
 
            # 6.2)
            node = Map.delete(node, "usages")
-           if Map.size(node) == 1 and Map.has_key?(node, "@id") do
+           if map_size(node) == 1 and Map.has_key?(node, "@id") do
              result
            else
              [node | result]
@@ -98,6 +100,9 @@ defmodule JSON.LD.Encoder do
       |> Enum.reverse
     end
   end
+
+  def from_rdf!(rdf_data, options),
+    do: rdf_data |> RDF.Dataset.new() |> from_rdf!(options)
 
   # 3.5)
   defp node_map_from_graph(graph, current, use_native_types, use_rdf_type) do
@@ -273,38 +278,39 @@ defmodule JSON.LD.Encoder do
     %{"@id" => to_string(bnode)}
   end
 
-  defp rdf_to_object(%Literal{value: value, datatype: datatype} = literal, use_native_types) do
+  defp rdf_to_object(%Literal{literal: %datatype{}} = literal, use_native_types) do
     result = %{}
+    value = Literal.value(literal)
     converted_value = literal
     type = nil
     {converted_value, type, result} =
       if use_native_types do
         cond do
-          datatype == XSD.string ->
+          datatype == XSD.String ->
             {value, type, result}
-          datatype == XSD.boolean ->
-            if RDF.Boolean.valid?(literal) do
+          datatype == XSD.Boolean ->
+            if RDF.XSD.Boolean.valid?(literal) do
               {value, type, result}
             else
-              {converted_value, XSD.boolean, result}
+              {converted_value, NS.XSD.boolean, result}
             end
-          datatype in [XSD.integer, XSD.double] ->
-            if RDF.Literal.valid?(literal) do
+          datatype in [XSD.Integer, XSD.Double] ->
+            if Literal.valid?(literal) do
               {value, type, result}
             else
               {converted_value, type, result}
             end
           true ->
-            {converted_value, datatype, result}
+            {converted_value, Literal.datatype_id(literal), result}
         end
       else
         cond do
-          datatype == RDF.langString ->
-            {converted_value, type, Map.put(result, "@language", literal.language)}
-          datatype == XSD.string ->
+          datatype == RDF.LangString ->
+            {converted_value, type, Map.put(result, "@language", Literal.language(literal))}
+          datatype == XSD.String ->
             {converted_value, type, result}
           true ->
-            {converted_value, datatype, result}
+            {Literal.lexical(literal), Literal.datatype_id(literal), result}
         end
       end
 
@@ -314,14 +320,11 @@ defmodule JSON.LD.Encoder do
   end
 
 
-  # TODO: This should not be dependent on Poison as a JSON encoder in general,
-  #   but determine available JSON encoders and use one heuristically or by configuration
-  defp encode_json(value, opts \\ []) do
-    Poison.encode(value)
+  defp encode_json(value, opts) do
+    Jason.encode(value, opts)
   end
 
-  defp encode_json!(value, opts \\ []) do
-    Poison.encode!(value)
+  defp encode_json!(value, opts) do
+    Jason.encode!(value, opts)
   end
-
 end

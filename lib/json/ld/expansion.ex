@@ -304,7 +304,7 @@ defmodule JSON.LD.Expansion do
       # 8)
       %{"@value" => value} ->
         with keys = Map.keys(result) do                       # 8.1)
-          if Enum.any?(keys, &(not &1 in ~w[@value @language @type @index])) ||
+          if Enum.any?(keys, &(&1 not in ~w[@value @language @type @index])) ||
              ("@language" in keys and "@type" in keys) do
             raise JSON.LD.InvalidValueObjectError,
               message: "value object with disallowed members"

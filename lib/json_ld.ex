@@ -9,7 +9,7 @@ defmodule JSON.LD do
   @extension  "jsonld"
   @media_type "application/ld+json"
 
-  def options,      do: JSON.LD.Options.new
+  def options, do: JSON.LD.Options.new
 
   @keywords ~w[
     @base

@@ -49,6 +49,6 @@ defmodule JSON.LD.TestSuite.FromRdfTest do
     filename
     |> file
     |> File.read!
-    |> Poison.Parser.parse!
+    |> Jason.decode!
   end
 end

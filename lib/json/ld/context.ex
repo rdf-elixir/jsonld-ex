@@ -345,7 +345,7 @@ defmodule JSON.LD.Context do
 
   # 16.1)
   defp do_create_container_definition(_, %{"@container" => container})
-        when not container in ~w[@list @set @index @language],
+        when container not in ~w[@list @set @index @language],
     do: raise JSON.LD.InvalidContainerMappingError,
           message: "#{inspect container} is not a valid container mapping; @container must be either @list, @set, @index, or @language"
   # 16.2)
