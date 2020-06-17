@@ -12,9 +12,17 @@ defmodule JSON.LD.TestSuite.RemoteDocTest do
       @tag :test_suite
       @tag :remote_doc_test_suite
       @tag data: test_case
-      test "#{input}: #{name}",
-          %{data: %{"input" => input, "expect" => output} = test_case, base_iri: base_iri} do
-        assert JSON.LD.expand(j(input), test_case_options(test_case, base_iri)) == j(output)
+      case hd(test_case["@type"]) do
+        "jld:PositiveEvaluationTest" ->
+          test "#{input}: #{name}",
+               %{data: %{"input" => input, "expect" => output} = test_case, base_iri: base_iri} do
+            assert JSON.LD.expand(j(input), test_case_options(test_case, base_iri)) == j(output)
+          end
+        "jld:NegativeEvaluationTest" ->
+          @tag skip: "TODO: "
+          test "#{input}: #{name}",
+               %{data: %{"input" => input, "expect" => output} = test_case, base_iri: base_iri} do
+          end
       end
     end)
 end
