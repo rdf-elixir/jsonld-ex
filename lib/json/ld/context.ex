@@ -71,7 +71,7 @@ defmodule JSON.LD.Context do
     end
     document = cond do
       is_map(document) -> document
-      is_binary(document) -> case Poison.decode(document) do
+      is_binary(document) -> case Jason.decode(document) do
         {:ok, result} -> result
         {:error, reason} -> raise JSON.LD.InvalidRemoteContextError,
           message: "Context is not a valid JSON document: #{inspect reason}"

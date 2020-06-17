@@ -4,17 +4,16 @@ defmodule JSON.LD.DocumentLoader.Default do
   alias JSON.LD.DocumentLoader.RemoteDocument
 
   def load(url, _options) do
-    with {:ok, res} <- HTTPoison.get(url, [accept: "application/ld+json"],
-                                     [follow_redirect: true]),
-         {:ok, data} <- Poison.decode(res.body)
+    with {:ok, res} <-
+           HTTPoison.get(url, [accept: "application/ld+json"], [follow_redirect: true]),
+
+         {:ok, data} <-
+           Jason.decode(res.body)
     do
-      result = %RemoteDocument{
+      {:ok, %RemoteDocument{
         document: data,
-        document_url: res.request_url,
-      }
-      {:ok, result}
-    else
-      {:error, reason} -> {:error, reason}
+        document_url: res.request_url
+      }}
     end
   end
 end
