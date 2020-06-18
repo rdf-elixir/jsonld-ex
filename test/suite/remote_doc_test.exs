@@ -9,11 +9,21 @@ defmodule JSON.LD.TestSuite.RemoteDocTest do
 
   test_cases("remote-doc")
   |> Enum.each(fn %{"name" => name, "input" => input} = test_case ->
-    if input in ~w[remote-doc-0005-in.jsonld remote-doc-0006-in.jsonld remote-doc-0007-in.jsonld] do
+    if input in ~w[
+          remote-doc-0005-in.jsonld
+          remote-doc-0006-in.jsonld
+          remote-doc-0007-in.jsonld
+          remote-doc-0008-in.jsonld
+        ] do
       @tag skip: "TODO: Missed test file"
     end
 
-    if input in ~w[remote-doc-0010-in.json remote-doc-0011-in.jldt] do
+    if input in ~w[
+          remote-doc-0009-in.jsonld
+          remote-doc-0010-in.json
+          remote-doc-0011-in.jldt
+          remote-doc-0012-in.json
+        ] do
       @tag skip: "TODO: Context from Link header is unsupported"
     end
 
