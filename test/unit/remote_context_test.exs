@@ -9,10 +9,7 @@ defmodule JSON.LD.RemoteContextTest do
         {
           "@context": {
             "name": "http://xmlns.com/foaf/0.1/name",
-            "homepage": {
-              "@id": "http://xmlns.com/foaf/0.1/homepage",
-              "@type": "@id"
-            }
+            "homepage": {"@id": "http://xmlns.com/foaf/0.1/homepage", "@type": "@id"}
           },
           "name": "Manu Sporny",
           "homepage": "http://manu.sporny.org/"
@@ -28,7 +25,7 @@ defmodule JSON.LD.RemoteContextTest do
         }
       """
 
-    [local: local, remote: remote]
+    {:ok, local: local, remote: remote}
   end
 
   describe "result is the same for identical local and remote contexts" do
