@@ -19,7 +19,6 @@ An implementation of the [JSON-LD] standard for Elixir and [RDF.ex].
 
 ## TODO
 
-- remote contexts
 - [JSON-LD Framing]
 - [JSON-LD 1.1] support
 
