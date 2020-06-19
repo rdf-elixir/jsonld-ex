@@ -59,16 +59,13 @@ defmodule JSON.LD.Context do
     # 3.2.3)
     document_loader = options.document_loader || JSON.LD.DocumentLoader.Default
 
-    document = try do
+    document =
       case apply(document_loader, :load, [local, options]) do
         {:ok, result} -> result.document
         {:error, reason} -> raise JSON.LD.LoadingRemoteContextFailedError,
           message: "Could not load remote context (#{local}): #{inspect reason}"
       end
-    rescue
-      e -> raise JSON.LD.LoadingRemoteContextFailedError,
-        message: "Could not load remote context: #{inspect e}"
-    end
+
     document = cond do
       is_map(document) -> document
       is_binary(document) -> case Jason.decode(document) do
@@ -79,11 +76,10 @@ defmodule JSON.LD.Context do
       true -> raise JSON.LD.InvalidRemoteContextError,
         message: "Context is not a valid JSON object: #{inspect document}"
     end
-    local = case document["@context"] do
-      nil -> raise JSON.LD.InvalidRemoteContextError,
-        message: "Invalid remote context: No @context key in #{inspect document}"
-      value -> value
-    end
+
+    local = document["@context"] ||
+      raise JSON.LD.InvalidRemoteContextError,
+            message: "Invalid remote context: No @context key in #{inspect document}"
 
     # 3.2.4) - 3.2.5)
     do_update(active, local, remote, options)
