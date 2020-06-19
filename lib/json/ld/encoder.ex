@@ -44,12 +44,10 @@ defmodule JSON.LD.Encoder do
 
   @spec from_rdf(input, Options.t() | Enum.t()) :: {:ok, [map]} | {:error, any}
   def from_rdf(dataset, options \\ %Options{}) do
-    try do
-      {:ok, from_rdf!(dataset, options)}
-    rescue
-      exception ->
-        {:error, Exception.message(exception)}
-    end
+    {:ok, from_rdf!(dataset, options)}
+  rescue
+    exception ->
+      {:error, Exception.message(exception)}
   end
 
   @spec from_rdf!(input, Options.t() | Enum.t()) :: [map]

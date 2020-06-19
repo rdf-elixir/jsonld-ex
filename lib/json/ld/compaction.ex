@@ -7,28 +7,28 @@ defmodule JSON.LD.Compaction do
 
   @spec compact(map | [map], map | nil, Options.t() | Enum.t()) :: map
   def compact(input, context, options \\ %Options{}) do
-    with options = Options.new(options),
-         active_context = JSON.LD.context(context, options),
-         inverse_context = Context.inverse(active_context),
-         expanded = JSON.LD.expand(input, options) do
-      result =
-        case do_compact(expanded, active_context, inverse_context, nil, options.compact_arrays) do
-          [] ->
-            %{}
+    options = Options.new(options)
+    active_context = JSON.LD.context(context, options)
+    inverse_context = Context.inverse(active_context)
+    expanded = JSON.LD.expand(input, options)
 
-          result when is_list(result) ->
-            # TODO: Spec fixme? We're setting vocab to true, as other implementations
-            # do it, but this is not mentioned in the spec
-            %{compact_iri("@graph", active_context, inverse_context, nil, true) => result}
+    result =
+      case do_compact(expanded, active_context, inverse_context, nil, options.compact_arrays) do
+        [] ->
+          %{}
 
-          result ->
-            result
-        end
+        result when is_list(result) ->
+          # TODO: Spec fixme? We're setting vocab to true, as other implementations
+          # do it, but this is not mentioned in the spec
+          %{compact_iri("@graph", active_context, inverse_context, nil, true) => result}
 
-      if Context.empty?(active_context),
-        do: result,
-        else: Map.put(result, "@context", context["@context"] || context)
-    end
+        result ->
+          result
+      end
+
+    if Context.empty?(active_context),
+      do: result,
+      else: Map.put(result, "@context", context["@context"] || context)
   end
 
   @spec do_compact(any, Context.t(), map, String.t() | nil, boolean) :: any
@@ -58,10 +58,10 @@ defmodule JSON.LD.Compaction do
       end)
       |> Enum.reverse()
 
+    term_def = active_context.term_defs[active_property]
+
     if compact_arrays and length(result) == 1 and
-         is_nil(
-           (term_def = active_context.term_defs[active_property]) && term_def.container_mapping
-         ) do
+         is_nil(term_def && term_def.container_mapping) do
       List.first(result)
     else
       result
@@ -579,9 +579,9 @@ defmodule JSON.LD.Compaction do
             # preferred values.
             # TODO: Spec fixme? document_relative is not a specified parameter of compact_iri
             compact_id = compact_iri(value["@id"], active_context, inverse_context, nil, true)
+            term_def = active_context.term_defs[compact_id]
 
-            if (term_def = active_context.term_defs[compact_id]) &&
-                 term_def.iri_mapping == value["@id"] do
+            if term_def && term_def.iri_mapping == value["@id"] do
               preferred_values ++ ~w[@vocab @id @none]
 
               # 2.12.2) Otherwise, append @id, @vocab, and @none, in that order, to

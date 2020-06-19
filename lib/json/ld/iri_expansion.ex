@@ -36,7 +36,7 @@ defmodule JSON.LD.IRIExpansion do
       if local_context && local_context[value] && defined[value] != true do
         local_def = local_context[value]
 
-        JSON.LD.Context.create_term_definition(
+        Context.create_term_definition(
           active_context,
           local_context,
           value,
@@ -65,7 +65,7 @@ defmodule JSON.LD.IRIExpansion do
                 if local_context && local_context[prefix] && defined[prefix] != true do
                   local_def = local_context[prefix]
 
-                  JSON.LD.Context.create_term_definition(
+                  Context.create_term_definition(
                     active_context,
                     local_context,
                     prefix,
@@ -105,7 +105,7 @@ defmodule JSON.LD.IRIExpansion do
         # same way that unreserved characters are treated in URI references, per section
         # 6.5 of [RFC3987].
         doc_relative ->
-          {absolute_iri(value, JSON.LD.Context.base(active_context)), active_context, defined}
+          {absolute_iri(value, Context.base(active_context)), active_context, defined}
 
         # TODO: RDF.rb's implementation differs from the spec here, by checking if
         # base_iri is actually present in the previous clause and adding the following

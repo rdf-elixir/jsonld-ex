@@ -26,7 +26,7 @@ defmodule JSON.LD.Options do
             processing_mode: "json-ld-1.0"
 
   @spec new :: t
-  def new(), do: %__MODULE__{}
+  def new, do: %__MODULE__{}
 
   @spec new(t | Enum.t()) :: t
   def new(%__MODULE__{} = options), do: options

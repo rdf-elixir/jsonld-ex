@@ -26,12 +26,13 @@ defmodule JSON.LD.Utils do
 
   @spec compact_iri_parts(String.t(), boolean) :: [String.t()] | nil
   def compact_iri_parts(compact_iri, exclude_bnode \\ true) do
-    with [prefix, suffix] <- String.split(compact_iri, ":", parts: 2) do
-      if not String.starts_with?(suffix, "//") and
-           not (exclude_bnode and prefix == "_"),
-         do: [prefix, suffix]
-    else
-      _ -> nil
+    case String.split(compact_iri, ":", parts: 2) do
+      [prefix, suffix] ->
+        if not String.starts_with?(suffix, "//") and not (exclude_bnode and prefix == "_"),
+          do: [prefix, suffix]
+
+      _ ->
+        nil
     end
   end
 

@@ -7,7 +7,7 @@ defmodule JSON.LD.Decoder do
   import JSON.LD.{NodeIdentifierMap, Utils}
 
   alias JSON.LD.{NodeIdentifierMap, Options}
-  alias RDF.{BlankNode, Dataset, Graph, IRI, Literal, NS, Statement}
+  alias RDF.{BlankNode, Dataset, Graph, IRI, Literal, NS, Statement, XSD}
 
   @impl RDF.Serialization.Decoder
   @spec decode(String.t(), keyword) :: {:ok, Dataset.t() | Graph.t()} | {:error, any}
@@ -44,7 +44,7 @@ defmodule JSON.LD.Decoder do
                       Graph.add(
                         rdf_graph,
                         node_to_rdf(subject),
-                        RDF.NS.RDF.type(),
+                        NS.RDF.type(),
                         Enum.map(values, &node_to_rdf/1)
                       )
 
@@ -135,9 +135,9 @@ defmodule JSON.LD.Decoder do
         is_boolean(value) ->
           value =
             value
-            |> RDF.XSD.Boolean.new()
-            |> RDF.XSD.Boolean.canonical()
-            |> RDF.XSD.Boolean.lexical()
+            |> XSD.Boolean.new()
+            |> XSD.Boolean.canonical()
+            |> XSD.Boolean.lexical()
 
           datatype = if is_nil(datatype), do: NS.XSD.boolean(), else: datatype
           {value, datatype}
@@ -145,9 +145,9 @@ defmodule JSON.LD.Decoder do
         is_float(value) or (is_number(value) and datatype == to_string(NS.XSD.double())) ->
           value =
             value
-            |> RDF.XSD.Double.new()
-            |> RDF.XSD.Double.canonical()
-            |> RDF.XSD.Double.lexical()
+            |> XSD.Double.new()
+            |> XSD.Double.canonical()
+            |> XSD.Double.lexical()
 
           datatype = if is_nil(datatype), do: NS.XSD.double(), else: datatype
           {value, datatype}
@@ -155,9 +155,9 @@ defmodule JSON.LD.Decoder do
         is_integer(value) or (is_number(value) and datatype == to_string(NS.XSD.integer())) ->
           value =
             value
-            |> RDF.XSD.Integer.new()
-            |> RDF.XSD.Integer.canonical()
-            |> RDF.XSD.Integer.lexical()
+            |> XSD.Integer.new()
+            |> XSD.Integer.canonical()
+            |> XSD.Integer.lexical()
 
           datatype = if is_nil(datatype), do: NS.XSD.integer(), else: datatype
           {value, datatype}
@@ -173,9 +173,9 @@ defmodule JSON.LD.Decoder do
       end
 
     if language = item["@language"] do
-      RDF.Literal.new(value, language: language, canonicalize: true)
+      Literal.new(value, language: language, canonicalize: true)
     else
-      RDF.Literal.new(value, datatype: datatype, canonicalize: true)
+      Literal.new(value, datatype: datatype, canonicalize: true)
     end
   end
 
@@ -188,29 +188,29 @@ defmodule JSON.LD.Decoder do
             {list_triples, first, last}
 
           object ->
-            with bnode = node_to_rdf(generate_blank_node_id(node_id_map)) do
-              if last do
-                {
-                  list_triples ++
-                    [{last, RDF.NS.RDF.rest(), bnode}, {bnode, RDF.NS.RDF.first(), object}],
-                  first,
-                  bnode
-                }
-              else
-                {
-                  list_triples ++ [{bnode, RDF.NS.RDF.first(), object}],
-                  bnode,
-                  bnode
-                }
-              end
+            bnode = node_to_rdf(generate_blank_node_id(node_id_map))
+
+            if last do
+              {
+                list_triples ++
+                  [{last, NS.RDF.rest(), bnode}, {bnode, NS.RDF.first(), object}],
+                first,
+                bnode
+              }
+            else
+              {
+                list_triples ++ [{bnode, NS.RDF.first(), object}],
+                bnode,
+                bnode
+              }
             end
         end
       end)
 
     if last do
-      {list_triples ++ [{last, RDF.NS.RDF.rest(), RDF.NS.RDF.nil()}], first}
+      {list_triples ++ [{last, NS.RDF.rest(), NS.RDF.nil()}], first}
     else
-      {[], RDF.NS.RDF.nil()}
+      {[], NS.RDF.nil()}
     end
   end
 
