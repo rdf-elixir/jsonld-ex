@@ -5,6 +5,16 @@ This project adheres to [Semantic Versioning](http://semver.org/) and
 [Keep a CHANGELOG](http://keepachangelog.com).
 
 
+## 0.3.2 - 2020-06-19
+
+### Added
+
+Support for remote contexts ([@KokaKiwi](https://github.com/KokaKiwi) and [@rustra](https://github.com/rustra))
+
+[Compare v0.3.1...v0.3.2](https://github.com/rdf-elixir/rdf-ex/compare/v0.3.1...v0.3.2)
+
+
+
 ## 0.3.1 - 2020-06-01
 
 This version just upgrades to RDF.ex 0.8. With that Elixir version < 1.8 are no longer supported.
