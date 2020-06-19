@@ -1,15 +1,14 @@
 defmodule JSON.LD do
-
   use RDF.Serialization.Format
 
   import RDF.Sigils
 
-  @id         ~I<http://www.w3.org/ns/formats/JSON-LD>
-  @name       :jsonld
-  @extension  "jsonld"
-  @media_type "application/ld+json"
+  alias JSON.LD.{Compaction, Context, Expansion, Flattening, Options}
 
-  def options, do: JSON.LD.Options.new
+  @id ~I<http://www.w3.org/ns/formats/JSON-LD>
+  @name :jsonld
+  @extension "jsonld"
+  @media_type "application/ld+json"
 
   @keywords ~w[
     @base
@@ -29,19 +28,23 @@ defmodule JSON.LD do
     :
   ]
 
+  @spec options :: Options.t()
+  def options, do: Options.new()
+
   @doc """
   The set of all JSON-LD keywords.
 
   see <https://www.w3.org/TR/json-ld/#syntax-tokens-and-keywords>
   """
+  @spec keywords :: [String.t()]
   def keywords, do: @keywords
 
   @doc """
   Returns if the given value is a JSON-LD keyword.
   """
+  @spec keyword?(String.t()) :: boolean
   def keyword?(value) when is_binary(value) and value in @keywords, do: true
   def keyword?(_value), do: false
-
 
   @doc """
   Expands the given input according to the steps in the JSON-LD Expansion Algorithm.
@@ -54,9 +57,9 @@ defmodule JSON.LD do
 
   Details at <http://json-ld.org/spec/latest/json-ld-api/#expansion-algorithm>
   """
-  defdelegate expand(input, options \\ %JSON.LD.Options{}),
-    to: JSON.LD.Expansion
-
+  @spec expand(map, Options.t() | Enum.t()) :: [map]
+  defdelegate expand(input, options \\ %Options{}),
+    to: Expansion
 
   @doc """
   Compacts the given input according to the steps in the JSON-LD Compaction Algorithm.
@@ -71,9 +74,9 @@ defmodule JSON.LD do
 
   Details at <https://www.w3.org/TR/json-ld-api/#compaction-algorithms>
   """
-  defdelegate compact(input, context, options \\ %JSON.LD.Options{}),
-    to: JSON.LD.Compaction
-
+  @spec compact(map | [map], map | nil, Options.t() | Enum.t()) :: map
+  defdelegate compact(input, context, options \\ %Options{}),
+    to: Compaction
 
   @doc """
   Flattens the given input according to the steps in the JSON-LD Flattening Algorithm.
@@ -87,9 +90,9 @@ defmodule JSON.LD do
 
   Details at <https://www.w3.org/TR/json-ld-api/#flattening-algorithms>
   """
-  defdelegate flatten(input, context \\ nil, options \\ %JSON.LD.Options{}),
-    to: JSON.LD.Flattening
-
+  @spec flatten(map | [map], map | nil, Options.t() | Enum.t()) :: [map]
+  defdelegate flatten(input, context \\ nil, options \\ %Options{}),
+    to: Flattening
 
   @doc """
   Generator function for `JSON.LD.Context`s.
@@ -97,19 +100,19 @@ defmodule JSON.LD do
   You can either pass a map with a `"@context"` key having the JSON-LD context
   object its value, or the JSON-LD context object directly.
   """
-  def context(args, opts \\ %JSON.LD.Options{})
+  @spec context(map, Options.t()) :: Context.t()
+  def context(args, opts \\ %Options{})
 
   def context(%{"@context" => _} = object, options),
-    do: JSON.LD.Context.create(object, options)
+    do: Context.create(object, options)
 
   def context(context, options),
-    do: JSON.LD.Context.create(%{"@context" => context}, options)
-
+    do: Context.create(%{"@context" => context}, options)
 
   @doc """
   Generator function for JSON-LD node maps.
   """
-  def node_map(input, node_id_map \\ nil),
-    do: JSON.LD.Flattening.node_map(input, node_id_map)
-
+  @spec node_map([map], pid | nil) :: map
+  defdelegate node_map(input, node_id_map \\ nil),
+    to: Flattening
 end
