@@ -4,7 +4,22 @@ defmodule JSON.LD.Encoder do
 
   use RDF.Serialization.Encoder
 
-  alias RDF.{IRI, BlankNode, Literal, XSD, NS}
+  alias JSON.LD.Options
+
+  alias RDF.{
+    BlankNode,
+    Dataset,
+    Description,
+    Graph,
+    IRI,
+    LangString,
+    Literal,
+    NS,
+    Statement,
+    XSD
+  }
+
+  @type input :: Dataset.t() | Description.t() | Graph.t()
 
   @rdf_type to_string(RDF.NS.RDF.type())
   @rdf_nil to_string(RDF.NS.RDF.nil())
@@ -13,108 +28,111 @@ defmodule JSON.LD.Encoder do
   @rdf_list to_string(RDF.uri(RDF.NS.RDF.List))
 
   @impl RDF.Serialization.Encoder
+  @spec encode(input, Options.t() | Enum.t()) :: {:ok, String.t()} | {:error, any}
   def encode(data, opts \\ []) do
     with {:ok, json_ld_object} <- from_rdf(data, opts) do
       encode_json(json_ld_object, opts)
     end
   end
 
+  @spec encode!(input, Options.t() | Enum.t()) :: String.t()
   def encode!(data, opts \\ []) do
     data
     |> from_rdf!(opts)
     |> encode_json!(opts)
   end
 
-  def from_rdf(dataset, options \\ %JSON.LD.Options{}) do
-    try do
-      {:ok, from_rdf!(dataset, options)}
-    rescue
-      exception -> {:error, Exception.message(exception)}
-    end
+  @spec from_rdf(input, Options.t() | Enum.t()) :: {:ok, [map]} | {:error, any}
+  def from_rdf(dataset, options \\ %Options{}) do
+    {:ok, from_rdf!(dataset, options)}
+  rescue
+    exception ->
+      {:error, Exception.message(exception)}
   end
 
-  def from_rdf!(rdf_data, options \\ %JSON.LD.Options{})
+  @spec from_rdf!(input, Options.t() | Enum.t()) :: [map]
+  def from_rdf!(rdf_data, options \\ %Options{})
 
-  def from_rdf!(%RDF.Dataset{} = dataset, options) do
-    with options = JSON.LD.Options.new(options) do
-      graph_map =
-        Enum.reduce(RDF.Dataset.graphs(dataset), %{}, fn graph, graph_map ->
-          # 3.1)
-          name = to_string(graph.name || "@default")
+  def from_rdf!(%Dataset{} = dataset, options) do
+    options = Options.new(options)
 
-          # 3.3)
-          graph_map =
-            if graph.name && !get_in(graph_map, ["@default", name]) do
-              Map.update(graph_map, "@default", %{name => %{"@id" => name}}, fn default_graph ->
-                Map.put(default_graph, name, %{"@id" => name})
-              end)
-            else
-              graph_map
-            end
+    graph_map =
+      Enum.reduce(Dataset.graphs(dataset), %{}, fn graph, graph_map ->
+        # 3.1)
+        name = to_string(graph.name || "@default")
 
-          # 3.2 + 3.4)
-          Map.put(
-            graph_map,
-            name,
-            node_map_from_graph(
-              graph,
-              Map.get(graph_map, name, %{}),
-              options.use_native_types,
-              options.use_rdf_type
-            )
-          )
-        end)
-
-      # 4)
-      graph_map =
-        Enum.reduce(graph_map, %{}, fn {name, graph_object}, graph_map ->
-          Map.put(graph_map, name, convert_list(graph_object))
-        end)
-
-      # 5+6)
-      Map.get(graph_map, "@default", %{})
-      |> Enum.sort_by(fn {subject, _} -> subject end)
-      |> Enum.reduce([], fn {subject, node}, result ->
-        # 6.1)
-        node =
-          if Map.has_key?(graph_map, subject) do
-            Map.put(
-              node,
-              "@graph",
-              graph_map[subject]
-              |> Enum.sort_by(fn {s, _} -> s end)
-              |> Enum.reduce([], fn {_s, n}, graph_nodes ->
-                n = Map.delete(n, "usages")
-
-                if map_size(n) == 1 and Map.has_key?(n, "@id") do
-                  graph_nodes
-                else
-                  [n | graph_nodes]
-                end
-              end)
-              |> Enum.reverse()
-            )
+        # 3.3)
+        graph_map =
+          if graph.name && !get_in(graph_map, ["@default", name]) do
+            Map.update(graph_map, "@default", %{name => %{"@id" => name}}, fn default_graph ->
+              Map.put(default_graph, name, %{"@id" => name})
+            end)
           else
-            node
+            graph_map
           end
 
-        # 6.2)
-        node = Map.delete(node, "usages")
+        # 3.2 + 3.4)
+        node_map =
+          node_map_from_graph(
+            graph,
+            Map.get(graph_map, name, %{}),
+            options.use_native_types,
+            options.use_rdf_type
+          )
 
-        if map_size(node) == 1 and Map.has_key?(node, "@id") do
-          result
-        else
-          [node | result]
-        end
+        Map.put(graph_map, name, node_map)
       end)
-      |> Enum.reverse()
-    end
+
+    # 4)
+    graph_map =
+      Enum.reduce(graph_map, %{}, fn {name, graph_object}, graph_map ->
+        Map.put(graph_map, name, convert_list(graph_object))
+      end)
+
+    # 5+6)
+    Map.get(graph_map, "@default", %{})
+    |> Enum.sort_by(fn {subject, _} -> subject end)
+    |> Enum.reduce([], fn {subject, node}, result ->
+      # 6.1)
+      node =
+        if Map.has_key?(graph_map, subject) do
+          Map.put(
+            node,
+            "@graph",
+            graph_map[subject]
+            |> Enum.sort_by(fn {s, _} -> s end)
+            |> Enum.reduce([], fn {_s, n}, graph_nodes ->
+              n = Map.delete(n, "usages")
+
+              if map_size(n) == 1 and Map.has_key?(n, "@id") do
+                graph_nodes
+              else
+                [n | graph_nodes]
+              end
+            end)
+            |> Enum.reverse()
+          )
+        else
+          node
+        end
+
+      # 6.2)
+      node = Map.delete(node, "usages")
+
+      if map_size(node) == 1 and Map.has_key?(node, "@id") do
+        result
+      else
+        [node | result]
+      end
+    end)
+    |> Enum.reverse()
   end
 
   def from_rdf!(rdf_data, options),
-    do: rdf_data |> RDF.Dataset.new() |> from_rdf!(options)
+    do: rdf_data |> Dataset.new() |> from_rdf!(options)
 
   # 3.5)
+  @spec node_map_from_graph(Graph.t(), map, boolean, boolean) :: map
   defp node_map_from_graph(graph, current, use_native_types, use_rdf_type) do
     Enum.reduce(graph, current, fn {subject, predicate, object}, node_map ->
       {subject, predicate, node_object} = {to_string(subject), to_string(predicate), nil}
@@ -133,11 +151,7 @@ defmodule JSON.LD.Encoder do
         if is_node_object and !use_rdf_type and predicate == @rdf_type do
           node =
             Map.update(node, "@type", [node_object], fn types ->
-              if node_object in types do
-                types
-              else
-                types ++ [node_object]
-              end
+              if node_object in types, do: types, else: types ++ [node_object]
             end)
 
           {node, node_map}
@@ -146,25 +160,15 @@ defmodule JSON.LD.Encoder do
 
           node =
             Map.update(node, predicate, [value], fn objects ->
-              if value in objects do
-                objects
-              else
-                objects ++ [value]
-              end
+              if value in objects, do: objects, else: objects ++ [value]
             end)
 
           node_map =
             if is_node_object do
-              usage = %{
-                "node" => node,
-                "property" => predicate,
-                "value" => value
-              }
+              usage = %{"node" => node, "property" => predicate, "value" => value}
 
               Map.update(node_map, node_object, %{"usages" => [usage]}, fn object_node ->
-                Map.update(object_node, "usages", [usage], fn usages ->
-                  usages ++ [usage]
-                end)
+                Map.update(object_node, "usages", [usage], fn usages -> usages ++ [usage] end)
               end)
             else
               node_map
@@ -180,6 +184,7 @@ defmodule JSON.LD.Encoder do
 
   # This function is necessary because we have no references and must update the
   # node member of the usage maps with later enhanced usages
+  @spec update_node_usages(map) :: map
   defp update_node_usages(node_map) do
     Enum.reduce(node_map, node_map, fn
       {subject, %{"usages" => _usages} = _node}, node_map ->
@@ -198,6 +203,7 @@ defmodule JSON.LD.Encoder do
 
   # This function is necessary because we have no references and use this
   # instead to update the head by path
+  @spec update_head(map, [String.t()], map, map) :: map
   defp update_head(graph_object, path, old, new) do
     update_in(graph_object, path, fn objects ->
       Enum.map(objects, fn
@@ -208,6 +214,7 @@ defmodule JSON.LD.Encoder do
   end
 
   # 4)
+  @spec convert_list(map) :: map
   defp convert_list(%{@rdf_nil => nil_node} = graph_object) do
     Enum.reduce(
       nil_node["usages"],
@@ -264,6 +271,7 @@ defmodule JSON.LD.Encoder do
   defp convert_list(graph_object), do: graph_object
 
   # 4.3.3)
+  @spec extract_list(map, [map], [String.t()]) :: {[map], [String.t()], [String.t()], map}
   defp extract_list(usage, list \\ [], list_nodes \\ [])
 
   defp extract_list(
@@ -314,6 +322,7 @@ defmodule JSON.LD.Encoder do
        ),
        do: {list, list_nodes, [subject, property], head}
 
+  @spec rdf_to_object(Statement.object(), boolean) :: map
   defp rdf_to_object(%IRI{} = iri, _use_native_types) do
     %{"@id" => to_string(iri)}
   end
@@ -353,7 +362,7 @@ defmodule JSON.LD.Encoder do
         end
       else
         cond do
-          datatype == RDF.LangString ->
+          datatype == LangString ->
             {converted_value, type, Map.put(result, "@language", Literal.language(literal))}
 
           datatype == XSD.String ->
@@ -373,10 +382,13 @@ defmodule JSON.LD.Encoder do
     )
   end
 
+  @spec encode_json(any, [Jason.encode_opt()]) ::
+          {:ok, String.t()} | {:error, Jason.EncodeError.t() | Exception.t()}
   defp encode_json(value, opts) do
     Jason.encode(value, opts)
   end
 
+  @spec encode_json!(any, [Jason.encode_opt()]) :: String.t()
   defp encode_json!(value, opts) do
     Jason.encode!(value, opts)
   end

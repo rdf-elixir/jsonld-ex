@@ -7,7 +7,8 @@ end
 
 defmodule JSON.LD.ListOfListsError do
   @moduledoc """
-  A list of lists was detected. List of lists are not supported in this version of JSON-LD due to the algorithmic complexity.
+  A list of lists was detected. List of lists are not supported in this version of
+  JSON-LD due to the algorithmic complexity.
   """
   defexception code: "list of lists", message: nil
 end
@@ -42,7 +43,8 @@ end
 
 defmodule JSON.LD.MultipleContextLinkHeadersError do
   @moduledoc """
-  Multiple HTTP Link Headers [RFC5988] using the http://www.w3.org/ns/json-ld#context link relation have been detected.
+  Multiple HTTP Link Headers [RFC5988] using the http://www.w3.org/ns/json-ld#context
+  link relation have been detected.
   """
   defexception code: "multiple context link headers", message: nil
 end
@@ -77,7 +79,8 @@ end
 
 defmodule JSON.LD.InvalidVocabMappingError do
   @moduledoc """
-  An invalid vocabulary mapping has been detected, i.e., it is neither an absolute IRI nor null.
+  An invalid vocabulary mapping has been detected, i.e., it is neither an absolute IRI
+  nor null.
   """
   defexception code: "invalid vocab mapping", message: nil
 end
@@ -133,35 +136,40 @@ end
 
 defmodule JSON.LD.InvalidTypeMappingError do
   @moduledoc """
-  An @type member in a term definition was encountered whose value could not be expanded to an absolute IRI.
+  An @type member in a term definition was encountered whose value could not be
+  expanded to an absolute IRI.
   """
   defexception code: "invalid type mapping", message: nil
 end
 
 defmodule JSON.LD.InvalidLanguageMappingError do
   @moduledoc """
-  An @language member in a term definition was encountered whose value was neither a string nor null and thus invalid.
+  An @language member in a term definition was encountered whose value was neither
+  a string nor null and thus invalid.
   """
   defexception code: "invalid language mapping", message: nil
 end
 
 defmodule JSON.LD.CollidingKeywordsError do
   @moduledoc """
-  Two properties which expand to the same keyword have been detected. This might occur if a keyword and an alias thereof are used at the same time.
+  Two properties which expand to the same keyword have been detected. This might occur
+  if a keyword and an alias thereof are used at the same time.
   """
   defexception code: "colliding keywords", message: nil
 end
 
 defmodule JSON.LD.InvalidContainerMappingError do
   @moduledoc """
-  An @container member was encountered whose value was not one of the following strings: @list, @set, or @index.
+  An @container member was encountered whose value was not one of the following strings:
+  @list, @set, or @index.
   """
   defexception code: "invalid container mapping", message: nil
 end
 
 defmodule JSON.LD.InvalidTypeValueError do
   @moduledoc """
-  An invalid value for an @type member has been detected, i.e., the value was neither a string nor an array of strings.
+  An invalid value for an @type member has been detected, i.e., the value was neither
+  a string nor an array of strings.
   """
   defexception code: "invalid type value", message: nil
 end
@@ -175,7 +183,8 @@ end
 
 defmodule JSON.LD.InvalidValueObjectValueError do
   @moduledoc """
-  An invalid value for the @value member of a value object has been detected, i.e., it is neither a scalar nor null.
+  An invalid value for the @value member of a value object has been detected,
+  i.e., it is neither a scalar nor null.
   """
   defexception code: "invalid value object value", message: nil
 end
@@ -210,14 +219,16 @@ end
 
 defmodule JSON.LD.InvalidLanguageMapValueError do
   @moduledoc """
-  An invalid value in a language map has been detected. It has to be a string or an array of strings.
+  An invalid value in a language map has been detected. It has to be a string or
+  an array of strings.
   """
   defexception code: "invalid language map value", message: nil
 end
 
 defmodule JSON.LD.CompactionToListOfListsError do
   @moduledoc """
-  The compacted document contains a list of lists as multiple lists have been compacted to the same term.
+  The compacted document contains a list of lists as multiple lists have been compacted
+  to the same term.
   """
   defexception code: "compaction to list of lists", message: nil
 end
@@ -231,14 +242,16 @@ end
 
 defmodule JSON.LD.InvalidReverseValueError do
   @moduledoc """
-  An invalid value for an @reverse member has been detected, i.e., the value was not a JSON object.
+  An invalid value for an @reverse member has been detected, i.e., the value was not
+  a JSON object.
   """
   defexception code: "invalid @reverse value", message: nil
 end
 
 defmodule JSON.LD.InvalidReversePropertyValueError do
   @moduledoc """
-  An invalid value for a reverse property has been detected. The value of an inverse property must be a node object.
+  An invalid value for a reverse property has been detected. The value of an inverse
+  property must be a node object.
   """
   defexception code: "invalid reverse property value", message: nil
 end
