@@ -22,7 +22,6 @@ defmodule JSON.LD.NodeIdentifierMap do
     GenServer.call(pid, {:generate_id, identifier})
   end
 
-
   # Server Callbacks
 
   def init(:ok) do
@@ -34,16 +33,17 @@ defmodule JSON.LD.NodeIdentifierMap do
       {:reply, map[identifier], state}
     else
       blank_node_id = "_:b#{counter}"
-      {:reply, blank_node_id, %{
-          counter: counter + 1,
-          map:
-            if identifier do
-              Map.put(map, identifier, blank_node_id)
-            else
-              map
-            end
-          }}
+
+      {:reply, blank_node_id,
+       %{
+         counter: counter + 1,
+         map:
+           if identifier do
+             Map.put(map, identifier, blank_node_id)
+           else
+             map
+           end
+       }}
     end
   end
-
 end

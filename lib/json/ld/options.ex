@@ -17,5 +17,4 @@ defmodule JSON.LD.Options do
   def new(), do: %JSON.LD.Options{}
   def new(%JSON.LD.Options{} = options), do: options
   def new(options), do: struct(JSON.LD.Options, options)
-
 end

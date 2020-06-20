@@ -5,7 +5,7 @@ defmodule JSON.LD.RemoteContextTest do
 
   setup_all do
     local =
-      Jason.decode! """
+      Jason.decode!("""
         {
           "@context": {
             "name": "http://xmlns.com/foaf/0.1/name",
@@ -14,16 +14,16 @@ defmodule JSON.LD.RemoteContextTest do
           "name": "Manu Sporny",
           "homepage": "http://manu.sporny.org/"
         }
-      """
+      """)
 
     remote =
-      Jason.decode! """
+      Jason.decode!("""
         {
           "@context": "http://example.com/test-context",
           "name": "Manu Sporny",
           "homepage": "http://manu.sporny.org/"
         }
-      """
+      """)
 
     {:ok, local: local, remote: remote}
   end
@@ -42,13 +42,13 @@ defmodule JSON.LD.RemoteContextTest do
 
   test "failed loading of remote context" do
     remote =
-      Jason.decode! """
+      Jason.decode!("""
         {
           "@context": "http://fake.com/fake-context",
           "name": "Manu Sporny",
           "homepage": "http://manu.sporny.org/"
         }
-      """
+      """)
 
     assert_raise LoadingRemoteContextFailedError, fn ->
       JSON.LD.flatten(remote, nil, %Options{document_loader: DocumentLoader.Test})

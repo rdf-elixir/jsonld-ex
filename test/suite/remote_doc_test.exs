@@ -1,6 +1,6 @@
 # TODO: These tests are disabled as we don't support remote document loading yet.
 
-#defmodule JSON.LD.TestSuite.RemoteDocTest do
+# defmodule JSON.LD.TestSuite.RemoteDocTest do
 #  use ExUnit.Case, async: false
 #
 #  import JSON.LD.TestSuite
@@ -54,4 +54,4 @@
 #        end
 #    end
 #  end)
-#end
+# end

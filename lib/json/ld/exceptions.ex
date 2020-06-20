@@ -187,7 +187,6 @@ defmodule JSON.LD.InvalidLanguageTaggedStringError do
   defexception code: "invalid language-tagged string", message: nil
 end
 
-
 defmodule JSON.LD.InvalidLanguageTaggedValueError do
   @moduledoc """
   A number, true, or false with an associated language tag was detected.

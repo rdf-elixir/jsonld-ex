@@ -1,6 +1,5 @@
 defmodule JSON.LD.TestData do
-
-  @dir Path.join(File.cwd!, "test/data/")
+  @dir Path.join(File.cwd!(), "test/data/")
   def dir, do: @dir
 
   def file(name) do
@@ -10,5 +9,4 @@ defmodule JSON.LD.TestData do
       raise "Test data file '#{name}' not found"
     end
   end
-
 end

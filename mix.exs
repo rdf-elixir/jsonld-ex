@@ -3,15 +3,15 @@ defmodule JSON.LD.Mixfile do
 
   @repo_url "https://github.com/rdf-elixir/jsonld-ex"
 
-  @version File.read!("VERSION") |> String.trim
+  @version File.read!("VERSION") |> String.trim()
 
   def project do
     [
       app: :json_ld,
       version: @version,
       elixir: "~> 1.8",
-      build_embedded: Mix.env == :prod,
-      start_permanent: Mix.env == :prod,
+      build_embedded: Mix.env() == :prod,
+      start_permanent: Mix.env() == :prod,
       deps: deps(),
       elixirc_paths: elixirc_paths(Mix.env()),
 
@@ -25,7 +25,7 @@ defmodule JSON.LD.Mixfile do
         main: "JSON.LD",
         source_url: @repo_url,
         source_ref: "v#{@version}",
-        extras: ["README.md"],
+        extras: ["README.md"]
       ],
 
       # ExCoveralls
@@ -35,7 +35,7 @@ defmodule JSON.LD.Mixfile do
         "coveralls.detail": :test,
         "coveralls.post": :test,
         "coveralls.html": :test
-      ],
+      ]
     ]
   end
 
@@ -63,16 +63,16 @@ defmodule JSON.LD.Mixfile do
       {:rdf, "~> 0.8"},
       {:jason, "~> 1.2"},
       {:httpoison, "~> 1.7"},
-
-      {:credo, "~> 1.4",         only: [:dev, :test], runtime: false},
-      {:dialyxir, "~> 1.0",      only: :dev, runtime: false},
-      {:ex_doc, "~> 0.22",       only: :dev, runtime: false},
-      {:bypass, "~> 1.0",        only: :test},
-      {:plug_cowboy, "~> 1.0",   only: :test}, # in order to run under OTP 21 we need to keep this dependency of bypass on 1.0
-      {:excoveralls, "~> 0.13",  only: :test}
+      {:credo, "~> 1.4", only: [:dev, :test], runtime: false},
+      {:dialyxir, "~> 1.0", only: :dev, runtime: false},
+      {:ex_doc, "~> 0.22", only: :dev, runtime: false},
+      {:bypass, "~> 1.0", only: :test},
+      # in order to run under OTP 21 we need to keep this dependency of bypass on 1.0
+      {:plug_cowboy, "~> 1.0", only: :test},
+      {:excoveralls, "~> 0.13", only: :test}
     ]
   end
 
   defp elixirc_paths(:test), do: ["lib", "test/support"]
-  defp elixirc_paths(_),     do: ["lib"]
+  defp elixirc_paths(_), do: ["lib"]
 end

@@ -1,5 +1,4 @@
 defmodule JSON.LD.TestSuite do
-
   @test_suite_dir "json-ld.org-test-suite"
   def test_suite_dir, do: @test_suite_dir
 
@@ -7,7 +6,7 @@ defmodule JSON.LD.TestSuite do
 
   def parse_json_file!(file) do
     case File.read(file(file)) do
-      {:ok,   content} -> Jason.decode!(content)
+      {:ok, content} -> Jason.decode!(content)
       {:error, reason} -> raise File.Error, path: file, action: "read", reason: reason
     end
   end
@@ -29,8 +28,8 @@ defmodule JSON.LD.TestSuite do
       cond do
         "jld:PositiveEvaluationTest" in type -> :positive_evaluation_test
         "jld:NegativeEvaluationTest" in type -> :negative_evaluation_test
-        "jld:PositiveSyntaxTest"     in type -> :positive_syntax_test
-        "jld:NegativeSyntaxTest"     in type -> :negative_syntax_test
+        "jld:PositiveSyntaxTest" in type -> :positive_syntax_test
+        "jld:NegativeSyntaxTest" in type -> :negative_syntax_test
       end
     end)
   end
@@ -43,22 +42,23 @@ defmodule JSON.LD.TestSuite do
     |> Map.get("option", %{})
     |> Map.put_new("base", base_iri <> test_case["input"])
     |> Enum.map(fn {key, value} ->
-        {key |> Macro.underscore |> String.to_atom, value}
-       end)
+      {key |> Macro.underscore() |> String.to_atom(), value}
+    end)
     |> Enum.map(fn
-        {:expand_context, file} -> {:expand_context, j(file)}
-        option -> option
-       end)
+      {:expand_context, file} -> {:expand_context, j(file)}
+      option -> option
+    end)
   end
 
   def exception(error) do
-    error = error
-    |> String.replace(" ", "_")
-    |> String.replace("-", "_")
-    |> String.replace("@", "_")
-    |> Macro.camelize
-    |> String.replace("_", "")
+    error =
+      error
+      |> String.replace(" ", "_")
+      |> String.replace("-", "_")
+      |> String.replace("@", "_")
+      |> Macro.camelize()
+      |> String.replace("_", "")
+
     String.to_existing_atom("Elixir.JSON.LD.#{error}Error")
   end
-
 end

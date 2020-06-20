@@ -12,14 +12,13 @@ defmodule JSON.LD.DecoderTest do
   defmodule TestNS do
     use RDF.Vocabulary.Namespace
     defvocab EX, base_iri: "http://example.org/#", terms: [], strict: false
-    defvocab S,  base_iri: "http://schema.org/", terms: [], strict: false
+    defvocab S, base_iri: "http://schema.org/", terms: [], strict: false
   end
 
   alias TestNS.{EX, S}
 
-
   test "an empty JSON document is deserialized to an empty graph" do
-    assert JSON.LD.Decoder.decode!("{}") == Dataset.new
+    assert JSON.LD.Decoder.decode!("{}") == Dataset.new()
   end
 
   describe "unnamed nodes" do
@@ -43,14 +42,14 @@ defmodule JSON.LD.DecoderTest do
           "http://example.com/foo": {"@id": "_:a"}
         }),
         {RDF.bnode("b0"), ~I<http://example.com/foo>, RDF.bnode("b0")}
-      },
+      }
     }
-    |> Enum.each(fn ({title, data}) ->
-         @tag data: data
-         test title, %{data: {input, output}} do
-           assert JSON.LD.Decoder.decode!(input) == RDF.Dataset.new(output)
-         end
-       end)
+    |> Enum.each(fn {title, data} ->
+      @tag data: data
+      test title, %{data: {input, output}} do
+        assert JSON.LD.Decoder.decode!(input) == RDF.Dataset.new(output)
+      end
+    end)
   end
 
   describe "nodes with @id" do
@@ -61,14 +60,14 @@ defmodule JSON.LD.DecoderTest do
           "http://example.com/foo": "bar"
         }),
         {~I<http://example.com/a>, ~I<http://example.com/foo>, RDF.literal("bar")}
-      },
+      }
     }
-    |> Enum.each(fn ({title, data}) ->
-         @tag data: data
-         test title, %{data: {input, output}} do
-           assert JSON.LD.Decoder.decode!(input) == RDF.Dataset.new(output)
-         end
-       end)
+    |> Enum.each(fn {title, data} ->
+      @tag data: data
+      test title, %{data: {input, output}} do
+        assert JSON.LD.Decoder.decode!(input) == RDF.Dataset.new(output)
+      end
+    end)
 
     %{
       "base" => {
@@ -76,30 +75,30 @@ defmodule JSON.LD.DecoderTest do
           "@id": "",
           "@type": "#{RDF.uri(RDFS.Resource)}"
         }),
-        {~I<http://example.org/>, NS.RDF.type, RDF.uri(RDFS.Resource)}
+        {~I<http://example.org/>, NS.RDF.type(), RDF.uri(RDFS.Resource)}
       },
-       "relative" => {
+      "relative" => {
         ~s({
           "@id": "a/b",
           "@type": "#{RDF.uri(RDFS.Resource)}"
         }),
-        {~I<http://example.org/a/b>, NS.RDF.type, RDF.uri(RDFS.Resource)}
+        {~I<http://example.org/a/b>, NS.RDF.type(), RDF.uri(RDFS.Resource)}
       },
       "hash" => {
         ~s({
           "@id": "#a",
           "@type": "#{RDF.uri(RDFS.Resource)}"
         }),
-        {~I<http://example.org/#a>, NS.RDF.type, RDF.uri(RDFS.Resource)}
-      },
+        {~I<http://example.org/#a>, NS.RDF.type(), RDF.uri(RDFS.Resource)}
+      }
     }
-    |> Enum.each(fn ({title, data}) ->
-         @tag data: data
-         test "when relative IRIs #{title}", %{data: {input, output}} do
-           assert JSON.LD.Decoder.decode!(input, base: "http://example.org/") ==
-                    RDF.Dataset.new(output)
-         end
-       end)
+    |> Enum.each(fn {title, data} ->
+      @tag data: data
+      test "when relative IRIs #{title}", %{data: {input, output}} do
+        assert JSON.LD.Decoder.decode!(input, base: "http://example.org/") ==
+                 RDF.Dataset.new(output)
+      end
+    end)
   end
 
   describe "typed nodes" do
@@ -108,30 +107,30 @@ defmodule JSON.LD.DecoderTest do
         ~s({
           "@type": "http://example.com/foo"
         }),
-        {RDF.bnode("b0"), NS.RDF.type, ~I<http://example.com/foo>}
+        {RDF.bnode("b0"), NS.RDF.type(), ~I<http://example.com/foo>}
       },
       "two types" => {
         ~s({
           "@type": ["http://example.com/foo", "http://example.com/baz"]
         }),
         [
-          {RDF.bnode("b0"), NS.RDF.type, ~I<http://example.com/foo>},
-          {RDF.bnode("b0"), NS.RDF.type, ~I<http://example.com/baz>},
+          {RDF.bnode("b0"), NS.RDF.type(), ~I<http://example.com/foo>},
+          {RDF.bnode("b0"), NS.RDF.type(), ~I<http://example.com/baz>}
         ]
       },
       "blank node type" => {
         ~s({
           "@type": "_:foo"
         }),
-        {RDF.bnode("b1"), NS.RDF.type, RDF.bnode("b0")}
+        {RDF.bnode("b1"), NS.RDF.type(), RDF.bnode("b0")}
       }
     }
-    |> Enum.each(fn ({title, data}) ->
-         @tag data: data
-         test title, %{data: {input, output}} do
-           assert JSON.LD.Decoder.decode!(input) == RDF.Dataset.new(output)
-         end
-       end)
+    |> Enum.each(fn {title, data} ->
+      @tag data: data
+      test title, %{data: {input, output}} do
+        assert JSON.LD.Decoder.decode!(input) == RDF.Dataset.new(output)
+      end
+    end)
   end
 
   describe "key/value" do
@@ -148,7 +147,7 @@ defmodule JSON.LD.DecoderTest do
         }),
         [
           {RDF.bnode("b0"), ~I<http://example.com/foo>, RDF.literal("bar")},
-          {RDF.bnode("b0"), ~I<http://example.com/foo>, RDF.literal("baz")},
+          {RDF.bnode("b0"), ~I<http://example.com/foo>, RDF.literal("baz")}
         ]
       },
       "IRI" => {
@@ -163,37 +162,35 @@ defmodule JSON.LD.DecoderTest do
         }),
         [
           {RDF.bnode("b0"), ~I<http://example.com/foo>, ~I<http://example.com/bar>},
-          {RDF.bnode("b0"), ~I<http://example.com/foo>, ~I<http://example.com/baz>},
+          {RDF.bnode("b0"), ~I<http://example.com/foo>, ~I<http://example.com/baz>}
         ]
-      },
+      }
     }
-    |> Enum.each(fn ({title, data}) ->
-         @tag data: data
-         test title, %{data: {input, output}} do
-           assert JSON.LD.Decoder.decode!(input) == RDF.Dataset.new(output)
-         end
-       end)
+    |> Enum.each(fn {title, data} ->
+      @tag data: data
+      test title, %{data: {input, output}} do
+        assert JSON.LD.Decoder.decode!(input) == RDF.Dataset.new(output)
+      end
+    end)
   end
 
   describe "literals" do
     %{
-      "plain literal" =>
-      {
+      "plain literal" => {
         ~s({"@id": "http://greggkellogg.net/foaf#me", "http://xmlns.com/foaf/0.1/name": "Gregg Kellogg"}),
-        {~I<http://greggkellogg.net/foaf#me>, ~I<http://xmlns.com/foaf/0.1/name>, RDF.literal("Gregg Kellogg")},
+        {~I<http://greggkellogg.net/foaf#me>, ~I<http://xmlns.com/foaf/0.1/name>,
+         RDF.literal("Gregg Kellogg")}
       },
-      "explicit plain literal" =>
-      {
+      "explicit plain literal" => {
         ~s({"http://xmlns.com/foaf/0.1/name": {"@value": "Gregg Kellogg"}}),
         {RDF.bnode("b0"), ~I<http://xmlns.com/foaf/0.1/name>, RDF.literal("Gregg Kellogg")}
       },
-      "language tagged literal" =>
-      {
+      "language tagged literal" => {
         ~s({"http://www.w3.org/2000/01/rdf-schema#label": {"@value": "A plain literal with a lang tag.", "@language": "en-us"}}),
-        {RDF.bnode("b0"), RDFS.label, RDF.literal("A plain literal with a lang tag.", language: "en-us")}
+        {RDF.bnode("b0"), RDFS.label(),
+         RDF.literal("A plain literal with a lang tag.", language: "en-us")}
       },
-      "I18N literal with language" =>
-      {
+      "I18N literal with language" => {
         ~s([{
           "@id": "http://greggkellogg.net/foaf#me",
           "http://xmlns.com/foaf/0.1/knows": {"@id": "http://www.ivan-herman.net/foaf#me"}
@@ -202,50 +199,52 @@ defmodule JSON.LD.DecoderTest do
           "http://xmlns.com/foaf/0.1/name": {"@value": "Herman Iván", "@language": "hu"}
         }]),
         [
-           {~I<http://greggkellogg.net/foaf#me>, ~I<http://xmlns.com/foaf/0.1/knows>, ~I<http://www.ivan-herman.net/foaf#me>},
-           {~I<http://www.ivan-herman.net/foaf#me>, ~I<http://xmlns.com/foaf/0.1/name>, RDF.literal("Herman Iv\u00E1n", language: "hu")},
+          {~I<http://greggkellogg.net/foaf#me>, ~I<http://xmlns.com/foaf/0.1/knows>,
+           ~I<http://www.ivan-herman.net/foaf#me>},
+          {~I<http://www.ivan-herman.net/foaf#me>, ~I<http://xmlns.com/foaf/0.1/name>,
+           RDF.literal("Herman Iv\u00E1n", language: "hu")}
         ]
       },
-      "explicit datatyped literal" =>
-      {
+      "explicit datatyped literal" => {
         ~s({
           "@id":  "http://greggkellogg.net/foaf#me",
           "http://purl.org/dc/terms/created":  {"@value": "1957-02-27", "@type": "http://www.w3.org/2001/XMLSchema#date"}
         }),
-        {~I<http://greggkellogg.net/foaf#me>, ~I<http://purl.org/dc/terms/created>, RDF.literal("1957-02-27", datatype: XSD.date)},
-      },
+        {~I<http://greggkellogg.net/foaf#me>, ~I<http://purl.org/dc/terms/created>,
+         RDF.literal("1957-02-27", datatype: XSD.date())}
+      }
     }
-    |> Enum.each(fn ({title, data}) ->
-         @tag data: data
-         test title, %{data: {input, output}} do
-           assert JSON.LD.Decoder.decode!(input) == RDF.Dataset.new(output)
-         end
-       end)
+    |> Enum.each(fn {title, data} ->
+      @tag data: data
+      test title, %{data: {input, output}} do
+        assert JSON.LD.Decoder.decode!(input) == RDF.Dataset.new(output)
+      end
+    end)
   end
 
   describe "prefixes" do
     %{
-       "empty prefix" => {
-         ~s({"@context": {"": "http://example.com/default#"}, ":foo": "bar"}),
-         {RDF.bnode("b0"), ~I<http://example.com/default#foo>, RDF.literal("bar")}
-       },
-       # TODO:
-       "empty suffix" => {
-         ~s({"@context": {"prefix": "http://example.com/default#"}, "prefix:": "bar"}),
-         {RDF.bnode("b0"), ~I<http://example.com/default#>, RDF.literal("bar")}
-       },
-       "prefix:suffix" => {
-         ~s({"@context": {"prefix": "http://example.com/default#"}, "prefix:foo": "bar"}),
-         {RDF.bnode("b0"), ~I<http://example.com/default#foo>, RDF.literal("bar")}
-       }
+      "empty prefix" => {
+        ~s({"@context": {"": "http://example.com/default#"}, ":foo": "bar"}),
+        {RDF.bnode("b0"), ~I<http://example.com/default#foo>, RDF.literal("bar")}
+      },
+      # TODO:
+      "empty suffix" => {
+        ~s({"@context": {"prefix": "http://example.com/default#"}, "prefix:": "bar"}),
+        {RDF.bnode("b0"), ~I<http://example.com/default#>, RDF.literal("bar")}
+      },
+      "prefix:suffix" => {
+        ~s({"@context": {"prefix": "http://example.com/default#"}, "prefix:foo": "bar"}),
+        {RDF.bnode("b0"), ~I<http://example.com/default#foo>, RDF.literal("bar")}
+      }
     }
-    |> Enum.each(fn ({title, data}) ->
-         if title == "empty suffix", do: @tag :skip
-         @tag data: data
-         test title, %{data: {input, output}} do
-            assert JSON.LD.Decoder.decode!(input) == RDF.Dataset.new(output)
-         end
-       end)
+    |> Enum.each(fn {title, data} ->
+      if title == "empty suffix", do: @tag(:skip)
+      @tag data: data
+      test title, %{data: {input, output}} do
+        assert JSON.LD.Decoder.decode!(input) == RDF.Dataset.new(output)
+      end
+    end)
   end
 
   describe "overriding keywords" do
@@ -258,23 +257,23 @@ defmodule JSON.LD.DecoderTest do
           "name": "Gregg Kellogg"
         }),
         [
-           {~I<http://example.com/about#gregg>, NS.RDF.type, ~I<http://schema.org/Person>},
-           {~I<http://example.com/about#gregg>, ~I<http://schema.org/name>, RDF.literal("Gregg Kellogg")},
+          {~I<http://example.com/about#gregg>, NS.RDF.type(), ~I<http://schema.org/Person>},
+          {~I<http://example.com/about#gregg>, ~I<http://schema.org/name>,
+           RDF.literal("Gregg Kellogg")}
         ]
-      },
+      }
     }
-    |> Enum.each(fn ({title, data}) ->
-         @tag data: data
-         test title, %{data: {input, output}} do
-           assert JSON.LD.Decoder.decode!(input) == RDF.Dataset.new(output)
-         end
-       end)
+    |> Enum.each(fn {title, data} ->
+      @tag data: data
+      test title, %{data: {input, output}} do
+        assert JSON.LD.Decoder.decode!(input) == RDF.Dataset.new(output)
+      end
+    end)
   end
 
   describe "chaining" do
     %{
-      "explicit subject" =>
-      {
+      "explicit subject" => {
         ~s({
           "@context": {"foaf": "http://xmlns.com/foaf/0.1/"},
           "@id": "http://greggkellogg.net/foaf#me",
@@ -284,12 +283,13 @@ defmodule JSON.LD.DecoderTest do
           }
         }),
         [
-           {~I<http://greggkellogg.net/foaf#me>, ~I<http://xmlns.com/foaf/0.1/knows>, ~I<http://www.ivan-herman.net/foaf#me>},
-           {~I<http://www.ivan-herman.net/foaf#me>, ~I<http://xmlns.com/foaf/0.1/name>, RDF.literal("Ivan Herman")},
+          {~I<http://greggkellogg.net/foaf#me>, ~I<http://xmlns.com/foaf/0.1/knows>,
+           ~I<http://www.ivan-herman.net/foaf#me>},
+          {~I<http://www.ivan-herman.net/foaf#me>, ~I<http://xmlns.com/foaf/0.1/name>,
+           RDF.literal("Ivan Herman")}
         ]
       },
-      "implicit subject" =>
-      {
+      "implicit subject" => {
         ~s({
           "@context": {"foaf": "http://xmlns.com/foaf/0.1/"},
           "@id": "http://greggkellogg.net/foaf#me",
@@ -298,40 +298,42 @@ defmodule JSON.LD.DecoderTest do
           }
         }),
         [
-           {~I<http://greggkellogg.net/foaf#me>, ~I<http://xmlns.com/foaf/0.1/knows>, RDF.bnode("b0")},
-           {RDF.bnode("b0"), ~I<http://xmlns.com/foaf/0.1/name>, RDF.literal("Manu Sporny")},
+          {~I<http://greggkellogg.net/foaf#me>, ~I<http://xmlns.com/foaf/0.1/knows>,
+           RDF.bnode("b0")},
+          {RDF.bnode("b0"), ~I<http://xmlns.com/foaf/0.1/name>, RDF.literal("Manu Sporny")}
         ]
-      },
+      }
     }
-    |> Enum.each(fn ({title, data}) ->
-         @tag data: data
-         test title, %{data: {input, output}} do
-           assert JSON.LD.Decoder.decode!(input) == RDF.Dataset.new(output)
-         end
-       end)
+    |> Enum.each(fn {title, data} ->
+      @tag data: data
+      test title, %{data: {input, output}} do
+        assert JSON.LD.Decoder.decode!(input) == RDF.Dataset.new(output)
+      end
+    end)
   end
 
   describe "multiple values" do
     %{
-      "literals" =>
-      {
+      "literals" => {
         ~s({
           "@context": {"foaf": "http://xmlns.com/foaf/0.1/"},
           "@id": "http://greggkellogg.net/foaf#me",
           "foaf:knows": ["Manu Sporny", "Ivan Herman"]
         }),
         [
-           {~I<http://greggkellogg.net/foaf#me>, ~I<http://xmlns.com/foaf/0.1/knows>, RDF.literal("Manu Sporny")},
-           {~I<http://greggkellogg.net/foaf#me>, ~I<http://xmlns.com/foaf/0.1/knows>, RDF.literal("Ivan Herman")},
+          {~I<http://greggkellogg.net/foaf#me>, ~I<http://xmlns.com/foaf/0.1/knows>,
+           RDF.literal("Manu Sporny")},
+          {~I<http://greggkellogg.net/foaf#me>, ~I<http://xmlns.com/foaf/0.1/knows>,
+           RDF.literal("Ivan Herman")}
         ]
-      },
+      }
     }
-    |> Enum.each(fn ({title, data}) ->
-         @tag data: data
-         test title, %{data: {input, output}} do
-           assert JSON.LD.Decoder.decode!(input) == RDF.Dataset.new(output)
-         end
-       end)
+    |> Enum.each(fn {title, data} ->
+      @tag data: data
+      test title, %{data: {input, output}} do
+        assert JSON.LD.Decoder.decode!(input) == RDF.Dataset.new(output)
+      end
+    end)
   end
 
   describe "lists" do
@@ -342,22 +344,23 @@ defmodule JSON.LD.DecoderTest do
           "@id": "http://greggkellogg.net/foaf#me",
           "foaf:knows": {"@list": []}
         }),
-        {~I<http://greggkellogg.net/foaf#me>, ~I<http://xmlns.com/foaf/0.1/knows>, NS.RDF.nil}
+        {~I<http://greggkellogg.net/foaf#me>, ~I<http://xmlns.com/foaf/0.1/knows>, NS.RDF.nil()}
       },
-     "single value" => {
-       ~s({
+      "single value" => {
+        ~s({
          "@context": {"foaf": "http://xmlns.com/foaf/0.1/"},
          "@id": "http://greggkellogg.net/foaf#me",
          "foaf:knows": {"@list": ["Manu Sporny"]}
        }),
-       [
-          {~I<http://greggkellogg.net/foaf#me>, ~I<http://xmlns.com/foaf/0.1/knows>, RDF.bnode("b0")},
-          {RDF.bnode("b0"), NS.RDF.first, RDF.literal("Manu Sporny")},
-          {RDF.bnode("b0"), NS.RDF.rest, NS.RDF.nil},
-       ]
-     },
-     "single value (with coercion)" => {
-       ~s({
+        [
+          {~I<http://greggkellogg.net/foaf#me>, ~I<http://xmlns.com/foaf/0.1/knows>,
+           RDF.bnode("b0")},
+          {RDF.bnode("b0"), NS.RDF.first(), RDF.literal("Manu Sporny")},
+          {RDF.bnode("b0"), NS.RDF.rest(), NS.RDF.nil()}
+        ]
+      },
+      "single value (with coercion)" => {
+        ~s({
          "@context": {
            "foaf": "http://xmlns.com/foaf/0.1/",
            "foaf:knows": { "@container": "@list"}
@@ -365,39 +368,40 @@ defmodule JSON.LD.DecoderTest do
          "@id": "http://greggkellogg.net/foaf#me",
          "foaf:knows": ["Manu Sporny"]
        }),
-       [
-          {~I<http://greggkellogg.net/foaf#me>, ~I<http://xmlns.com/foaf/0.1/knows>, RDF.bnode("b0")},
-          {RDF.bnode("b0"), NS.RDF.first, RDF.literal("Manu Sporny")},
-          {RDF.bnode("b0"), NS.RDF.rest, NS.RDF.nil},
-       ]
-     },
-     "multiple values" => {
-       ~s({
+        [
+          {~I<http://greggkellogg.net/foaf#me>, ~I<http://xmlns.com/foaf/0.1/knows>,
+           RDF.bnode("b0")},
+          {RDF.bnode("b0"), NS.RDF.first(), RDF.literal("Manu Sporny")},
+          {RDF.bnode("b0"), NS.RDF.rest(), NS.RDF.nil()}
+        ]
+      },
+      "multiple values" => {
+        ~s({
          "@context": {"foaf": "http://xmlns.com/foaf/0.1/"},
          "@id": "http://greggkellogg.net/foaf#me",
          "foaf:knows": {"@list": ["Manu Sporny", "Dave Longley"]}
        }),
-       [
-          {~I<http://greggkellogg.net/foaf#me>, ~I<http://xmlns.com/foaf/0.1/knows>, RDF.bnode("b0")},
-          {RDF.bnode("b0"), NS.RDF.first, RDF.literal("Manu Sporny")},
-          {RDF.bnode("b0"), NS.RDF.rest, RDF.bnode("b1")},
-          {RDF.bnode("b1"), NS.RDF.first, RDF.literal("Dave Longley")},
-          {RDF.bnode("b1"), NS.RDF.rest, NS.RDF.nil},
-       ]
-     },
+        [
+          {~I<http://greggkellogg.net/foaf#me>, ~I<http://xmlns.com/foaf/0.1/knows>,
+           RDF.bnode("b0")},
+          {RDF.bnode("b0"), NS.RDF.first(), RDF.literal("Manu Sporny")},
+          {RDF.bnode("b0"), NS.RDF.rest(), RDF.bnode("b1")},
+          {RDF.bnode("b1"), NS.RDF.first(), RDF.literal("Dave Longley")},
+          {RDF.bnode("b1"), NS.RDF.rest(), NS.RDF.nil()}
+        ]
+      }
     }
-    |> Enum.each(fn ({title, data}) ->
-         @tag data: data
-         test title, %{data: {input, output}} do
-           assert JSON.LD.Decoder.decode!(input) == RDF.Dataset.new(output)
-         end
-       end)
+    |> Enum.each(fn {title, data} ->
+      @tag data: data
+      test title, %{data: {input, output}} do
+        assert JSON.LD.Decoder.decode!(input) == RDF.Dataset.new(output)
+      end
+    end)
   end
 
   describe "context" do
     %{
-      "@id coersion" =>
-      {
+      "@id coersion" => {
         ~s({
           "@context": {
             "knows": {"@id": "http://xmlns.com/foaf/0.1/knows", "@type": "@id"}
@@ -405,10 +409,10 @@ defmodule JSON.LD.DecoderTest do
           "@id":  "http://greggkellogg.net/foaf#me",
           "knows":  "http://www.ivan-herman.net/foaf#me"
         }),
-        {~I<http://greggkellogg.net/foaf#me>, ~I<http://xmlns.com/foaf/0.1/knows>, ~I<http://www.ivan-herman.net/foaf#me>},
+        {~I<http://greggkellogg.net/foaf#me>, ~I<http://xmlns.com/foaf/0.1/knows>,
+         ~I<http://www.ivan-herman.net/foaf#me>}
       },
-      "datatype coersion" =>
-      {
+      "datatype coersion" => {
         ~s({
           "@context": {
             "dcterms":  "http://purl.org/dc/terms/",
@@ -418,7 +422,8 @@ defmodule JSON.LD.DecoderTest do
           "@id":  "http://greggkellogg.net/foaf#me",
           "created":  "1957-02-27"
         }),
-        {~I<http://greggkellogg.net/foaf#me>, ~I<http://purl.org/dc/terms/created>, RDF.literal("1957-02-27", datatype: XSD.date)},
+        {~I<http://greggkellogg.net/foaf#me>, ~I<http://purl.org/dc/terms/created>,
+         RDF.literal("1957-02-27", datatype: XSD.date())}
       },
       "sub-objects with context" => {
         ~s({
@@ -428,10 +433,10 @@ defmodule JSON.LD.DecoderTest do
             "foo": "bar"
           }
         }),
-       [
+        [
           {RDF.bnode("b0"), ~I<http://example.com/foo>, RDF.bnode("b1")},
-          {RDF.bnode("b1"), ~I<http://example.org/foo>, RDF.literal("bar")},
-       ]
+          {RDF.bnode("b1"), ~I<http://example.org/foo>, RDF.literal("bar")}
+        ]
       },
       "contexts with a list processed in order" => {
         ~s({
@@ -441,7 +446,7 @@ defmodule JSON.LD.DecoderTest do
           ],
           "foo":  "bar"
         }),
-        {RDF.bnode("b0"), ~I<http://example.org/foo>, RDF.literal("bar")},
+        {RDF.bnode("b0"), ~I<http://example.org/foo>, RDF.literal("bar")}
       },
       "term definition resolves term as IRI" => {
         ~s({
@@ -451,7 +456,7 @@ defmodule JSON.LD.DecoderTest do
           ],
           "bar":  "bar"
         }),
-        {RDF.bnode("b0"), ~I<http://example.com/foo>, RDF.literal("bar")},
+        {RDF.bnode("b0"), ~I<http://example.com/foo>, RDF.literal("bar")}
       },
       "term definition resolves prefix as IRI" => {
         ~s({
@@ -461,7 +466,7 @@ defmodule JSON.LD.DecoderTest do
           ],
           "bar":  "bar"
         }),
-        {RDF.bnode("b0"), ~I<http://example.com/foo#bar>, RDF.literal("bar")},
+        {RDF.bnode("b0"), ~I<http://example.com/foo#bar>, RDF.literal("bar")}
       },
       "@language" => {
         ~s({
@@ -471,7 +476,7 @@ defmodule JSON.LD.DecoderTest do
           },
           "foo:bar":  "baz"
         }),
-        {RDF.bnode("b0"), ~I<http://example.com/foo#bar>, RDF.literal("baz", language: "en")},
+        {RDF.bnode("b0"), ~I<http://example.com/foo#bar>, RDF.literal("baz", language: "en")}
       },
       "@language with override" => {
         ~s({
@@ -481,7 +486,7 @@ defmodule JSON.LD.DecoderTest do
           },
           "foo:bar":  {"@value": "baz", "@language": "fr"}
         }),
-        {RDF.bnode("b0"), ~I<http://example.com/foo#bar>, RDF.literal("baz", language: "fr")},
+        {RDF.bnode("b0"), ~I<http://example.com/foo#bar>, RDF.literal("baz", language: "fr")}
       },
       "@language with plain" => {
         ~s({
@@ -491,15 +496,15 @@ defmodule JSON.LD.DecoderTest do
           },
           "foo:bar":  {"@value": "baz"}
         }),
-        {RDF.bnode("b0"), ~I<http://example.com/foo#bar>, RDF.literal("baz")},
-      },
+        {RDF.bnode("b0"), ~I<http://example.com/foo#bar>, RDF.literal("baz")}
+      }
     }
-    |> Enum.each(fn ({title, data}) ->
-         @tag data: data
-         test title, %{data: {input, output}} do
-           assert JSON.LD.Decoder.decode!(input) == RDF.Dataset.new(output)
-         end
-       end)
+    |> Enum.each(fn {title, data} ->
+      @tag data: data
+      test title, %{data: {input, output}} do
+        assert JSON.LD.Decoder.decode!(input) == RDF.Dataset.new(output)
+      end
+    end)
 
     %{
       "dt with term" => {
@@ -510,7 +515,7 @@ defmodule JSON.LD.DecoderTest do
           ],
           "foo": "bar"
         }),
-        {RDF.bnode("b0"), ~I<http://example.org/foo#>, RDF.literal("bar", datatype: XSD.date)},
+        {RDF.bnode("b0"), ~I<http://example.org/foo#>, RDF.literal("bar", datatype: XSD.date())}
       },
       "@id with term" => {
         ~s({
@@ -519,7 +524,7 @@ defmodule JSON.LD.DecoderTest do
           ],
           "foo": "http://example.org/foo#bar"
         }),
-        {RDF.bnode("b0"), ~I<http://example.org/foo#bar>, ~I<http://example.org/foo#bar>},
+        {RDF.bnode("b0"), ~I<http://example.org/foo#bar>, ~I<http://example.org/foo#bar>}
       },
       "coercion without term definition" => {
         ~s({
@@ -534,15 +539,16 @@ defmodule JSON.LD.DecoderTest do
           ],
           "dc:date": "2011-11-23"
         }),
-        {RDF.bnode("b0"), ~I<http://purl.org/dc/terms/date>, RDF.literal("2011-11-23", datatype: XSD.date)},
-      },
+        {RDF.bnode("b0"), ~I<http://purl.org/dc/terms/date>,
+         RDF.literal("2011-11-23", datatype: XSD.date())}
+      }
     }
-    |> Enum.each(fn ({title, data}) ->
-         @tag data: data
-         test "term def with @id + @type coercion: #{title}", %{data: {input, output}} do
-           assert JSON.LD.Decoder.decode!(input) == RDF.Dataset.new(output)
-         end
-       end)
+    |> Enum.each(fn {title, data} ->
+      @tag data: data
+      test "term def with @id + @type coercion: #{title}", %{data: {input, output}} do
+        assert JSON.LD.Decoder.decode!(input) == RDF.Dataset.new(output)
+      end
+    end)
 
     %{
       "dt with term" => {
@@ -555,8 +561,8 @@ defmodule JSON.LD.DecoderTest do
         }),
         [
           {RDF.bnode("b0"), ~I<http://example.org/foo#>, RDF.bnode("b1")},
-          {RDF.bnode("b1"), NS.RDF.first, RDF.literal("bar", datatype: XSD.date)},
-          {RDF.bnode("b1"), NS.RDF.rest, NS.RDF.nil},
+          {RDF.bnode("b1"), NS.RDF.first(), RDF.literal("bar", datatype: XSD.date())},
+          {RDF.bnode("b1"), NS.RDF.rest(), NS.RDF.nil()}
         ]
       },
       "@id with term" => {
@@ -568,17 +574,17 @@ defmodule JSON.LD.DecoderTest do
         }),
         [
           {RDF.bnode("b0"), ~I<http://example.org/foo#bar>, RDF.bnode("b1")},
-          {RDF.bnode("b1"), NS.RDF.first, ~I<http://example.org/foo#bar>},
-          {RDF.bnode("b1"), NS.RDF.rest, NS.RDF.nil},
+          {RDF.bnode("b1"), NS.RDF.first(), ~I<http://example.org/foo#bar>},
+          {RDF.bnode("b1"), NS.RDF.rest(), NS.RDF.nil()}
         ]
-      },
+      }
     }
-    |> Enum.each(fn ({title, data}) ->
-         @tag data: data
-         test "term def with @id + @type + @container list: #{title}", %{data: {input, output}} do
-           assert JSON.LD.Decoder.decode!(input) == RDF.Dataset.new(output)
-         end
-       end)
+    |> Enum.each(fn {title, data} ->
+      @tag data: data
+      test "term def with @id + @type + @container list: #{title}", %{data: {input, output}} do
+        assert JSON.LD.Decoder.decode!(input) == RDF.Dataset.new(output)
+      end
+    end)
   end
 
   describe "blank node predicates" do
@@ -587,82 +593,79 @@ defmodule JSON.LD.DecoderTest do
     end
 
     test "outputs statements with blank node predicates if :produceGeneralizedRdf is true",
-      %{input: input} do
-       dataset = JSON.LD.Decoder.decode!(input, produce_generalized_rdf: true)
-       assert RDF.Dataset.statement_count(dataset) == 1
+         %{input: input} do
+      dataset = JSON.LD.Decoder.decode!(input, produce_generalized_rdf: true)
+      assert RDF.Dataset.statement_count(dataset) == 1
     end
 
     test "rejects statements with blank node predicates if :produceGeneralizedRdf is false",
-      %{input: input} do
-       dataset = JSON.LD.Decoder.decode!(input, produce_generalized_rdf: false)
-       assert RDF.Dataset.statement_count(dataset) == 0
+         %{input: input} do
+      dataset = JSON.LD.Decoder.decode!(input, produce_generalized_rdf: false)
+      assert RDF.Dataset.statement_count(dataset) == 0
     end
   end
 
   describe "advanced features" do
     %{
-      "number syntax (decimal)" =>
-      {
+      "number syntax (decimal)" => {
         ~s({"@context": { "measure": "http://example/measure#"}, "measure:cups": 5.3}),
-        {RDF.bnode("b0"), ~I<http://example/measure#cups>, RDF.literal("5.3E0", datatype: XSD.double)}
+        {RDF.bnode("b0"), ~I<http://example/measure#cups>,
+         RDF.literal("5.3E0", datatype: XSD.double())}
       },
-      "number syntax (double)" =>
-      {
+      "number syntax (double)" => {
         ~s({"@context": { "measure": "http://example/measure#"}, "measure:cups": 5.3e0}),
-        {RDF.bnode("b0"), ~I<http://example/measure#cups>, RDF.literal("5.3E0", datatype: XSD.double)}
+        {RDF.bnode("b0"), ~I<http://example/measure#cups>,
+         RDF.literal("5.3E0", datatype: XSD.double())}
       },
-     "number syntax (integer)" =>
-     {
-       ~s({"@context": { "chem": "http://example/chem#"}, "chem:protons": 12}),
-       {RDF.bnode("b0"), ~I<http://example/chem#protons>, RDF.literal("12", datatype: XSD.integer)}
-     },
-     "boolan syntax" =>
-     {
-       ~s({"@context": { "sensor": "http://example/sensor#"}, "sensor:active": true}),
-       {RDF.bnode("b0"), ~I<http://example/sensor#active>, RDF.literal("true", datatype: XSD.boolean)}
-     },
-     "Array top element" =>
-     {
-       ~s([
+      "number syntax (integer)" => {
+        ~s({"@context": { "chem": "http://example/chem#"}, "chem:protons": 12}),
+        {RDF.bnode("b0"), ~I<http://example/chem#protons>,
+         RDF.literal("12", datatype: XSD.integer())}
+      },
+      "boolan syntax" => {
+        ~s({"@context": { "sensor": "http://example/sensor#"}, "sensor:active": true}),
+        {RDF.bnode("b0"), ~I<http://example/sensor#active>,
+         RDF.literal("true", datatype: XSD.boolean())}
+      },
+      "Array top element" => {
+        ~s([
          {"@id":   "http://example.com/#me", "@type": "http://xmlns.com/foaf/0.1/Person"},
          {"@id":   "http://example.com/#you", "@type": "http://xmlns.com/foaf/0.1/Person"}
        ]),
-       [
-         {~I<http://example.com/#me>, NS.RDF.type, ~I<http://xmlns.com/foaf/0.1/Person>},
-         {~I<http://example.com/#you>, NS.RDF.type, ~I<http://xmlns.com/foaf/0.1/Person>}
-       ]
-     },
-     "@graph with array of objects value" =>
-     {
-       ~s({
+        [
+          {~I<http://example.com/#me>, NS.RDF.type(), ~I<http://xmlns.com/foaf/0.1/Person>},
+          {~I<http://example.com/#you>, NS.RDF.type(), ~I<http://xmlns.com/foaf/0.1/Person>}
+        ]
+      },
+      "@graph with array of objects value" => {
+        ~s({
          "@context": {"foaf": "http://xmlns.com/foaf/0.1/"},
          "@graph": [
            {"@id":   "http://example.com/#me", "@type": "foaf:Person"},
            {"@id":   "http://example.com/#you", "@type": "foaf:Person"}
          ]
        }),
-       [
-         {~I<http://example.com/#me>, NS.RDF.type, ~I<http://xmlns.com/foaf/0.1/Person>},
-         {~I<http://example.com/#you>, NS.RDF.type, ~I<http://xmlns.com/foaf/0.1/Person>}
-       ]
-     },
-     "XMLLiteral" =>
-     {
-       ~s({
+        [
+          {~I<http://example.com/#me>, NS.RDF.type(), ~I<http://xmlns.com/foaf/0.1/Person>},
+          {~I<http://example.com/#you>, NS.RDF.type(), ~I<http://xmlns.com/foaf/0.1/Person>}
+        ]
+      },
+      "XMLLiteral" => {
+        ~s({
          "http://rdfs.org/sioc/ns#content": {
            "@value": "foo",
            "@type": "http://www.w3.org/1999/02/22-rdf-syntax-ns#XMLLiteral"
          }
        }),
-       {RDF.bnode("b0"), ~I<http://rdfs.org/sioc/ns#content>, RDF.literal("foo", datatype: "http://www.w3.org/1999/02/22-rdf-syntax-ns#XMLLiteral")}
-     }
+        {RDF.bnode("b0"), ~I<http://rdfs.org/sioc/ns#content>,
+         RDF.literal("foo", datatype: "http://www.w3.org/1999/02/22-rdf-syntax-ns#XMLLiteral")}
+      }
     }
-    |> Enum.each(fn ({title, data}) ->
-         @tag data: data
-         test title, %{data: {input, output}} do
-           assert JSON.LD.Decoder.decode!(input) == RDF.Dataset.new(output)
-         end
-       end)
+    |> Enum.each(fn {title, data} ->
+      @tag data: data
+      test title, %{data: {input, output}} do
+        assert JSON.LD.Decoder.decode!(input) == RDF.Dataset.new(output)
+      end
+    end)
   end
-
 end

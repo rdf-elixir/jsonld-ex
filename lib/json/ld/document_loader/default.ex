@@ -13,6 +13,6 @@ defmodule JSON.LD.DocumentLoader.Default do
   defp http_get(url) do
     HTTPoison.get(url, [accept: "application/ld+json"], follow_redirect: true)
   rescue
-    e -> {:error, "HTTPoison failed: #{inspect e}"}
+    e -> {:error, "HTTPoison failed: #{inspect(e)}"}
   end
 end

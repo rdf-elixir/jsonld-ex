@@ -7,5 +7,5 @@ defmodule JSON.LD.DocumentLoader do
 
   alias JSON.LD.DocumentLoader.RemoteDocument
 
-  @callback load(String.t, JSON.LD.Options.t) :: {:ok, RemoteDocument.t} | {:error, any}
+  @callback load(String.t(), JSON.LD.Options.t()) :: {:ok, RemoteDocument.t()} | {:error, any}
 end

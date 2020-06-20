@@ -16,7 +16,7 @@ defmodule JSON.LD.ContextTest do
 
     test "extracts @vocab" do
       assert JSON.LD.context(%{"@vocab" => "http://schema.org/"}).vocab ==
-              "http://schema.org/"
+               "http://schema.org/"
     end
 
     test "maps term with IRI value" do
@@ -32,40 +32,39 @@ defmodule JSON.LD.ContextTest do
     end
 
     test "associates @list container mapping with predicate" do
-      c = JSON.LD.context(%{"foo" =>
-                      %{"@id" => "http://example.com/", "@container" => "@list"}})
+      c = JSON.LD.context(%{"foo" => %{"@id" => "http://example.com/", "@container" => "@list"}})
       assert c.term_defs["foo"]
       assert c.term_defs["foo"].iri_mapping == "http://example.com/"
       assert c.term_defs["foo"].container_mapping == "@list"
     end
 
     test "associates @set container mapping with predicate" do
-      c = JSON.LD.context(%{"foo" =>
-                      %{"@id" => "http://example.com/", "@container" => "@set"}})
+      c = JSON.LD.context(%{"foo" => %{"@id" => "http://example.com/", "@container" => "@set"}})
       assert c.term_defs["foo"]
       assert c.term_defs["foo"].iri_mapping == "http://example.com/"
       assert c.term_defs["foo"].container_mapping == "@set"
     end
 
     test "associates @id container mapping with predicate" do
-      c = JSON.LD.context(%{"foo" =>
-                      %{"@id" => "http://example.com/", "@type" => "@id"}})
+      c = JSON.LD.context(%{"foo" => %{"@id" => "http://example.com/", "@type" => "@id"}})
       assert c.term_defs["foo"]
       assert c.term_defs["foo"].iri_mapping == "http://example.com/"
       assert c.term_defs["foo"].type_mapping == "@id"
     end
 
     test "associates type mapping with predicate" do
-      c = JSON.LD.context(%{"foo" =>
-            %{"@id" => "http://example.com/", "@type" => to_string(XSD.string)}})
+      c =
+        JSON.LD.context(%{
+          "foo" => %{"@id" => "http://example.com/", "@type" => to_string(XSD.string())}
+        })
+
       assert c.term_defs["foo"]
       assert c.term_defs["foo"].iri_mapping == "http://example.com/"
-      assert c.term_defs["foo"].type_mapping == to_string(XSD.string)
+      assert c.term_defs["foo"].type_mapping == to_string(XSD.string())
     end
 
     test "associates language mapping with predicate" do
-      c = JSON.LD.context(%{"foo" =>
-            %{"@id" => "http://example.com/", "@language" => "en"}})
+      c = JSON.LD.context(%{"foo" => %{"@id" => "http://example.com/", "@language" => "en"}})
       assert c.term_defs["foo"]
       assert c.term_defs["foo"].iri_mapping == "http://example.com/"
       assert c.term_defs["foo"].language_mapping == "en"
@@ -73,20 +72,24 @@ defmodule JSON.LD.ContextTest do
 
     test "expands chains of term definition/use with string values" do
       assert JSON.LD.context(%{
-          "foo" => "bar",
-          "bar" => "baz",
-          "baz" => "http://example.com/"
-        }) |> iri_mappings == %{
-          "foo" => "http://example.com/",
-          "bar" => "http://example.com/",
-          "baz" => "http://example.com/"
-        }
+               "foo" => "bar",
+               "bar" => "baz",
+               "baz" => "http://example.com/"
+             })
+             |> iri_mappings == %{
+               "foo" => "http://example.com/",
+               "bar" => "http://example.com/",
+               "baz" => "http://example.com/"
+             }
     end
 
     test "expands terms using @vocab" do
-      c = JSON.LD.context(%{
-            "foo" => "bar",
-            "@vocab" => "http://example.com/"})
+      c =
+        JSON.LD.context(%{
+          "foo" => "bar",
+          "@vocab" => "http://example.com/"
+        })
+
       assert c.term_defs["foo"]
       assert c.term_defs["foo"].iri_mapping == "http://example.com/bar"
     end
@@ -95,37 +98,41 @@ defmodule JSON.LD.ContextTest do
   describe "create from Array/List" do
     test "merges definitions from each context" do
       assert JSON.LD.context([
-          %{"foo" => "http://example.com/foo"},
-          %{"bar" => "foo"}
-        ]) |> iri_mappings == %{
-          "foo" => "http://example.com/foo",
-          "bar" => "http://example.com/foo"
-        }
+               %{"foo" => "http://example.com/foo"},
+               %{"bar" => "foo"}
+             ])
+             |> iri_mappings == %{
+               "foo" => "http://example.com/foo",
+               "bar" => "http://example.com/foo"
+             }
     end
   end
 
   describe "term definitions with null values" do
     test "removes @language if set to null" do
       assert JSON.LD.context([
-        %{ "@language" => "en" },
-        %{ "@language" => nil }
-      ]).default_language == nil
+               %{"@language" => "en"},
+               %{"@language" => nil}
+             ]).default_language == nil
     end
 
     test "removes @vocab if set to null" do
       assert JSON.LD.context([
-        %{ "@vocab" => "http://schema.org/" },
-        %{ "@vocab" => nil }
-      ]).vocab == nil
+               %{"@vocab" => "http://schema.org/"},
+               %{"@vocab" => nil}
+             ]).vocab == nil
     end
 
     test "removes term if set to null with @vocab" do
-      assert JSON.LD.context([%{
-          "@vocab" => "http://schema.org/",
-          "term" => nil
-        }]) |> iri_mappings == %{
-          "term" => nil
-        }
+      assert JSON.LD.context([
+               %{
+                 "@vocab" => "http://schema.org/",
+                 "term" => nil
+               }
+             ])
+             |> iri_mappings == %{
+               "term" => nil
+             }
     end
 
     test "removes a term definition" do
@@ -133,7 +140,7 @@ defmodule JSON.LD.ContextTest do
     end
 
     test "loads initial context" do
-      init_ec = JSON.LD.Context.new
+      init_ec = JSON.LD.Context.new()
       nil_ec = JSON.LD.context(nil)
       assert nil_ec.default_language == init_ec.default_language
       assert nil_ec |> coercions == init_ec |> coercions
@@ -146,87 +153,87 @@ defmodule JSON.LD.ContextTest do
   describe "errors" do
     %{
       "no @id, @type, or @container" => %{
-          input: %{"foo" => %{}},
-          exception: JSON.LD.InvalidIRIMappingError
-        },
+        input: %{"foo" => %{}},
+        exception: JSON.LD.InvalidIRIMappingError
+      },
       "value as array" => %{
-          input: %{"foo" => []},
-          exception: JSON.LD.InvalidTermDefinitionError
-        },
+        input: %{"foo" => []},
+        exception: JSON.LD.InvalidTermDefinitionError
+      },
       "@id as object" => %{
-          input: %{"foo" => %{"@id" => %{}}},
-          exception: JSON.LD.InvalidIRIMappingError
-        },
+        input: %{"foo" => %{"@id" => %{}}},
+        exception: JSON.LD.InvalidIRIMappingError
+      },
       "@id as array of object" => %{
-          input: %{"foo" => %{"@id" => [{}]}},
-          exception: JSON.LD.InvalidIRIMappingError
-        },
+        input: %{"foo" => %{"@id" => [{}]}},
+        exception: JSON.LD.InvalidIRIMappingError
+      },
       "@id as array of null" => %{
-          input: %{"foo" => %{"@id" => [nil]}},
-          exception: JSON.LD.InvalidIRIMappingError
-        },
+        input: %{"foo" => %{"@id" => [nil]}},
+        exception: JSON.LD.InvalidIRIMappingError
+      },
       "@type as object" => %{
-          input: %{"foo" => %{"@type" => %{}}},
-          exception: JSON.LD.InvalidTypeMappingError
-        },
+        input: %{"foo" => %{"@type" => %{}}},
+        exception: JSON.LD.InvalidTypeMappingError
+      },
       "@type as array" => %{
-          input: %{"foo" => %{"@type" => []}},
-          exception: JSON.LD.InvalidTypeMappingError
-        },
+        input: %{"foo" => %{"@type" => []}},
+        exception: JSON.LD.InvalidTypeMappingError
+      },
       "@type as @list" => %{
-          input: %{"foo" => %{"@type" => "@list"}},
-          exception: JSON.LD.InvalidTypeMappingError
-        },
+        input: %{"foo" => %{"@type" => "@list"}},
+        exception: JSON.LD.InvalidTypeMappingError
+      },
       "@type as @set" => %{
-          input: %{"foo" => %{"@type" => "@set"}},
-          exception: JSON.LD.InvalidTypeMappingError
-        },
+        input: %{"foo" => %{"@type" => "@set"}},
+        exception: JSON.LD.InvalidTypeMappingError
+      },
       "@container as object" => %{
-          input: %{"foo" => %{"@container" => %{}}},
-          exception: JSON.LD.InvalidIRIMappingError
-        },
+        input: %{"foo" => %{"@container" => %{}}},
+        exception: JSON.LD.InvalidIRIMappingError
+      },
       "@container as array" => %{
-          input: %{"foo" => %{"@container" => []}},
-          exception: JSON.LD.InvalidIRIMappingError
-        },
+        input: %{"foo" => %{"@container" => []}},
+        exception: JSON.LD.InvalidIRIMappingError
+      },
       "@container as string" => %{
-          input: %{"foo" => %{"@container" => "true"}},
-          exception: JSON.LD.InvalidIRIMappingError
-        },
+        input: %{"foo" => %{"@container" => "true"}},
+        exception: JSON.LD.InvalidIRIMappingError
+      },
       "@language as @id" => %{
-          input: %{"@language" => %{"@id" => "http://example.com/"}},
-          exception: JSON.LD.InvalidDefaultLanguageError
-        },
+        input: %{"@language" => %{"@id" => "http://example.com/"}},
+        exception: JSON.LD.InvalidDefaultLanguageError
+      },
       "@vocab as @id" => %{
-          input: %{"@vocab" => %{"@id" => "http://example.com/"}},
-          exception: JSON.LD.InvalidVocabMappingError
-        },
+        input: %{"@vocab" => %{"@id" => "http://example.com/"}},
+        exception: JSON.LD.InvalidVocabMappingError
+      }
     }
-    |> Enum.each(fn ({title, data}) ->
-         @tag data: data
-         test title, %{data: data} do
-           assert_raise data.exception, fn ->
-             JSON.LD.context(data.input)
-           end
-         end
-       end)
+    |> Enum.each(fn {title, data} ->
+      @tag data: data
+      test title, %{data: data} do
+        assert_raise data.exception, fn ->
+          JSON.LD.context(data.input)
+        end
+      end
+    end)
 
-    (JSON.LD.keywords -- ~w[@base @language @vocab])
+    (JSON.LD.keywords() -- ~w[@base @language @vocab])
     |> Enum.each(fn keyword ->
-         @tag keyword: keyword
-         test "does not redefine #{keyword} as a string", %{keyword: keyword} do
-           assert_raise JSON.LD.KeywordRedefinitionError, fn ->
-             JSON.LD.context(%{"@context" => %{keyword => "http://example.com/"}})
-           end
-         end
+      @tag keyword: keyword
+      test "does not redefine #{keyword} as a string", %{keyword: keyword} do
+        assert_raise JSON.LD.KeywordRedefinitionError, fn ->
+          JSON.LD.context(%{"@context" => %{keyword => "http://example.com/"}})
+        end
+      end
 
-         @tag keyword: keyword
-         test "does not redefine #{keyword} with an @id", %{keyword: keyword} do
-           assert_raise JSON.LD.KeywordRedefinitionError, fn ->
-             JSON.LD.context(%{"@context" => %{keyword => %{"@id" => "http://example.com/"}}})
-           end
-         end
-       end)
+      @tag keyword: keyword
+      test "does not redefine #{keyword} with an @id", %{keyword: keyword} do
+        assert_raise JSON.LD.KeywordRedefinitionError, fn ->
+          JSON.LD.context(%{"@context" => %{keyword => %{"@id" => "http://example.com/"}}})
+        end
+      end
+    end)
   end
 
   # TODO: "Furthermore, the term must not be an empty string ("") as not all programming languages are able to handle empty JSON keys." -- https://www.w3.org/TR/json-ld/#terms
@@ -237,29 +244,27 @@ defmodule JSON.LD.ContextTest do
   @tag :skip
   test "warn on terms starting with a @"
 
-
   def iri_mappings(%JSON.LD.Context{term_defs: term_defs}) do
-    Enum.reduce term_defs, %{}, fn ({term, term_def}, iri_mappings) ->
-      Map.put iri_mappings, term, (term_def && term_def.iri_mapping) || nil
-    end
+    Enum.reduce(term_defs, %{}, fn {term, term_def}, iri_mappings ->
+      Map.put(iri_mappings, term, (term_def && term_def.iri_mapping) || nil)
+    end)
   end
 
   def languages(%JSON.LD.Context{term_defs: term_defs}) do
-    Enum.reduce term_defs, %{}, fn ({term, term_def}, language_mappings) ->
-      Map.put language_mappings, term, term_def.language_mapping
-    end
+    Enum.reduce(term_defs, %{}, fn {term, term_def}, language_mappings ->
+      Map.put(language_mappings, term, term_def.language_mapping)
+    end)
   end
 
   def coercions(%JSON.LD.Context{term_defs: term_defs}) do
-    Enum.reduce term_defs, %{}, fn ({term, term_def}, type_mappings) ->
-      Map.put type_mappings, term, term_def.type_mapping
-    end
+    Enum.reduce(term_defs, %{}, fn {term, term_def}, type_mappings ->
+      Map.put(type_mappings, term, term_def.type_mapping)
+    end)
   end
 
   def containers(%JSON.LD.Context{term_defs: term_defs}) do
-    Enum.reduce term_defs, %{}, fn ({term, term_def}, type_mappings) ->
-      Map.put type_mappings, term, term_def.container_mapping
-    end
+    Enum.reduce(term_defs, %{}, fn {term, term_def}, type_mappings ->
+      Map.put(type_mappings, term, term_def.container_mapping)
+    end)
   end
-
 end

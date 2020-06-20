@@ -1,15 +1,14 @@
 defmodule JSON.LD do
-
   use RDF.Serialization.Format
 
   import RDF.Sigils
 
-  @id         ~I<http://www.w3.org/ns/formats/JSON-LD>
-  @name       :jsonld
-  @extension  "jsonld"
+  @id ~I<http://www.w3.org/ns/formats/JSON-LD>
+  @name :jsonld
+  @extension "jsonld"
   @media_type "application/ld+json"
 
-  def options, do: JSON.LD.Options.new
+  def options, do: JSON.LD.Options.new()
 
   @keywords ~w[
     @base
@@ -42,7 +41,6 @@ defmodule JSON.LD do
   def keyword?(value) when is_binary(value) and value in @keywords, do: true
   def keyword?(_value), do: false
 
-
   @doc """
   Expands the given input according to the steps in the JSON-LD Expansion Algorithm.
 
@@ -56,7 +54,6 @@ defmodule JSON.LD do
   """
   defdelegate expand(input, options \\ %JSON.LD.Options{}),
     to: JSON.LD.Expansion
-
 
   @doc """
   Compacts the given input according to the steps in the JSON-LD Compaction Algorithm.
@@ -74,7 +71,6 @@ defmodule JSON.LD do
   defdelegate compact(input, context, options \\ %JSON.LD.Options{}),
     to: JSON.LD.Compaction
 
-
   @doc """
   Flattens the given input according to the steps in the JSON-LD Flattening Algorithm.
 
@@ -90,7 +86,6 @@ defmodule JSON.LD do
   defdelegate flatten(input, context \\ nil, options \\ %JSON.LD.Options{}),
     to: JSON.LD.Flattening
 
-
   @doc """
   Generator function for `JSON.LD.Context`s.
 
@@ -105,11 +100,9 @@ defmodule JSON.LD do
   def context(context, options),
     do: JSON.LD.Context.create(%{"@context" => context}, options)
 
-
   @doc """
   Generator function for JSON-LD node maps.
   """
   def node_map(input, node_id_map \\ nil),
     do: JSON.LD.Flattening.node_map(input, node_id_map)
-
 end

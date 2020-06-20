@@ -17,5 +17,4 @@ defmodule JSON.LD.UtilsTest do
       assert compact_iri_parts("_:bar") == nil
     end
   end
-
 end
