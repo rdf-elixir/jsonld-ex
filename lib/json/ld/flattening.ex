@@ -2,61 +2,65 @@ defmodule JSON.LD.Flattening do
   @moduledoc nil
 
   import JSON.LD.{NodeIdentifierMap, Utils}
-  alias JSON.LD.NodeIdentifierMap
 
-  def flatten(input, context \\ nil, options \\ %JSON.LD.Options{}) do
-    with options = JSON.LD.Options.new(options),
-         expanded = JSON.LD.expand(input, options),
-         node_map = node_map(expanded) do
-      default_graph =
-        Enum.reduce(node_map, node_map["@default"], fn
-          {"@default", _}, default_graph ->
-            default_graph
+  alias JSON.LD.{NodeIdentifierMap, Options}
 
-          {graph_name, graph}, default_graph ->
-            entry =
-              if Map.has_key?(default_graph, graph_name) do
-                default_graph[graph_name]
-              else
-                %{"@id" => graph_name}
-              end
+  @dialyzer {:nowarn_function, flatten: 3}
+  @spec flatten(map | [map], map | nil, Options.t() | Enum.t()) :: [map]
+  def flatten(input, context \\ nil, options \\ %Options{}) do
+    options = Options.new(options)
+    expanded = JSON.LD.expand(input, options)
+    node_map = node_map(expanded)
 
-            graph_entry =
-              graph
-              |> Stream.reject(fn {_, node} ->
-                Map.has_key?(node, "@id") and map_size(node) == 1
-              end)
-              |> Enum.sort_by(fn {id, _} -> id end)
-              # TODO: Spec fixme: Spec doesn't handle the case, when a "@graph" member already exists
-              |> Enum.reduce(Map.get(entry, "@graph", []), fn {_, node}, graph_entry ->
-                [node | graph_entry]
-              end)
-              |> Enum.reverse()
+    default_graph =
+      Enum.reduce(node_map, node_map["@default"], fn
+        {"@default", _}, default_graph ->
+          default_graph
 
-            Map.put(default_graph, graph_name, Map.put(entry, "@graph", graph_entry))
-        end)
+        {graph_name, graph}, default_graph ->
+          entry =
+            if Map.has_key?(default_graph, graph_name) do
+              default_graph[graph_name]
+            else
+              %{"@id" => graph_name}
+            end
 
-      flattened =
-        default_graph
-        |> Enum.sort_by(fn {id, _} -> id end)
-        |> Enum.reduce([], fn {_, node}, flattened ->
-          if not (Enum.count(node) == 1 and Map.has_key?(node, "@id")) do
-            [node | flattened]
-          else
-            flattened
-          end
-        end)
-        |> Enum.reverse()
+          graph_entry =
+            graph
+            |> Stream.reject(fn {_, node} ->
+              Map.has_key?(node, "@id") and map_size(node) == 1
+            end)
+            |> Enum.sort_by(fn {id, _} -> id end)
+            # TODO: Spec fixme: Spec doesn't handle the case, when a "@graph" member already exists
+            |> Enum.reduce(Map.get(entry, "@graph", []), fn {_, node}, graph_entry ->
+              [node | graph_entry]
+            end)
+            |> Enum.reverse()
 
-      # TODO: Spec fixme: !Enum.empty?(flattened) is not in the spec, but in other implementations (Ruby, Java, Go, ...)
-      if context && !Enum.empty?(flattened) do
-        JSON.LD.compact(flattened, context, options)
-      else
-        flattened
-      end
+          Map.put(default_graph, graph_name, Map.put(entry, "@graph", graph_entry))
+      end)
+
+    flattened =
+      default_graph
+      |> Enum.sort_by(fn {id, _} -> id end)
+      |> Enum.reduce([], fn {_, node}, flattened ->
+        if not (Enum.count(node) == 1 and Map.has_key?(node, "@id")) do
+          [node | flattened]
+        else
+          flattened
+        end
+      end)
+      |> Enum.reverse()
+
+    # TODO: Spec fixme: !Enum.empty?(flattened) is not in the spec, but in other implementations (Ruby, Java, Go, ...)
+    if context && !Enum.empty?(flattened) do
+      JSON.LD.compact(flattened, context, options)
+    else
+      flattened
     end
   end
 
+  @spec node_map([map], pid | nil) :: map
   def node_map(input, node_id_map \\ nil)
 
   def node_map(input, nil) do
@@ -78,6 +82,15 @@ defmodule JSON.LD.Flattening do
 
   Details at <https://www.w3.org/TR/json-ld-api/#node-map-generation>
   """
+  @spec generate_node_map(
+          [map] | map,
+          map,
+          pid,
+          String.t(),
+          String.t() | nil,
+          String.t() | nil,
+          pid | nil
+        ) :: map
   def generate_node_map(
         element,
         node_map,
@@ -154,13 +167,8 @@ defmodule JSON.LD.Flattening do
         if is_nil(list) do
           if node do
             update_in(node_map, [active_graph, active_subject, active_property], fn
-              nil ->
-                [element]
-
-              items ->
-                unless element in items,
-                  do: items ++ [element],
-                  else: items
+              nil -> [element]
+              items -> unless element in items, do: items ++ [element], else: items
             end)
           else
             node_map
@@ -208,11 +216,7 @@ defmodule JSON.LD.Flattening do
 
         id =
           if id do
-            if blank_node_id?(id) do
-              generate_blank_node_id(node_id_map, id)
-            else
-              id
-            end
+            if blank_node_id?(id), do: generate_blank_node_id(node_id_map, id), else: id
 
             # 6.2)
           else
@@ -241,9 +245,7 @@ defmodule JSON.LD.Flattening do
                   [active_subject]
 
                 items ->
-                  unless active_subject in items,
-                    do: items ++ [active_subject],
-                    else: items
+                  unless active_subject in items, do: items ++ [active_subject], else: items
               end)
             else
               node_map
@@ -260,9 +262,7 @@ defmodule JSON.LD.Flattening do
                     [reference]
 
                   items ->
-                    unless reference in items,
-                      do: items ++ [reference],
-                      else: items
+                    unless reference in items, do: items ++ [reference], else: items
                 end)
 
                 # 6.6.3) TODO: Spec fixme: specs says to add ELEMENT to @list member, should be REFERENCE
@@ -281,13 +281,8 @@ defmodule JSON.LD.Flattening do
             node_map =
               Enum.reduce(element["@type"], node_map, fn type, node_map ->
                 update_in(node_map, [active_graph, id, "@type"], fn
-                  nil ->
-                    [type]
-
-                  items ->
-                    unless type in items,
-                      do: items ++ [type],
-                      else: items
+                  nil -> [type]
+                  items -> unless type in items, do: items ++ [type], else: items
                 end)
               end)
 
@@ -366,9 +361,7 @@ defmodule JSON.LD.Flattening do
 
           node_map =
             unless Map.has_key?(node_map[active_graph][id], property) do
-              update_in(node_map, [active_graph, id], fn node ->
-                Map.put(node, property, [])
-              end)
+              update_in(node_map, [active_graph, id], fn node -> Map.put(node, property, []) end)
             else
               node_map
             end
@@ -378,6 +371,7 @@ defmodule JSON.LD.Flattening do
     end
   end
 
+  @spec deep_compare(map | [map], map | [map]) :: boolean
   defp deep_compare(v1, v2) when is_map(v1) and is_map(v2) do
     Enum.count(v1) == Enum.count(v2) &&
       Enum.all?(v1, fn {k, v} ->
@@ -392,18 +386,22 @@ defmodule JSON.LD.Flattening do
   defp deep_compare(v, v), do: true
   defp deep_compare(_, _), do: false
 
+  @spec new_list :: Agent.on_start()
   defp new_list do
     Agent.start_link(fn -> %{"@list" => []} end)
   end
 
+  @spec terminate_list(pid) :: :ok
   defp terminate_list(pid) do
-    Agent.stop(pid)
+    :ok = Agent.stop(pid)
   end
 
+  @spec get_list(pid) :: map
   defp get_list(pid) do
     Agent.get(pid, fn list_node -> list_node end)
   end
 
+  @spec append_to_list(pid, map) :: :ok
   defp append_to_list(pid, element) do
     Agent.update(pid, fn list_node ->
       Map.update(list_node, "@list", [element], fn list -> list ++ [element] end)

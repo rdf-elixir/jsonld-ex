@@ -1,48 +1,64 @@
 defmodule JSON.LD.Context do
+  import JSON.LD.{IRIExpansion, Utils}
+
+  alias JSON.LD.Context.TermDefinition
+  alias JSON.LD.Options
+
+  alias RDF.IRI
+
+  @type local :: map | String.t() | nil
+  @type remote :: [map]
+  @type value :: map | String.t() | nil
+
+  @type t :: %__MODULE__{
+          term_defs: map,
+          default_language: String.t() | nil,
+          vocab: nil,
+          base_iri: String.t() | boolean | nil,
+          api_base_iri: String.t() | nil
+        }
+
   defstruct term_defs: %{},
             default_language: nil,
             vocab: nil,
             base_iri: false,
             api_base_iri: nil
 
-  import JSON.LD.IRIExpansion
-  import JSON.LD.Utils
-
-  alias JSON.LD.Context.TermDefinition
-  alias RDF.IRI
-
-  def base(%JSON.LD.Context{base_iri: false, api_base_iri: api_base_iri}),
+  @spec base(t) :: String.t() | nil
+  def base(%__MODULE__{base_iri: false, api_base_iri: api_base_iri}),
     do: api_base_iri
 
-  def base(%JSON.LD.Context{base_iri: base_iri}),
+  def base(%__MODULE__{base_iri: base_iri}),
     do: base_iri
 
-  def new(options \\ %JSON.LD.Options{}),
-    do: %JSON.LD.Context{api_base_iri: JSON.LD.Options.new(options).base}
+  @spec new(Options.t()) :: t
+  def new(options \\ %Options{}),
+    do: %__MODULE__{api_base_iri: Options.new(options).base}
 
+  @spec create(map, Options.t()) :: t
   def create(%{"@context" => json_ld_context}, options),
-    do: new(options) |> update(json_ld_context, [], options)
+    do: options |> new() |> update(json_ld_context, [], options)
 
-  def update(active, local, remote \\ [], options \\ %JSON.LD.Options{})
+  @spec update(t, [local] | local, remote, Options.t()) :: t
+  def update(active, local, remote \\ [], options \\ %Options{})
 
-  def update(%JSON.LD.Context{} = active, local, remote, options) when is_list(local) do
+  def update(%__MODULE__{} = active, local, remote, options) when is_list(local) do
     Enum.reduce(local, active, fn local, result ->
       do_update(result, local, remote, options)
     end)
   end
 
   # 2) If local context is not an array, set it to an array containing only local context.
-  def update(%JSON.LD.Context{} = active, local, remote, options) do
-    update(active, [local], remote, options)
-  end
+  def update(%__MODULE__{} = active, local, remote, options),
+    do: update(active, [local], remote, options)
 
   # 3.1) If context is null, set result to a newly-initialized active context and continue with the next context. The base IRI of the active context is set to the IRI of the currently being processed document (which might be different from the currently being processed context), if available; otherwise to null. If set, the base option of a JSON-LD API Implementation overrides the base IRI.
-  defp do_update(%JSON.LD.Context{}, nil, _remote, options) do
-    new(options)
-  end
+  @spec do_update(t, local, remote, Options.t()) :: t
+  defp do_update(%__MODULE__{}, nil, _remote, options),
+    do: new(options)
 
   # 3.2) If context is a string, [it's interpreted as a remote context]
-  defp do_update(%JSON.LD.Context{} = active, local, remote, options) when is_binary(local) do
+  defp do_update(%__MODULE__{} = active, local, remote, options) when is_binary(local) do
     # 3.2.1)
     local = absolute_iri(local, base(active))
 
@@ -97,7 +113,7 @@ defmodule JSON.LD.Context do
   end
 
   # 3.4) - 3.8)
-  defp do_update(%JSON.LD.Context{} = active, local, remote, _) when is_map(local) do
+  defp do_update(%__MODULE__{} = active, local, remote, _) when is_map(local) do
     with {base, local} <- Map.pop(local, "@base", false),
          {vocab, local} <- Map.pop(local, "@vocab", false),
          {language, local} <- Map.pop(local, "@language", false) do
@@ -110,12 +126,12 @@ defmodule JSON.LD.Context do
   end
 
   # 3.3) If context is not a JSON object, an invalid local context error has been detected and processing is aborted.
-  defp do_update(_, local, _, _),
-    do:
-      raise(JSON.LD.InvalidLocalContextError,
-        message: "#{inspect(local)} is not a valid @context value"
-      )
+  defp do_update(_, local, _, _) do
+    raise JSON.LD.InvalidLocalContextError,
+      message: "#{inspect(local)} is not a valid @context value"
+  end
 
+  @spec set_base(t, boolean, remote) :: t
   defp set_base(active, false, _),
     do: active
 
@@ -126,10 +142,10 @@ defmodule JSON.LD.Context do
     cond do
       # TODO: this slightly differs from the spec, due to our false special value for base_iri; add more tests
       is_nil(base) or IRI.absolute?(base) ->
-        %JSON.LD.Context{active | base_iri: base}
+        %__MODULE__{active | base_iri: base}
 
       active.base_iri ->
-        %JSON.LD.Context{active | base_iri: absolute_iri(base, active.base_iri)}
+        %__MODULE__{active | base_iri: absolute_iri(base, active.base_iri)}
 
       true ->
         raise JSON.LD.InvalidBaseIRIError,
@@ -137,31 +153,33 @@ defmodule JSON.LD.Context do
     end
   end
 
+  @spec set_vocab(t, boolean | nil) :: t
   defp set_vocab(active, false), do: active
 
   defp set_vocab(active, vocab) do
     if is_nil(vocab) or IRI.absolute?(vocab) or blank_node_id?(vocab) do
-      %JSON.LD.Context{active | vocab: vocab}
+      %__MODULE__{active | vocab: vocab}
     else
       raise JSON.LD.InvalidVocabMappingError,
         message: "#{inspect(vocab)} is not a valid vocabulary mapping"
     end
   end
 
+  @spec set_language(t, boolean | nil) :: t
   defp set_language(active, false), do: active
 
   defp set_language(active, nil),
-    do: %JSON.LD.Context{active | default_language: nil}
+    do: %__MODULE__{active | default_language: nil}
 
   defp set_language(active, language) when is_binary(language),
-    do: %JSON.LD.Context{active | default_language: String.downcase(language)}
+    do: %__MODULE__{active | default_language: String.downcase(language)}
 
-  defp set_language(_, language),
-    do:
-      raise(JSON.LD.InvalidDefaultLanguageError,
-        message: "#{inspect(language)} is not a valid language"
-      )
+  defp set_language(_, language) do
+    raise JSON.LD.InvalidDefaultLanguageError,
+      message: "#{inspect(language)} is not a valid language"
+  end
 
+  @spec language(t, String.t()) :: String.t() | nil
   def language(active, term) do
     case Map.get(active.term_defs, term, %TermDefinition{}).language_mapping do
       false -> active.default_language
@@ -169,6 +187,7 @@ defmodule JSON.LD.Context do
     end
   end
 
+  @spec create_term_definitions(t, map, map) :: t
   defp create_term_definitions(active, local, defined \\ %{}) do
     {active, _} =
       Enum.reduce(local, {active, defined}, fn {term, value}, {active, defined} ->
@@ -183,6 +202,7 @@ defmodule JSON.LD.Context do
 
   see <https://www.w3.org/TR/json-ld-api/#create-term-definition>
   """
+  @spec create_term_definition(t, map, String.t(), value, map) :: {t, map}
   def create_term_definition(active, local, term, value, defined)
 
   def create_term_definition(active, _, "@base", _, defined), do: {active, defined}
@@ -191,11 +211,10 @@ defmodule JSON.LD.Context do
 
   def create_term_definition(active, local, term, value, defined) do
     # 3)
-    if term in JSON.LD.keywords(),
-      do:
-        raise(JSON.LD.KeywordRedefinitionError,
-          message: "#{inspect(term)} is a keyword and can not be defined in context"
-        )
+    if term in JSON.LD.keywords() do
+      raise JSON.LD.KeywordRedefinitionError,
+        message: "#{inspect(term)} is a keyword and can not be defined in context"
+    end
 
     # 1)
     case defined[term] do
@@ -207,23 +226,18 @@ defmodule JSON.LD.Context do
         raise JSON.LD.CyclicIRIMappingError
 
       nil ->
-        do_create_term_definition(
-          active,
-          local,
-          term,
-          value,
-          # 2)
-          Map.put(defined, term, false)
-        )
+        # 2)
+        do_create_term_definition(active, local, term, value, Map.put(defined, term, false))
     end
   end
 
+  @spec do_create_term_definition(t, map, String.t(), value, map) :: {t, map}
   defp do_create_term_definition(active, _local, term, nil, defined) do
     {
-      #      (if Map.has_key?(active.term_defs, term),
-      #        do: put_in(active, [:term_defs, term], nil),
-      #        else: raise "NotImplemented"),
-      %JSON.LD.Context{active | term_defs: Map.put(active.term_defs, term, nil)},
+      # (if Map.has_key?(active.term_defs, term),
+      #   do: put_in(active, [:term_defs, term], nil),
+      #   else: raise "NotImplemented"),
+      %__MODULE__{active | term_defs: Map.put(active.term_defs, term, nil)},
       Map.put(defined, term, true)
     }
   end
@@ -251,29 +265,31 @@ defmodule JSON.LD.Context do
 
         definition = do_create_container_definition(definition, value)
         definition = do_create_language_definition(definition, value)
+
         {definition, active, defined}
       else
         {definition, active, defined}
       end
 
     # 18 / 11.6) Set the term definition of term in active context to definition and set the value associated with defined's key term to true.
-    {%JSON.LD.Context{active | term_defs: Map.put(active.term_defs, term, definition)},
-     Map.put(defined, term, true)}
+    {
+      %__MODULE__{active | term_defs: Map.put(active.term_defs, term, definition)},
+      Map.put(defined, term, true)
+    }
   end
 
-  defp do_create_term_definition(_, _, _, value, _),
-    do:
-      raise(JSON.LD.InvalidTermDefinitionError,
-        message: "#{inspect(value)} is not a valid term definition"
-      )
+  defp do_create_term_definition(_, _, _, value, _) do
+    raise JSON.LD.InvalidTermDefinitionError,
+      message: "#{inspect(value)} is not a valid term definition"
+  end
 
   # 10.1)
   # TODO: RDF.rb implementation says: "SPEC FIXME: @type may be nil"
-  defp do_create_type_definition(_, _, _, %{"@type" => type}, _) when not is_binary(type),
-    do:
-      raise(JSON.LD.InvalidTypeMappingError,
-        message: "#{inspect(type)} is not a valid type mapping"
-      )
+  @spec do_create_type_definition(TermDefinition.t(), map, map, value, map) ::
+          {TermDefinition.t(), t, map}
+  defp do_create_type_definition(_, _, _, %{"@type" => type}, _) when not is_binary(type) do
+    raise JSON.LD.InvalidTypeMappingError, message: "#{inspect(type)} is not a valid type mapping"
+  end
 
   # 10.2) and 10.3)
   defp do_create_type_definition(definition, active, local, %{"@type" => type}, defined) do
@@ -290,6 +306,8 @@ defmodule JSON.LD.Context do
   defp do_create_type_definition(definition, active, _, _, defined),
     do: {definition, active, defined}
 
+  @spec do_create_reverse_definition(TermDefinition.t(), t, map, value, map) ::
+          {boolean, TermDefinition.t(), t, map}
   # 11) If value contains the key @reverse
   defp do_create_reverse_definition(
          definition,
@@ -346,6 +364,8 @@ defmodule JSON.LD.Context do
     do: {false, definition, active, defined}
 
   # 13)
+  @spec do_create_id_definition(TermDefinition.t(), t, map, String.t(), map, map) ::
+          {TermDefinition.t(), t, map}
   defp do_create_id_definition(definition, active, local, term, %{"@id" => id}, defined)
        when id != term do
     # 13.1)
@@ -355,12 +375,9 @@ defmodule JSON.LD.Context do
 
       cond do
         expanded_id == "@context" ->
-          raise JSON.LD.InvalidKeywordAliasError,
-            message: "cannot alias @context"
+          raise JSON.LD.InvalidKeywordAliasError, message: "cannot alias @context"
 
-        JSON.LD.keyword?(expanded_id) or
-          IRI.absolute?(expanded_id) or
-            blank_node_id?(expanded_id) ->
+        JSON.LD.keyword?(expanded_id) or IRI.absolute?(expanded_id) or blank_node_id?(expanded_id) ->
           {%TermDefinition{definition | iri_mapping: expanded_id}, active, defined}
 
         true ->
@@ -376,8 +393,7 @@ defmodule JSON.LD.Context do
 
   defp do_create_id_definition(definition, active, local, term, _, defined) do
     # 14)
-    # TODO: The W3C spec seems to contain an error by requiring only to check for a collon.
-    #  What's when an absolute IRI is given and an "http" term is defined in the context?
+    # TODO: The W3C spec seems to contain an error by requiring only to check for a collon. What's when an absolute IRI is given and an "http" term is defined in the context?
     if String.contains?(term, ":") do
       case compact_iri_parts(term) do
         [prefix, suffix] ->
@@ -414,13 +430,13 @@ defmodule JSON.LD.Context do
   end
 
   # 16.1)
+  @spec do_create_container_definition(TermDefinition.t(), map) :: TermDefinition.t()
   defp do_create_container_definition(_, %{"@container" => container})
-       when container not in ~w[@list @set @index @language],
-       do:
-         raise(JSON.LD.InvalidContainerMappingError,
-           message:
-             "#{inspect(container)} is not a valid container mapping; @container must be either @list, @set, @index, or @language"
-         )
+       when container not in ~w[@list @set @index @language] do
+    raise JSON.LD.InvalidContainerMappingError,
+      message:
+        "#{inspect(container)} is not a valid container mapping; @container must be either @list, @set, @index, or @language"
+  end
 
   # 16.2)
   defp do_create_container_definition(definition, %{"@container" => container}),
@@ -430,6 +446,7 @@ defmodule JSON.LD.Context do
     do: definition
 
   # 17)
+  @spec do_create_language_definition(TermDefinition.t(), map) :: TermDefinition.t()
   defp do_create_language_definition(definition, %{"@language" => language} = value) do
     unless Map.has_key?(value, "@type") do
       case language do
@@ -454,7 +471,8 @@ defmodule JSON.LD.Context do
 
   Details at <https://www.w3.org/TR/json-ld-api/#inverse-context-creation>
   """
-  def inverse(%JSON.LD.Context{} = context) do
+  @spec inverse(t) :: map
+  def inverse(%__MODULE__{} = context) do
     # 2) Initialize default language to @none. If the active context has a default language, set default language to it.
     default_language = context.default_language || "@none"
 
@@ -466,6 +484,7 @@ defmodule JSON.LD.Context do
       if term_def do
         # 3.2) Initialize container to @none. If there is a container mapping in term definition, set container to its associated value.
         container = term_def.container_mapping || "@none"
+
         # 3.3) Initialize iri to the value of the IRI mapping for the term definition.
         iri = term_def.iri_mapping
 
@@ -479,13 +498,11 @@ defmodule JSON.LD.Context do
               {Map.put_new(type_map, "@reverse", term), language_map}
 
             # 3.9) Otherwise, if term definition has a type mapping
-            %TermDefinition{type_mapping: type_mapping}
-            when type_mapping != false ->
+            %TermDefinition{type_mapping: type_mapping} when type_mapping != false ->
               {Map.put_new(type_map, type_mapping, term), language_map}
 
             # 3.10) Otherwise, if term definition has a language mapping (might be null)
-            %TermDefinition{language_mapping: language_mapping}
-            when language_mapping != false ->
+            %TermDefinition{language_mapping: language_mapping} when language_mapping != false ->
               language = language_mapping || "@null"
               {type_map, Map.put_new(language_map, language, term)}
 
@@ -500,10 +517,7 @@ defmodule JSON.LD.Context do
         result
         |> Map.put_new(iri, %{})
         |> Map.update(iri, %{}, fn container_map ->
-          Map.put(container_map, container, %{
-            "@type" => type_map,
-            "@language" => language_map
-          })
+          Map.put(container_map, container, %{"@type" => type_map, "@language" => language_map})
         end)
       else
         result
@@ -511,12 +525,8 @@ defmodule JSON.LD.Context do
     end)
   end
 
-  def empty?(%JSON.LD.Context{
-        term_defs: term_defs,
-        vocab: nil,
-        base_iri: false,
-        default_language: nil
-      })
+  @spec empty?(t) :: boolean
+  def empty?(%__MODULE__{term_defs: term_defs, vocab: nil, base_iri: false, default_language: nil})
       when map_size(term_defs) == 0,
       do: true
 

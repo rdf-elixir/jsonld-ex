@@ -1,12 +1,16 @@
 defmodule JSON.LD.IRIExpansion do
   import JSON.LD.Utils
 
+  alias JSON.LD.Context
+
   # to allow this to be used in function guard clauses, we redefine this here
   @keywords JSON.LD.keywords()
 
   @doc """
   see http://json-ld.org/spec/latest/json-ld-api/#iri-expansion
   """
+  @spec expand_iri(String.t(), Context.t(), boolean, boolean, map | nil, map | nil) ::
+          {String.t(), Context.t(), map} | String.t()
   def expand_iri(
         value,
         active_context,
@@ -32,7 +36,7 @@ defmodule JSON.LD.IRIExpansion do
       if local_context && local_context[value] && defined[value] != true do
         local_def = local_context[value]
 
-        JSON.LD.Context.create_term_definition(
+        Context.create_term_definition(
           active_context,
           local_context,
           value,
@@ -59,7 +63,7 @@ defmodule JSON.LD.IRIExpansion do
                 if local_context && local_context[prefix] && defined[prefix] != true do
                   local_def = local_context[prefix]
 
-                  JSON.LD.Context.create_term_definition(
+                  Context.create_term_definition(
                     active_context,
                     local_context,
                     prefix,
@@ -93,12 +97,12 @@ defmodule JSON.LD.IRIExpansion do
 
         # 6) Otherwise, if document relative is true, set value to the result of resolving value against the base IRI. Only the basic algorithm in section 5.2 of [RFC3986] is used; neither Syntax-Based Normalization nor Scheme-Based Normalization are performed. Characters additionally allowed in IRI references are treated in the same way that unreserved characters are treated in URI references, per section 6.5 of [RFC3987].
         doc_relative ->
-          {absolute_iri(value, JSON.LD.Context.base(active_context)), active_context, defined}
+          {absolute_iri(value, Context.base(active_context)), active_context, defined}
 
         # TODO: RDF.rb's implementation differs from the spec here, by checking if base_iri is actually present in the previous clause and adding the following additional clause. Another Spec error?
-        #      if local_context && RDF::URI(value).relative?
-        #        # If local context is not null and value is not an absolute IRI, an invalid IRI mapping error has been detected and processing is aborted.
-        #        raise JSON.LD.InvalidIRIMappingError, message: "not an absolute IRI: #{value}"
+        #   if local_context && RDF::URI(value).relative?
+        #     # If local context is not null and value is not an absolute IRI, an invalid IRI mapping error has been detected and processing is aborted.
+        #     raise JSON.LD.InvalidIRIMappingError, message: "not an absolute IRI: #{value}"
         # 7) Return value as is.
         true ->
           {value, active_context, defined}
