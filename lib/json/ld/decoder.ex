@@ -12,8 +12,9 @@ defmodule JSON.LD.Decoder do
   @impl RDF.Serialization.Decoder
   @spec decode(String.t(), keyword) :: {:ok, Dataset.t() | Graph.t()} | {:error, any}
   def decode(content, opts \\ []) do
-    with {:ok, json_ld_object} <- parse_json(content),
-         dataset <- to_rdf(json_ld_object, opts) do
+    with {:ok, json_ld_object} <- parse_json(content) do
+      dataset = to_rdf(json_ld_object, opts)
+
       {:ok, dataset}
     end
   end
