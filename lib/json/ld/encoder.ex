@@ -182,8 +182,7 @@ defmodule JSON.LD.Encoder do
     |> update_node_usages
   end
 
-  # This function is necessary because we have no references and must update the
-  # node member of the usage maps with later enhanced usages
+  # This function is necessary because we have no references and must update the node member of the usage maps with later enhanced usages
   @spec update_node_usages(map) :: map
   defp update_node_usages(node_map) do
     Enum.reduce(node_map, node_map, fn
@@ -201,8 +200,7 @@ defmodule JSON.LD.Encoder do
     end)
   end
 
-  # This function is necessary because we have no references and use this
-  # instead to update the head by path
+  # This function is necessary because we have no references and use this instead to update the head by path
   @spec update_head(map, [String.t()], map, map) :: map
   defp update_head(graph_object, path, old, new) do
     update_in(graph_object, path, fn objects ->

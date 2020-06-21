@@ -1,8 +1,6 @@
 defmodule JSON.LD.DocumentLoader.Default do
   @behaviour JSON.LD.DocumentLoader
 
-  alias HTTPoison.{AsyncResponse, Response}
-
   alias JSON.LD.DocumentLoader.RemoteDocument
   alias JSON.LD.Options
 
@@ -14,7 +12,8 @@ defmodule JSON.LD.DocumentLoader.Default do
     end
   end
 
-  @spec http_get(String.t()) :: {:ok, Response.t() | AsyncResponse.t()} | {:error, any}
+  @spec http_get(String.t()) ::
+          {:ok, HTTPoison.Response.t() | HTTPoison.AsyncResponse.t()} | {:error, any}
   defp http_get(url) do
     HTTPoison.get(url, [accept: "application/ld+json"], follow_redirect: true)
   rescue

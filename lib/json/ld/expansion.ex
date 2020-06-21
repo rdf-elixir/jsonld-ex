@@ -175,14 +175,11 @@ defmodule JSON.LD.Expansion do
                     else
                       value = do_expand(active_context, active_property, value, options)
 
-                      # Spec FIXME: need to be sure that result is a list
-                      # [from RDF.rb implementation]
+                      # Spec FIXME: need to be sure that result is a list [from RDF.rb implementation]
                       value = if is_list(value), do: value, else: [value]
 
-                      # If expanded value is a list object, a list of lists error
-                      # has been detected and processing is aborted.
-                      # Spec FIXME: Also look at each object if result is a list
-                      # [from RDF.rb implementation]
+                      # If expanded value is a list object, a list of lists error has been detected and processing is aborted.
+                      # Spec FIXME: Also look at each object if result is a list [from RDF.rb implementation]
                       if Enum.any?(value, fn v -> Map.has_key?(v, "@list") end) do
                         raise JSON.LD.ListOfListsError,
                           message: "List of lists in #{inspect(value)}"
@@ -205,9 +202,7 @@ defmodule JSON.LD.Expansion do
                     # 7.4.11.1)
                     expanded_value = do_expand(active_context, "@reverse", value, options)
 
-                    # 7.4.11.2) If expanded value contains an @reverse member,
-                    # i.e., properties that are reversed twice, execute for each of its
-                    # property and item the following steps:
+                    # 7.4.11.2) If expanded value contains an @reverse member, i.e., properties that are reversed twice, execute for each of its property and item the following steps:
                     new_result =
                       if Map.has_key?(expanded_value, "@reverse") do
                         Enum.reduce(
@@ -269,9 +264,7 @@ defmodule JSON.LD.Expansion do
 
               expanded_value =
                 cond do
-                  # 7.5) Otherwise, if key's container mapping in active context is
-                  # @language and value is a JSON object then value is expanded from
-                  # a language map as follows:
+                  # 7.5) Otherwise, if key's container mapping in active context is @language and value is a JSON object then value is expanded from a language map as follows:
                   is_map(value) && term_def && term_def.container_mapping == "@language" ->
                     value
                     |> Enum.sort_by(fn {language, _} -> language end)
@@ -325,8 +318,7 @@ defmodule JSON.LD.Expansion do
                     expanded_value
                   end
 
-                # 7.10) Otherwise, if the term definition associated to key indicates that
-                # it is a reverse property
+                # 7.10) Otherwise, if the term definition associated to key indicates that it is a reverse property
                 # Spec FIXME: this is not an otherwise [from RDF.rb implementation]
                 # 7.11)
                 if term_def && term_def.reverse_property do
@@ -420,8 +412,7 @@ defmodule JSON.LD.Expansion do
         else: result
 
     # 12) If active property is null or @graph, drop free-floating values as follows:
-    # Spec FIXME: Due to case 10) we might land with a list here; other implementations
-    # deal with that, by just returning in step 10)
+    # Spec FIXME: Due to case 10) we might land with a list here; other implementations deal with that, by just returning in step 10)
     result =
       if is_map(result) and active_property in [nil, "@graph"] and
            (Enum.empty?(result) or

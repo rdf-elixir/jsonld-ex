@@ -30,8 +30,7 @@ defmodule JSON.LD.Flattening do
               Map.has_key?(node, "@id") and map_size(node) == 1
             end)
             |> Enum.sort_by(fn {id, _} -> id end)
-            # TODO: Spec fixme: Spec doesn't handle the case, when a "@graph" member
-            # already exists
+            # TODO: Spec fixme: Spec doesn't handle the case, when a "@graph" member already exists
             |> Enum.reduce(Map.get(entry, "@graph", []), fn {_, node}, graph_entry ->
               [node | graph_entry]
             end)
@@ -52,8 +51,7 @@ defmodule JSON.LD.Flattening do
       end)
       |> Enum.reverse()
 
-    # TODO: Spec fixme: !Enum.empty?(flattened) is not in the spec, but in other
-    # implementations (Ruby, Java, Go, ...)
+    # TODO: Spec fixme: !Enum.empty?(flattened) is not in the spec, but in other implementations (Ruby, Java, Go, ...)
     if context && !Enum.empty?(flattened) do
       JSON.LD.compact(flattened, context, options)
     else
@@ -234,9 +232,7 @@ defmodule JSON.LD.Flattening do
             node_map
           end
 
-        # 6.4) TODO: Spec fixme: "this line is asked for by the spec, but it breaks
-        # various tests" (according to Java and Go implementation, which perform this
-        # step before 6.7) instead)
+        # 6.4) TODO: Spec fixme: "this line is asked for by the spec, but it breaks various tests" (according to Java and Go implementation, which perform this step before 6.7) instead)
         node = node_map[active_graph][id]
 
         # 6.5)
@@ -268,8 +264,7 @@ defmodule JSON.LD.Flattening do
                     unless reference in items, do: items ++ [reference], else: items
                 end)
 
-                # 6.6.3) TODO: Spec fixme: specs says to add ELEMENT to @list member,
-                # should be REFERENCE
+                # 6.6.3) TODO: Spec fixme: specs says to add ELEMENT to @list member, should be REFERENCE
               else
                 append_to_list(list, reference)
                 node_map

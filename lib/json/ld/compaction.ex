@@ -18,8 +18,7 @@ defmodule JSON.LD.Compaction do
           %{}
 
         result when is_list(result) ->
-          # TODO: Spec fixme? We're setting vocab to true, as other implementations
-          # do it, but this is not mentioned in the spec
+          # TODO: Spec fixme? We're setting vocab to true, as other implementations do it, but this is not mentioned in the spec
           %{compact_iri("@graph", active_context, inverse_context, nil, true) => result}
 
         result ->
@@ -40,8 +39,7 @@ defmodule JSON.LD.Compaction do
          compact_arrays \\ true
        )
 
-  # 1) If element is a scalar, it is already in its most compact form, so simply
-  # return element.
+  # 1) If element is a scalar, it is already in its most compact form, so simply return element.
   defp do_compact(element, _, _, _, _)
        when is_binary(element) or is_number(element) or is_boolean(element),
        do: element
@@ -58,9 +56,10 @@ defmodule JSON.LD.Compaction do
       end)
       |> Enum.reverse()
 
-    term_def = active_context.term_defs[active_property]
-
-    if compact_arrays and length(result) == 1 and is_nil(term_def && term_def.container_mapping) do
+    if compact_arrays and length(result) == 1 and
+         is_nil(
+           (term_def = active_context.term_defs[active_property]) && term_def.container_mapping
+         ) do
       List.first(result)
     else
       result
@@ -264,8 +263,7 @@ defmodule JSON.LD.Compaction do
                 unless container == "@list" do
                   # 7.6.4.2.1)
                   compacted_item = %{
-                    # TODO: Spec fixme? We're setting vocab to true, as other
-                    # implementations do it, but this is not mentioned in the spec
+                    # TODO: Spec fixme? We're setting vocab to true, as other implementations do it, but this is not mentioned in the spec
                     compact_iri("@list", active_context, inverse_context, nil, true) =>
                       compacted_item
                   }
@@ -274,8 +272,7 @@ defmodule JSON.LD.Compaction do
                   if Map.has_key?(expanded_item, "@index") do
                     Map.put(
                       compacted_item,
-                      # TODO: Spec fixme? We're setting vocab to true, as other
-                      # implementations do it, but this is not mentioned in the spec
+                      # TODO: Spec fixme? We're setting vocab to true, as other implementations do it, but this is not mentioned in the spec
                       compact_iri("@index", active_context, inverse_context, nil, true),
                       expanded_item["@index"]
                     )
@@ -366,47 +363,35 @@ defmodule JSON.LD.Compaction do
     # 2) If vocab is true and iri is a key in inverse context:
     term =
       if vocab && Map.has_key?(inverse_context, iri) do
-        # 2.1) Initialize default language to active context's default language, if it has
-        # one, otherwise to @none.
+        # 2.1) Initialize default language to active context's default language, if it has one, otherwise to @none.
         # TODO: Spec fixme: This step is effectively useless; see Spec fixme on step 2.6.3
         # default_language = active_context.default_language || "@none"
-        # 2.3) Initialize type/language to @language, and type/language value to @null.
-        # These two variables will keep track of the preferred type mapping or language
-        # mapping for a term, based on what is compatible with value.
+        # 2.3) Initialize type/language to @language, and type/language value to @null. These two variables will keep track of the preferred type mapping or language mapping for a term, based on what is compatible with value.
         type_language = "@language"
         type_language_value = "@null"
 
-        # 2.2) Initialize containers to an empty array. This array will be used to keep
-        # track of an ordered list of preferred container mappings for a term, based on
-        # what is compatible with value.
-        # 2.4) If value is a JSON object that contains the key @index, then append the
-        # value @index to containers.
+        # 2.2) Initialize containers to an empty array. This array will be used to keep track of an ordered list of preferred container mappings for a term, based on what is compatible with value.
+        # 2.4) If value is a JSON object that contains the key @index, then append the value @index to containers.
         containers = if index?(value), do: ["@index"], else: []
 
         {containers, type_language, type_language_value} =
           cond do
-            # 2.5) If reverse is true, set type/language to @type, type/language value to
-            # @reverse, and append @set to containers.
+            # 2.5) If reverse is true, set type/language to @type, type/language value to @reverse, and append @set to containers.
             reverse ->
               containers = containers ++ ["@set"]
               type_language = "@type"
               type_language_value = "@reverse"
               {containers, type_language, type_language_value}
 
-            # 2.6) Otherwise, if value is a list object, then set type/language and
-            # type/language value to the most specific values that work for all items
-            # in the list as follows:
+            # 2.6) Otherwise, if value is a list object, then set type/language and type/language value to the most specific values that work for all items in the list as follows:
             list?(value) ->
               # 2.6.1) If @index is a not key in value, then append @list to containers.
               containers = if not index?(value), do: containers ++ ["@list"], else: containers
               # 2.6.2) Initialize list to the array associated with the key @list in value.
               list = value["@list"]
 
-              # 2.6.3) Initialize common type and common language to null. If list is
-              # empty, set common language to default language.
-              # TODO: Spec fixme: Setting common language to default language is
-              # effectively useless, since the only place it is used is the follow loop
-              # in 2.6.4, which is immediately left when the list is empty
+              # 2.6.3) Initialize common type and common language to null. If list is empty, set common language to default language.
+              # TODO: Spec fixme: Setting common language to default language is effectively useless, since the only place it is used is the follow loop in 2.6.4, which is immediately left when the list is empty
               {common_type, common_language} = {nil, nil}
 
               {type_language, type_language_value} =
@@ -425,13 +410,11 @@ defmodule JSON.LD.Compaction do
                         {item_type, item_language} =
                           if Map.has_key?(item, "@value") do
                             cond do
-                              # 2.6.4.2.1) If item contains the key @language, then set
-                              # item language to its associated value.
+                              # 2.6.4.2.1) If item contains the key @language, then set item language to its associated value.
                               Map.has_key?(item, "@language") ->
                                 {item_type, item["@language"]}
 
-                              # 2.6.4.2.2) Otherwise, if item contains the key @type, set
-                              # item type to its associated value.
+                              # 2.6.4.2.2) Otherwise, if item contains the key @type, set item type to its associated value.
                               Map.has_key?(item, "@type") ->
                                 {item["@type"], item_language}
 
@@ -451,9 +434,7 @@ defmodule JSON.LD.Compaction do
                             is_nil(common_language) ->
                               item_language
 
-                            # 2.6.4.5) Otherwise, if item language does not equal common
-                            # language and item contains the key @value, then set common
-                            # language to @none because list items have conflicting languages.
+                            # 2.6.4.5) Otherwise, if item language does not equal common language and item contains the key @value, then set common language to @none because list items have conflicting languages.
                             item_language != common_language and Map.has_key?(item, "@value") ->
                               "@none"
 
@@ -467,9 +448,7 @@ defmodule JSON.LD.Compaction do
                             is_nil(common_type) ->
                               item_type
 
-                            # 2.6.4.7) Otherwise, if item type does not equal common type,
-                            # then set common type to @none because list items have
-                            # conflicting types.
+                            # 2.6.4.7) Otherwise, if item type does not equal common type, then set common type to @none because list items have conflicting types.
                             item_type != common_type ->
                               "@none"
 
@@ -477,10 +456,7 @@ defmodule JSON.LD.Compaction do
                               common_type
                           end
 
-                        # 2.6.4.8) If common language is @none and common type is @none,
-                        # then stop processing items in the list because it has been
-                        # detected that there is no common language or type amongst the
-                        # items.
+                        # 2.6.4.8) If common language is @none and common type is @none, then stop processing items in the list because it has been detected that there is no common language or type amongst the items.
                         if common_language == "@none" and common_type == "@none" do
                           {:halt, {common_type, common_language}}
                         else
@@ -494,8 +470,7 @@ defmodule JSON.LD.Compaction do
                   # 2.6.6) If common type is null, set it to @none.
                   common_type = if is_nil(common_type), do: "@none", else: common_type
 
-                  # 2.6.7) If common type is not @none then set type/language to @type and
-                  # type/language value to common type.
+                  # 2.6.7) If common type is not @none then set type/language to @type and type/language value to common type.
                   if common_type != "@none" do
                     type_language = "@type"
                     type_language_value = common_type
@@ -514,17 +489,13 @@ defmodule JSON.LD.Compaction do
               # 2.7.1) If value is a value object:
               {containers, type_language, type_language_value} =
                 if is_map(value) and Map.has_key?(value, "@value") do
-                  # 2.7.1.1) If value contains the key @language and does not contain the
-                  # key @index, then set type/language value to its associated value and
-                  # append @language to containers.
+                  # 2.7.1.1) If value contains the key @language and does not contain the key @index, then set type/language value to its associated value and append @language to containers.
                   if Map.has_key?(value, "@language") and not Map.has_key?(value, "@index") do
                     type_language_value = value["@language"]
                     containers = containers ++ ["@language"]
                     {containers, type_language, type_language_value}
                   else
-                    # 2.7.1.2) Otherwise, if value contains the key @type, then set
-                    # type/language value to its associated value and set type/language to
-                    # @type.
+                    # 2.7.1.2) Otherwise, if value contains the key @type, then set type/language value to its associated value and set type/language to @type.
                     if Map.has_key?(value, "@type") do
                       type_language_value = value["@type"]
                       type_language = "@type"
@@ -534,8 +505,7 @@ defmodule JSON.LD.Compaction do
                     end
                   end
 
-                  # 2.7.2) Otherwise, set type/language to @type and set type/language
-                  # value to @id.
+                  # 2.7.2) Otherwise, set type/language to @type and set type/language value to @id.
                 else
                   type_language = "@type"
                   type_language_value = "@id"
@@ -547,18 +517,14 @@ defmodule JSON.LD.Compaction do
               {containers, type_language, type_language_value}
           end
 
-        # 2.8) Append @none to containers. This represents the non-existence of a container
-        # mapping, and it will be the last container mapping value to be checked as it is
-        # the most generic.
+        # 2.8) Append @none to containers. This represents the non-existence of a container mapping, and it will be the last container mapping value to be checked as it is the most generic.
         containers = containers ++ ["@none"]
 
-        # 2.9) If type/language value is null, set it to @null. This is the key under
-        # which null values are stored in the inverse context entry.
+        # 2.9) If type/language value is null, set it to @null. This is the key under which null values are stored in the inverse context entry.
         type_language_value =
           if is_nil(type_language_value), do: "@null", else: type_language_value
 
-        # 2.10) Initialize preferred values to an empty array. This array will indicate,
-        # in order, the preferred values for a term's type mapping or language mapping.
+        # 2.10) Initialize preferred values to an empty array. This array will indicate, in order, the preferred values for a term's type mapping or language mapping.
         preferred_values = []
         # 2.11) If type/language value is @reverse, append @reverse to preferred values.
         preferred_values =
@@ -570,12 +536,7 @@ defmodule JSON.LD.Compaction do
         preferred_values =
           if type_language_value in ~w[@id @reverse] and is_map(value) and
                Map.has_key?(value, "@id") do
-            # 2.12.1) If the result of using the IRI compaction algorithm, passing active
-            # context, inverse context, the value associated with the @id key in value for
-            # iri, true for vocab, and true for document relative has a term definition in
-            # the active context with an IRI mapping that equals the value associated with
-            # the @id key in value, then append @vocab, @id, and @none, in that order, to
-            # preferred values.
+            # 2.12.1) If the result of using the IRI compaction algorithm, passing active context, inverse context, the value associated with the @id key in value for iri, true for vocab, and true for document relative has a term definition in the active context with an IRI mapping that equals the value associated with the @id key in value, then append @vocab, @id, and @none, in that order, to preferred values.
             # TODO: Spec fixme? document_relative is not a specified parameter of compact_iri
             compact_id = compact_iri(value["@id"], active_context, inverse_context, nil, true)
             term_def = active_context.term_defs[compact_id]
@@ -583,20 +544,17 @@ defmodule JSON.LD.Compaction do
             if term_def && term_def.iri_mapping == value["@id"] do
               preferred_values ++ ~w[@vocab @id @none]
 
-              # 2.12.2) Otherwise, append @id, @vocab, and @none, in that order, to
-              # preferred values.
+              # 2.12.2) Otherwise, append @id, @vocab, and @none, in that order, to preferred values.
             else
               preferred_values ++ ~w[@id @vocab @none]
             end
 
-            # 2.13) Otherwise, append type/language value and @none, in that order, to
-            # preferred values.
+            # 2.13) Otherwise, append type/language value and @none, in that order, to preferred values.
           else
             preferred_values ++ [type_language_value, "@none"]
           end
 
-        # 2.14) Initialize term to the result of the Term Selection algorithm, passing
-        # inverse context, iri, containers, type/language, and preferred values.
+        # 2.14) Initialize term to the result of the Term Selection algorithm, passing inverse context, iri, containers, type/language, and preferred values.
         select_term(inverse_context, iri, containers, type_language, preferred_values)
       end
 
@@ -605,11 +563,8 @@ defmodule JSON.LD.Compaction do
       not is_nil(term) ->
         term
 
-      # 3) At this point, there is no simple term that iri can be compacted to. If vocab
-      # is true and active context has a vocabulary mapping:
-      # 3.1) If iri begins with the vocabulary mapping's value but is longer, then
-      # initialize suffix to the substring of iri that does not match. If suffix does not
-      # have a term definition in active context, then return suffix.
+      # 3) At this point, there is no simple term that iri can be compacted to. If vocab is true and active context has a vocabulary mapping:
+      # 3.1) If iri begins with the vocabulary mapping's value but is longer, then initialize suffix to the substring of iri that does not match. If suffix does not have a term definition in active context, then return suffix.
       vocab && active_context.vocab && String.starts_with?(iri, active_context.vocab) ->
         suffix = String.replace_prefix(iri, active_context.vocab, "")
 
@@ -625,41 +580,29 @@ defmodule JSON.LD.Compaction do
   end
 
   defp create_compact_iri(iri, active_context, value, vocab) do
-    # 4) The iri could not be compacted using the active context's vocabulary mapping.
-    # Try to create a compact IRI, starting by initializing compact IRI to null. This
-    # variable will be used to tore the created compact IRI, if any.
+    # 4) The iri could not be compacted using the active context's vocabulary mapping. Try to create a compact IRI, starting by initializing compact IRI to null. This variable will be used to tore the created compact IRI, if any.
     # 5) For each key term and value term definition in the active context:
     compact_iri =
       Enum.reduce(active_context.term_defs, nil, fn {term, term_def}, compact_iri ->
         cond do
-          # 5.1) If the term contains a colon (:), then continue to the next term because
-          # terms with colons can't be used as prefixes.
+          # 5.1) If the term contains a colon (:), then continue to the next term because terms with colons can't be used as prefixes.
           String.contains?(term, ":") ->
             compact_iri
 
-          # 5.2) If the term definition is null, its IRI mapping equals iri, or its IRI
-          # mapping is not a substring at the beginning of iri, the term cannot be used
-          # as a prefix because it is not a partial match with iri. Continue with the next
-          # term.
+          # 5.2) If the term definition is null, its IRI mapping equals iri, or its IRI mapping is not a substring at the beginning of iri, the term cannot be used as a prefix because it is not a partial match with iri. Continue with the next term.
           is_nil(term_def) || term_def.iri_mapping == iri ||
               not String.starts_with?(iri, term_def.iri_mapping) ->
             compact_iri
 
           true ->
-            # 5.3) Initialize candidate by concatenating term, a colon (:), and the
-            # substring of iri that follows after the value of the term definition's IRI
-            # mapping.
+            # 5.3) Initialize candidate by concatenating term, a colon (:), and the substring of iri that follows after the value of the term definition's IRI mapping.
             candidate =
               term <>
                 ":" <> (String.split_at(iri, String.length(term_def.iri_mapping)) |> elem(1))
 
-            # 5.4) If either compact IRI is null or candidate is shorter or the same length
-            # but lexicographically less than compact IRI and candidate does not have a
-            # term definition in active context or if the term definition has an IRI mapping
-            # that equals iri and value is null, set compact IRI to candidate.
+            # 5.4) If either compact IRI is null or candidate is shorter or the same length but lexicographically less than compact IRI and candidate does not have a term definition in active context or if the term definition has an IRI mapping that equals iri and value is null, set compact IRI to candidate.
             # TODO: Spec fixme: The specified expression is pretty ambiguous without brackets ...
-            # TODO: Spec fixme: "if the term definition has an IRI mapping that equals iri"
-            # is already catched in 5.2, so will never happen here ...
+            # TODO: Spec fixme: "if the term definition has an IRI mapping that equals iri" is already catched in 5.2, so will never happen here ...
             if (is_nil(compact_iri) or shortest_or_least?(candidate, compact_iri)) and
                  (is_nil(active_context.term_defs[candidate]) or
                     (active_context.term_defs[candidate].iri_mapping == iri and is_nil(value))) do
@@ -748,8 +691,7 @@ defmodule JSON.LD.Compaction do
     # 1) Initialize number members to the number of members value contains.
     number_members = Enum.count(value)
 
-    # 2) If value has an @index member and the container mapping associated to active
-    # property is set to @index, decrease number members by 1.
+    # 2) If value has an @index member and the container mapping associated to active property is set to @index, decrease number members by 1.
     number_members =
       if term_def != nil and Map.has_key?(value, "@index") and
            term_def.container_mapping == "@index",
@@ -767,17 +709,11 @@ defmodule JSON.LD.Compaction do
         # 4) If value has an @id member
         id = Map.get(value, "@id") ->
           cond do
-            # 4.1) If number members is 1 and the type mapping of active property
-            # is set to @id, return the result of using the IRI compaction algorithm,
-            # passing active context, inverse context, and the value of the @id member
-            # for iri.
+            # 4.1) If number members is 1 and the type mapping of active property is set to @id, return the result of using the IRI compaction algorithm, passing active context, inverse context, and the value of the @id member for iri.
             number_members == 1 and type_mapping == "@id" ->
               compact_iri(id, active_context, inverse_context)
 
-            # 4.2) Otherwise, if number members is 1 and the type mapping of active
-            # property is set to @vocab, return the result of using the IRI compaction
-            # algorithm, passing active context, inverse context, the value of the @id
-            # member for iri, and true for vocab.
+            # 4.2) Otherwise, if number members is 1 and the type mapping of active property is set to @vocab, return the result of using the IRI compaction algorithm, passing active context, inverse context, the value of the @id member for iri, and true for vocab.
             number_members == 1 and type_mapping == "@vocab" ->
               compact_iri(id, active_context, inverse_context, nil, true)
 
@@ -786,24 +722,18 @@ defmodule JSON.LD.Compaction do
               value
           end
 
-        # 5) Otherwise, if value has an @type member whose value matches the type mapping
-        # of active property, return the value associated with the @value member of value.
+        # 5) Otherwise, if value has an @type member whose value matches the type mapping of active property, return the value associated with the @value member of value.
         (type = Map.get(value, "@type")) && type == type_mapping ->
           value["@value"]
 
-        # 6) Otherwise, if value has an @language member whose value matches the language
-        # mapping of active property, return the value associated with the @value member
-        # of value.
+        # 6) Otherwise, if value has an @language member whose value matches the language mapping of active property, return the value associated with the @value member of value.
         # TODO: Spec fixme: doesn't specify to check default language as well
         (language = Map.get(value, "@language")) &&
             language in [language_mapping, active_context.default_language] ->
           value["@value"]
 
         true ->
-          # 7) Otherwise, if number members equals 1 and either the value of the @value
-          # member is not a string, or the active context has no default language, or
-          # the language mapping of active property is set to null,, return the value
-          # associated with the @value member.
+          # 7) Otherwise, if number members equals 1 and either the value of the @value member is not a string, or the active context has no default language, or the language mapping of active property is set to null,, return the value associated with the @value member.
           value_value = value["@value"]
           # TODO: Spec fixme: doesn't specify to check default language as well
           if number_members == 1 and
