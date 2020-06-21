@@ -1,3 +1,4 @@
+0. Raise an issue to talk about your contribution upfront (<https://github.com/rdf-elixir/jsonld-ex/issues/new>)
 1. Fork it (<https://github.com/rdf-elixir/jsonld-ex/fork>)
 2. Create your feature branch (`git checkout -b my-new-feature`)
 3. Make your changes, with new passing tests. Follow this [style guide].
