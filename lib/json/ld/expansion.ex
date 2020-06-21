@@ -65,6 +65,7 @@ defmodule JSON.LD.Expansion do
   end
 
   # 4) - 13)
+  @dialyzer {:nowarn_function, do_expand: 4}
   defp do_expand(active_context, active_property, element, options)
        when is_map(element) do
     # 5)
@@ -85,7 +86,7 @@ defmodule JSON.LD.Expansion do
           expanded_property = expand_iri(key, active_context, false, true)
           # 7.2)
           # 7.3)
-          if is_binary(expanded_property) &&
+          if expanded_property &&
                (String.contains?(expanded_property, ":") || JSON.LD.keyword?(expanded_property)) do
             # 7.4)
             # expanded_property is not a keyword

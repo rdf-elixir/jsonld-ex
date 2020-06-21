@@ -19,6 +19,7 @@ defmodule JSON.LD.Decoder do
     end
   end
 
+  @dialyzer {:nowarn_function, to_rdf: 2}
   @spec to_rdf(map, Options.t() | Enum.t()) :: Dataset.t() | Graph.t()
   def to_rdf(element, options \\ %Options{}) do
     {:ok, node_id_map} = NodeIdentifierMap.start_link()

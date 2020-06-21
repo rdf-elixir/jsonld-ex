@@ -5,6 +5,7 @@ defmodule JSON.LD.Flattening do
 
   alias JSON.LD.{NodeIdentifierMap, Options}
 
+  @dialyzer {:nowarn_function, flatten: 3}
   @spec flatten(map | [map], map | nil, Options.t() | Enum.t()) :: [map]
   def flatten(input, context \\ nil, options \\ %Options{}) do
     options = Options.new(options)
