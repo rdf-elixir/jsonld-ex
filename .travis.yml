@@ -22,3 +22,7 @@ matrix:
 sudo: false
 script:
   - MIX_ENV=test mix coveralls.travis
+  - mix dialyzer
+cache:
+  directories:
+    - priv/plts

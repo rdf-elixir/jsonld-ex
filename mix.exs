@@ -28,6 +28,9 @@ defmodule JSON.LD.Mixfile do
         extras: ["README.md"]
       ],
 
+      # Dialyzer
+      dialyzer: dialyzer(),
+
       # ExCoveralls
       test_coverage: [tool: ExCoveralls],
       preferred_cli_env: [
@@ -69,6 +72,12 @@ defmodule JSON.LD.Mixfile do
       # in order to run under OTP 21 we need to keep this dependency of bypass on 1.0
       {:plug_cowboy, "~> 1.0", only: :test},
       {:excoveralls, "~> 0.13", only: :test}
+    ]
+  end
+
+  defp dialyzer do
+    [
+      plt_file: {:no_warn, "priv/plts/dialyzer.plt"}
     ]
   end
 
