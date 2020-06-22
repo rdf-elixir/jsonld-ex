@@ -5,6 +5,16 @@ This project adheres to [Semantic Versioning](http://semver.org/) and
 [Keep a CHANGELOG](http://keepachangelog.com).
 
 
+## Unreleased
+
+### Added
+
+- proper typespecs so that Dialyzer passes without warnings ([@rustra](https://github.com/rustra))
+
+[Compare v0.3.2...HEAD](https://github.com/rdf-elixir/jsonld-ex/compare/v0.3.2...HEAD)
+
+
+
 ## 0.3.2 - 2020-06-19
 
 ### Added
