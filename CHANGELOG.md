@@ -5,13 +5,15 @@ This project adheres to [Semantic Versioning](http://semver.org/) and
 [Keep a CHANGELOG](http://keepachangelog.com).
 
 
-## Unreleased
+## 0.3.3 - 2020-10-13
 
+This version mainly upgrades to RDF.ex 0.9.
+ 
 ### Added
 
 - proper typespecs so that Dialyzer passes without warnings ([@rustra](https://github.com/rustra))
 
-[Compare v0.3.2...HEAD](https://github.com/rdf-elixir/jsonld-ex/compare/v0.3.2...HEAD)
+[Compare v0.3.2...v0.3.3](https://github.com/rdf-elixir/jsonld-ex/compare/v0.3.2...v0.3.3)
 
 
 
