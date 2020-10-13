@@ -45,9 +45,7 @@ defmodule JSON.LD.Decoder do
                     property == "@type" ->
                       Graph.add(
                         rdf_graph,
-                        node_to_rdf(subject),
-                        NS.RDF.type(),
-                        Enum.map(values, &node_to_rdf/1)
+                        {node_to_rdf(subject), NS.RDF.type(), Enum.map(values, &node_to_rdf/1)}
                       )
 
                     JSON.LD.keyword?(property) ->
@@ -91,7 +89,7 @@ defmodule JSON.LD.Decoder do
             dataset
           else
             graph_name = if graph_name == "@default", do: nil, else: graph_name
-            Dataset.add(dataset, rdf_graph, graph_name)
+            Dataset.add(dataset, rdf_graph, graph: graph_name)
           end
         else
           dataset

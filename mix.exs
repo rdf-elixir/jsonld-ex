@@ -63,7 +63,7 @@ defmodule JSON.LD.Mixfile do
 
   defp deps do
     [
-      {:rdf, "~> 0.8"},
+      {:rdf, "~> 0.9"},
       {:jason, "~> 1.2"},
       {:httpoison, "~> 1.7"},
       {:dialyxir, "~> 1.0", only: :dev, runtime: false},

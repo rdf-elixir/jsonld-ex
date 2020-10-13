@@ -22,8 +22,19 @@ defmodule JSON.LD.EncoderTest do
   def gets_serialized_to(input, output, opts \\ []) do
     data_structs = Keyword.get(opts, :data_structs, [Dataset, Graph])
 
-    Enum.each(data_structs, fn data_struct ->
-      assert JSON.LD.Encoder.from_rdf!(data_struct.new(input), opts) == output
+    Enum.each(data_structs, fn
+      RDF.Description ->
+        subject =
+          case input do
+            {subject, _, _} -> subject
+            [{subject, _, _} | _] -> subject
+          end
+
+        assert JSON.LD.Encoder.from_rdf!(RDF.Description.new(subject, init: input), opts) ==
+                 output
+
+      data_struct ->
+        assert JSON.LD.Encoder.from_rdf!(data_struct.new(input), opts) == output
     end)
   end
 
