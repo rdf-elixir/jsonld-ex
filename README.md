@@ -2,7 +2,7 @@
 
 # JSON-LD.ex
 
-[![Travis](https://img.shields.io/travis/rdf-elixir/jsonld-ex.svg?style=flat-square)](https://travis-ci.org/rdf-elixir/jsonld-ex)
+[![CI](https://github.com/rdf-elixir/jsonld-ex/workflows/CI/badge.svg?branch=master)](https://github.com/rdf-elixir/jsonld-ex/actions?query=branch%3Amaster+workflow%3ACI)
 [![Hex.pm](https://img.shields.io/hexpm/v/json_ld.svg?style=flat-square)](https://hex.pm/packages/json_ld)
 [![Coverage Status](https://coveralls.io/repos/github/rdf-elixir/jsonld-ex/badge.svg?branch=master)](https://coveralls.io/github/rdf-elixir/jsonld-ex?branch=master)
 
