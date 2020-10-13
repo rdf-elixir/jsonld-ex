@@ -67,7 +67,7 @@ defmodule JSON.LD.Mixfile do
       {:jason, "~> 1.2"},
       {:httpoison, "~> 1.7"},
       {:dialyxir, "~> 1.0", only: :dev, runtime: false},
-      {:ex_doc, "~> 0.22", only: :dev, runtime: false},
+      {:ex_doc, "~> 0.23", only: :dev, runtime: false},
       {:bypass, "~> 1.0", only: :test},
       # in order to run under OTP 21 we need to keep this dependency of bypass on 1.0
       {:plug_cowboy, "~> 1.0", only: :test},
