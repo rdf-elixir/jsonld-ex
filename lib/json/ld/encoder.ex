@@ -28,21 +28,23 @@ defmodule JSON.LD.Encoder do
   @rdf_list to_string(RDF.uri(RDF.NS.RDF.List))
 
   @impl RDF.Serialization.Encoder
-  @spec encode(input, Options.t() | Enum.t()) :: {:ok, String.t()} | {:error, any}
+  @spec encode(RDF.Data.t(), Options.t() | Enum.t()) :: {:ok, String.t()} | {:error, any}
   def encode(data, opts \\ []) do
     with {:ok, json_ld_object} <- from_rdf(data, opts) do
       encode_json(json_ld_object, opts)
     end
   end
 
-  @spec encode!(input, Options.t() | Enum.t()) :: String.t()
+  @impl RDF.Serialization.Encoder
+  @spec encode!(RDF.Data.t(), Options.t() | Enum.t()) :: String.t()
+  @dialyzer {:nowarn_function, encode!: 1}
   def encode!(data, opts \\ []) do
     data
     |> from_rdf!(opts)
     |> encode_json!(opts)
   end
 
-  @spec from_rdf(input, Options.t() | Enum.t()) :: {:ok, [map]} | {:error, any}
+  @spec from_rdf(RDF.Data.t(), Options.t() | Enum.t()) :: {:ok, [map]} | {:error, any}
   def from_rdf(dataset, options \\ %Options{}) do
     {:ok, from_rdf!(dataset, options)}
   rescue
@@ -50,7 +52,7 @@ defmodule JSON.LD.Encoder do
       {:error, Exception.message(exception)}
   end
 
-  @spec from_rdf!(input, Options.t() | Enum.t()) :: [map]
+  @spec from_rdf!(RDF.Data.t(), Options.t() | Enum.t()) :: [map]
   def from_rdf!(rdf_data, options \\ %Options{})
 
   def from_rdf!(%Dataset{} = dataset, options) do
