@@ -35,6 +35,7 @@ defmodule JSON.LD.Encoder do
     end
   end
 
+  # TODO: unless we find a way to allow more optimized encode! versions, remove this since it's never used (see the respective warning)
   @impl RDF.Serialization.Encoder
   @spec encode!(RDF.Data.t(), Options.t() | Enum.t()) :: String.t()
   @dialyzer {:nowarn_function, encode!: 1}
