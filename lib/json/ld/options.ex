@@ -16,6 +16,8 @@ defmodule JSON.LD.Options do
           processing_mode: String.t()
         }
 
+  @type convertible :: t | Enum.t()
+
   defstruct base: nil,
             compact_arrays: true,
             document_loader: nil,
@@ -28,7 +30,7 @@ defmodule JSON.LD.Options do
   @spec new :: t
   def new, do: %__MODULE__{}
 
-  @spec new(t | Enum.t()) :: t
+  @spec new(convertible) :: t
   def new(%__MODULE__{} = options), do: options
   def new(options), do: struct(__MODULE__, options)
 end

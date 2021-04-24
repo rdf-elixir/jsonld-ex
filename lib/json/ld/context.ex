@@ -31,26 +31,29 @@ defmodule JSON.LD.Context do
   def base(%__MODULE__{base_iri: base_iri}),
     do: base_iri
 
-  @spec new(Options.t()) :: t
+  @spec new(Options.convertible()) :: t
   def new(options \\ %Options{}),
     do: %__MODULE__{api_base_iri: Options.new(options).base}
 
-  @spec create(map, Options.t()) :: t
+  @spec create(map, Options.convertible()) :: t
   def create(%{"@context" => json_ld_context}, options),
     do: options |> new() |> update(json_ld_context, [], options)
 
-  @spec update(t, [local] | local, remote, Options.t()) :: t
+  @spec update(t, [local] | local, remote, Options.convertible()) :: t
   def update(active, local, remote \\ [], options \\ %Options{})
 
-  def update(%__MODULE__{} = active, local, remote, options) when is_list(local) do
+  def update(%__MODULE__{} = active, local, remote, %Options{} = options) when is_list(local) do
     Enum.reduce(local, active, fn local, result ->
       do_update(result, local, remote, options)
     end)
   end
 
   # 2) If local context is not an array, set it to an array containing only local context.
-  def update(%__MODULE__{} = active, local, remote, options),
+  def update(%__MODULE__{} = active, local, remote, %Options{} = options),
     do: update(active, [local], remote, options)
+
+  def update(%__MODULE__{} = active, local, remote, options),
+    do: update(active, local, remote, Options.new(options))
 
   # 3.1) If context is null, set result to a newly-initialized active context and continue with the next context. The base IRI of the active context is set to the IRI of the currently being processed document (which might be different from the currently being processed context), if available; otherwise to null. If set, the base option of a JSON-LD API Implementation overrides the base IRI.
   @spec do_update(t, local, remote, Options.t()) :: t

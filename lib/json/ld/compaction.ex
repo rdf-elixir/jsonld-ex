@@ -5,7 +5,7 @@ defmodule JSON.LD.Compaction do
 
   alias JSON.LD.{Context, Options}
 
-  @spec compact(map | [map], map | nil, Options.t() | Enum.t()) :: map
+  @spec compact(map | [map], map | nil, Options.convertible()) :: map
   def compact(input, context, options \\ %Options{}) do
     options = Options.new(options)
     active_context = JSON.LD.context(context, options)
