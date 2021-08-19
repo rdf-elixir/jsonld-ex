@@ -153,6 +153,7 @@ defmodule JSON.LD.ContextTest do
   describe "remote contexts" do
     test "when the remote context is a list" do
       assert context = JSON.LD.context("https://dev.poast.org/schemas/litepub-0.1.jsonld")
+
       assert %{
                "Emoji" => "http://joinmastodon.org/ns#Emoji",
                # https://www.w3.org/ns/activitystreams
