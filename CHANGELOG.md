@@ -5,6 +5,16 @@ This project adheres to [Semantic Versioning](http://semver.org/) and
 [Keep a CHANGELOG](http://keepachangelog.com).
 
 
+## Unreleased
+
+### Fixed
+
+- remote contexts with a list couldn't be processed correctly (failed with a `JSON.LD.InvalidLocalContextError`)
+
+[Compare v0.3.3...HEAD](https://github.com/rdf-elixir/jsonld-ex/compare/v0.3.3...HEAD)
+
+
+
 ## 0.3.3 - 2020-10-13
 
 This version mainly upgrades to RDF.ex 0.9.

@@ -112,7 +112,7 @@ defmodule JSON.LD.Context do
           message: "Invalid remote context: No @context key in #{inspect(document)}"
 
     # 3.2.4) - 3.2.5)
-    do_update(active, local, remote, options)
+    update(active, local, remote, options)
   end
 
   # 3.4) - 3.8)
