@@ -152,7 +152,16 @@ defmodule JSON.LD.ContextTest do
 
   describe "remote contexts" do
     test "when the remote context is a list" do
-      assert context = JSON.LD.context("https://dev.poast.org/schemas/litepub-0.1.jsonld")
+      bypass = Bypass.open()
+
+      Bypass.expect(bypass, fn conn ->
+        assert "GET" == conn.method
+        assert "/litepub-0.1.jsonld" == conn.request_path
+        context = File.read!("test/fixtures/litepub-0.1.jsonld")
+        Plug.Conn.resp(conn, 200, context)
+      end)
+
+      assert context = JSON.LD.context("http://localhost:#{bypass.port}/litepub-0.1.jsonld")
 
       assert %{
                "Emoji" => "http://joinmastodon.org/ns#Emoji",
