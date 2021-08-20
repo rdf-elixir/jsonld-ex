@@ -25,7 +25,7 @@ defmodule JSON.LD.Mixfile do
         main: "JSON.LD",
         source_url: @repo_url,
         source_ref: "v#{@version}",
-        extras: ["README.md"]
+        extras: ["README.md", "CHANGELOG.md"]
       ],
 
       # Dialyzer
