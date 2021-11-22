@@ -53,9 +53,6 @@ jobs:
 
       - run: mix deps.compile
 
-      - run: mix compile --warnings-as-errors
-        if: ${{ matrix.lint }}
-
       - run: MIX_ENV=test mix coveralls.github
 
       - name: Retrieve PLT Cache
