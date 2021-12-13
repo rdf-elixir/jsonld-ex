@@ -52,6 +52,8 @@ jobs:
         if: ${{ matrix.lint }}
 
       - run: mix deps.compile
+      - run: mix compile --warnings-as-errors
+        if: ${{ matrix.lint }}
 
       - run: MIX_ENV=test mix coveralls.github
 
