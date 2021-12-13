@@ -5,13 +5,15 @@ This project adheres to [Semantic Versioning](http://semver.org/) and
 [Keep a CHANGELOG](http://keepachangelog.com).
 
 
-## Unreleased
+## 0.3.4 - 2021-12-13
+
+Elixir versions < 1.10 are no longer supported
 
 ### Fixed
 
-- remote contexts with a list couldn't be processed correctly (failed with a `JSON.LD.InvalidLocalContextError`)
+- remote contexts with a list couldn't be processed correctly (but failed with a `JSON.LD.InvalidLocalContextError`)
 
-[Compare v0.3.3...HEAD](https://github.com/rdf-elixir/jsonld-ex/compare/v0.3.3...HEAD)
+[Compare v0.3.3...v0.3.4](https://github.com/rdf-elixir/jsonld-ex/compare/v0.3.3...v0.3.4)
 
 
 
