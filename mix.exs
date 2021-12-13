@@ -9,7 +9,7 @@ defmodule JSON.LD.Mixfile do
     [
       app: :json_ld,
       version: @version,
-      elixir: "~> 1.8",
+      elixir: "~> 1.10",
       build_embedded: Mix.env() == :prod,
       start_permanent: Mix.env() == :prod,
       deps: deps(),
