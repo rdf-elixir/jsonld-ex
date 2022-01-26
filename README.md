@@ -9,6 +9,8 @@
 
 An implementation of the [JSON-LD] standard for Elixir and [RDF.ex].
 
+The API documentation can be found [here](https://hexdocs.pm/json_ld/). For a guide and more information about RDF.ex and it's related projects, go to <https://rdf-elixir.dev>.
+
 
 ## Features
 
@@ -128,12 +130,6 @@ Pretty printing is possible on all writer functions with all of the formatter op
 JSON.LD.write_file!(dataset, "file.jsonld", pretty: true)
 JSON.LD.write_string(dataset, "file.jsonld", pretty: [indent: "\t"])
 ```
-
-
-## Getting help
-
-- [Documentation](http://hexdocs.pm/json_ld)
-- [Google Group](https://groups.google.com/d/forum/rdfex)
 
 
 ## Contributing
