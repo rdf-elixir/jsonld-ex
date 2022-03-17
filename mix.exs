@@ -63,7 +63,7 @@ defmodule JSON.LD.Mixfile do
 
   defp deps do
     [
-      {:rdf, "~> 0.9"},
+      rdf_ex_dep(:rdf, "~> 0.9"),
       {:jason, "~> 1.2"},
       {:httpoison, "~> 1.6"},
       {:dialyxir, "~> 1.1", only: :dev, runtime: false},
@@ -71,6 +71,13 @@ defmodule JSON.LD.Mixfile do
       {:bypass, "~> 2.1", only: :test},
       {:excoveralls, "~> 0.14", only: :test}
     ]
+  end
+
+  defp rdf_ex_dep(dep, version) do
+    case System.get_env("RDF_EX_PACKAGES_SRC") do
+      "LOCAL" -> {dep, path: "../#{dep}"}
+      _ -> {dep, version}
+    end
   end
 
   defp dialyzer do
