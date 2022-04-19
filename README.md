@@ -137,9 +137,14 @@ JSON.LD.write_string(dataset, "file.jsonld", pretty: [indent: "\t"])
 see [CONTRIBUTING](CONTRIBUTING.md) for details.
 
 
+## Consulting
+
+If you need help with your Elixir and Linked Data projects, just contact [NinjaConcept](https://www.ninjaconcept.com/) via <contact@ninjaconcept.com>.
+
+
 ## License and Copyright
 
-(c) 2017-2020 Marcel Otto. MIT Licensed, see [LICENSE](LICENSE.md) for details.
+(c) 2017-present Marcel Otto. MIT Licensed, see [LICENSE](LICENSE.md) for details.
 
 
 [RDF.ex]:             https://hex.pm/packages/rdf
