@@ -1,10 +1,34 @@
 defmodule JSON.LD.Encoder do
   @moduledoc """
+  An encoder for JSON-LD serializations of RDF.ex data structures.
+
+  As for all encoders of `RDF.Serialization.Format`s, you normally won't use these
+  functions directly, but via one of the `write_` functions on the `JSON.LD`
+  format module or the generic `RDF.Serialization` module.
+
+
+  ## Options
+
+  - `:context`: When a context map or remote context URL string is given,
+    compaction is performed using this context
+  - `:base`: : Allows to specify a base URI to be used during compaction
+    (only when `:context` is provided).
+  - `:use_native_types`: If this flag is set to `true`, RDF literals with a datatype IRI
+    that equals `xsd:integer` or `xsd:double` are converted to a JSON numbers and
+    RDF literals with a datatype IRI that equals `xsd:boolean` are converted to `true`
+    or `false` based on their lexical form. (default: `false`)
+  - `:use_rdf_type`: Unless this flag is set to `true`, `rdf:type` predicates will be
+    serialized as `@type` as long as the associated object is either an IRI or blank
+    node identifier. (default: `false`)
+
+  The given options are also passed through to `Jason.encode/2`, so you can also
+  provide any the options this function supports, most notably the `:pretty` option.
+
   """
 
   use RDF.Serialization.Encoder
 
-  alias JSON.LD.Options
+  alias JSON.LD.{Compaction, Options}
 
   alias RDF.{
     BlankNode,
@@ -30,7 +54,8 @@ defmodule JSON.LD.Encoder do
   @impl RDF.Serialization.Encoder
   @spec encode(RDF.Data.t(), Options.t() | Enum.t()) :: {:ok, String.t()} | {:error, any}
   def encode(data, opts \\ []) do
-    with {:ok, json_ld_object} <- from_rdf(data, opts) do
+    with {:ok, json_ld_object} <- from_rdf(data, opts),
+         {:ok, json_ld_object} <- maybe_compact(json_ld_object, opts) do
       encode_json(json_ld_object, opts)
     end
   end
@@ -40,9 +65,18 @@ defmodule JSON.LD.Encoder do
   @spec encode!(RDF.Data.t(), Options.t() | Enum.t()) :: String.t()
   @dialyzer {:nowarn_function, encode!: 1}
   def encode!(data, opts \\ []) do
-    data
-    |> from_rdf!(opts)
-    |> encode_json!(opts)
+    case encode(data, opts) do
+      {:ok, result} -> result
+      {:error, error} -> raise error
+    end
+  end
+
+  defp maybe_compact(json_ld_object, opts) do
+    if context = Keyword.get(opts, :context) do
+      {:ok, Compaction.compact(json_ld_object, context, opts)}
+    else
+      {:ok, json_ld_object}
+    end
   end
 
   @spec from_rdf(RDF.Data.t(), Options.t() | Enum.t()) :: {:ok, [map]} | {:error, any}
@@ -387,10 +421,5 @@ defmodule JSON.LD.Encoder do
           {:ok, String.t()} | {:error, Jason.EncodeError.t() | Exception.t()}
   defp encode_json(value, opts) do
     Jason.encode(value, opts)
-  end
-
-  @spec encode_json!(any, [Jason.encode_opt()]) :: String.t()
-  defp encode_json!(value, opts) do
-    Jason.encode!(value, opts)
   end
 end

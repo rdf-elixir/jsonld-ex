@@ -25,9 +25,11 @@ defmodule JSON.LD.Compaction do
           result
       end
 
-    if Context.empty?(active_context),
-      do: result,
-      else: Map.put(result, "@context", context["@context"] || context)
+    cond do
+      Context.empty?(active_context) -> result
+      is_binary(context) -> Map.put(result, "@context", context)
+      true -> Map.put(result, "@context", context["@context"] || context)
+    end
   end
 
   @spec do_compact(any, Context.t(), map, String.t() | nil, boolean) :: any

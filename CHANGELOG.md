@@ -5,6 +5,17 @@ This project adheres to [Semantic Versioning](http://semver.org/) and
 [Keep a CHANGELOG](http://keepachangelog.com).
 
 
+## Unreleased
+
+### Added
+
+- the `JSON.LD.Encoder` now supports implicit compaction by providing a context
+  as a map or a URL string for a remote context with the new `:context` option
+  
+[Compare v0.3.4...HEAD](https://github.com/rdf-elixir/jsonld-ex/compare/v0.3.4...HEAD)
+
+
+
 ## 0.3.4 - 2021-12-13
 
 Elixir versions < 1.10 are no longer supported

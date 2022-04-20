@@ -572,6 +572,131 @@ defmodule JSON.LD.EncoderTest do
     end)
   end
 
+  describe "encode options" do
+    test ":context with a context map" do
+      graph =
+        ~I<http://manu.sporny.org/about#manu>
+        |> S.givenName("Manu")
+        |> S.familyName("Sporny")
+        |> S.url(~I<http://manu.sporny.org/>)
+        |> Graph.new()
+
+      context = %{
+        "givenName" => "http://schema.org/givenName",
+        "familyName" => "http://schema.org/familyName",
+        "homepage" => %{
+          "@id" => "http://schema.org/url",
+          "@type" => "@id"
+        }
+      }
+
+      assert JSON.LD.Encoder.encode!(graph, context: context, pretty: true) ==
+               """
+               {
+                 "@context": {
+                   "familyName": "http://schema.org/familyName",
+                   "givenName": "http://schema.org/givenName",
+                   "homepage": {
+                     "@id": "http://schema.org/url",
+                     "@type": "@id"
+                   }
+                 },
+                 "@id": "http://manu.sporny.org/about#manu",
+                 "familyName": "Sporny",
+                 "givenName": "Manu",
+                 "homepage": "http://manu.sporny.org/"
+               }
+               """
+               |> String.trim()
+    end
+
+    test ":context with a remote context" do
+      bypass = Bypass.open()
+
+      Bypass.expect(bypass, fn conn ->
+        assert "GET" == conn.method
+        assert "/test-context" == conn.request_path
+
+        context = %{
+          "@context" => %{
+            "givenName" => "http://schema.org/givenName",
+            "familyName" => "http://schema.org/familyName",
+            "homepage" => %{
+              "@id" => "http://schema.org/url",
+              "@type" => "@id"
+            }
+          }
+        }
+
+        Plug.Conn.resp(conn, 200, Jason.encode!(context))
+      end)
+
+      remote_context = "http://localhost:#{bypass.port}/test-context"
+
+      graph =
+        ~I<http://manu.sporny.org/about#manu>
+        |> S.givenName("Manu")
+        |> S.familyName("Sporny")
+        |> S.url(~I<http://manu.sporny.org/>)
+        |> Graph.new()
+
+      assert JSON.LD.Encoder.encode!(graph, context: remote_context, pretty: true) ==
+               """
+               {
+                 "@context": "#{remote_context}",
+                 "@id": "http://manu.sporny.org/about#manu",
+                 "familyName": "Sporny",
+                 "givenName": "Manu",
+                 "homepage": "http://manu.sporny.org/"
+               }
+               """
+               |> String.trim()
+    end
+
+    test "compaction options" do
+      graph =
+        ~I<http://manu.sporny.org/about#manu>
+        |> S.givenName("Manu")
+        |> S.familyName("Sporny")
+        |> RDF.type(S.Person)
+        |> EX.foo(3.14)
+        |> EX.bar(EX.Bar)
+        |> Graph.new()
+
+      context = %{
+        "givenName" => "http://schema.org/givenName",
+        "familyName" => "http://schema.org/familyName"
+      }
+
+      assert JSON.LD.Encoder.encode!(graph,
+               context: context,
+               base: EX.__base_iri__(),
+               use_native_types: true,
+               use_rdf_type: true,
+               pretty: true
+             ) ==
+               """
+               {
+                 "@context": {
+                   "familyName": "http://schema.org/familyName",
+                   "givenName": "http://schema.org/givenName"
+                 },
+                 "@id": "http://manu.sporny.org/about#manu",
+                 "familyName": "Sporny",
+                 "givenName": "Manu",
+                 "http://example.com/bar": {
+                   "@id": "Bar"
+                 },
+                 "http://example.com/foo": 3.14,
+                 "http://www.w3.org/1999/02/22-rdf-syntax-ns#type": {
+                   "@id": "http://schema.org/Person"
+                 }
+               }
+               """
+               |> String.trim()
+    end
+  end
+
   describe "problems" do
     %{
       "xsd:boolean as value" => {
