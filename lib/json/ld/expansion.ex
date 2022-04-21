@@ -6,7 +6,7 @@ defmodule JSON.LD.Expansion do
   alias JSON.LD.{Context, Options}
   alias JSON.LD.Context.TermDefinition
 
-  @spec expand(map, Options.t() | Enum.t()) :: [map]
+  @spec expand(map | [map], Options.convertible()) :: [map]
   def expand(input, options \\ %Options{}) do
     options = Options.new(options)
     active_context = Context.new(options)

@@ -5,7 +5,10 @@ defmodule JSON.LD.Compaction do
 
   alias JSON.LD.{Context, Options}
 
-  @spec compact(map | [map], map | nil, Options.convertible()) :: map
+  # TODO: Why is dialyzer ignoring the spec of context as a potential binary and
+  #  complains about the is_binary(context) in the final cond to never match?
+  @dialyzer {:nowarn_function, compact: 3}
+  @spec compact(map | [map], map | binary | nil, Options.convertible()) :: map
   def compact(input, context, options \\ %Options{}) do
     options = Options.new(options)
     active_context = JSON.LD.context(context, options)

@@ -52,7 +52,7 @@ defmodule JSON.LD.Encoder do
   @rdf_list to_string(RDF.uri(RDF.NS.RDF.List))
 
   @impl RDF.Serialization.Encoder
-  @spec encode(RDF.Data.t(), Options.t() | Enum.t()) :: {:ok, String.t()} | {:error, any}
+  @spec encode(RDF.Data.t(), keyword) :: {:ok, String.t()} | {:error, any}
   def encode(data, opts \\ []) do
     with {:ok, json_ld_object} <- from_rdf(data, opts),
          {:ok, json_ld_object} <- maybe_compact(json_ld_object, opts) do
@@ -62,7 +62,7 @@ defmodule JSON.LD.Encoder do
 
   # TODO: unless we find a way to allow more optimized encode! versions, remove this since it's never used (see the respective warning)
   @impl RDF.Serialization.Encoder
-  @spec encode!(RDF.Data.t(), Options.t() | Enum.t()) :: String.t()
+  @spec encode!(RDF.Data.t(), Options.convertible()) :: String.t()
   @dialyzer {:nowarn_function, encode!: 1}
   def encode!(data, opts \\ []) do
     case encode(data, opts) do

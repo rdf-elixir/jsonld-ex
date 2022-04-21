@@ -57,9 +57,7 @@ defmodule JSON.LD do
 
   Details at <http://json-ld.org/spec/latest/json-ld-api/#expansion-algorithm>
   """
-  @spec expand(map, Options.t() | Enum.t()) :: [map]
-  defdelegate expand(input, options \\ %Options{}),
-    to: Expansion
+  defdelegate expand(input, options \\ %Options{}), to: Expansion
 
   @doc """
   Compacts the given input according to the steps in the JSON-LD Compaction Algorithm.
@@ -74,9 +72,7 @@ defmodule JSON.LD do
 
   Details at <https://www.w3.org/TR/json-ld-api/#compaction-algorithms>
   """
-  @spec compact(map | [map], map | nil, Options.t() | Enum.t()) :: map
-  defdelegate compact(input, context, options \\ %Options{}),
-    to: Compaction
+  defdelegate compact(input, context, options \\ %Options{}), to: Compaction
 
   @doc """
   Flattens the given input according to the steps in the JSON-LD Flattening Algorithm.
@@ -90,9 +86,7 @@ defmodule JSON.LD do
 
   Details at <https://www.w3.org/TR/json-ld-api/#flattening-algorithms>
   """
-  @spec flatten(map | [map], map | nil, Options.t() | Enum.t()) :: [map]
-  defdelegate flatten(input, context \\ nil, options \\ %Options{}),
-    to: Flattening
+  defdelegate flatten(input, context \\ nil, options \\ %Options{}), to: Flattening
 
   @doc """
   Generator function for `JSON.LD.Context`s.
@@ -112,7 +106,5 @@ defmodule JSON.LD do
   @doc """
   Generator function for JSON-LD node maps.
   """
-  @spec node_map([map], pid | nil) :: map
-  defdelegate node_map(input, node_id_map \\ nil),
-    to: Flattening
+  defdelegate node_map(input, node_id_map \\ nil), to: Flattening
 end

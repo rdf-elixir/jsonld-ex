@@ -16,7 +16,7 @@ defmodule JSON.LD.Options do
           processing_mode: String.t()
         }
 
-  @type convertible :: t | Enum.t()
+  @type convertible :: t | keyword | Enum.t()
 
   defstruct base: nil,
             compact_arrays: true,
