@@ -683,32 +683,42 @@ defmodule JSON.LD.EncoderTest do
         "familyName" => "http://schema.org/familyName"
       }
 
+      expected_result =
+        """
+        {
+          "@context": {
+            "familyName": "http://schema.org/familyName",
+            "givenName": "http://schema.org/givenName"
+          },
+          "@id": "http://manu.sporny.org/about#manu",
+          "familyName": "Sporny",
+          "givenName": "Manu",
+          "http://example.com/bar": {
+            "@id": "Bar"
+          },
+          "http://example.com/foo": 3.14,
+          "http://www.w3.org/1999/02/22-rdf-syntax-ns#type": {
+            "@id": "http://schema.org/Person"
+          }
+        }
+        """
+        |> String.trim()
+
       assert JSON.LD.Encoder.encode!(graph,
                context: context,
                base: EX.__base_iri__(),
                use_native_types: true,
                use_rdf_type: true,
                pretty: true
-             ) ==
-               """
-               {
-                 "@context": {
-                   "familyName": "http://schema.org/familyName",
-                   "givenName": "http://schema.org/givenName"
-                 },
-                 "@id": "http://manu.sporny.org/about#manu",
-                 "familyName": "Sporny",
-                 "givenName": "Manu",
-                 "http://example.com/bar": {
-                   "@id": "Bar"
-                 },
-                 "http://example.com/foo": 3.14,
-                 "http://www.w3.org/1999/02/22-rdf-syntax-ns#type": {
-                   "@id": "http://schema.org/Person"
-                 }
-               }
-               """
-               |> String.trim()
+             ) == expected_result
+
+      assert JSON.LD.Encoder.encode!(graph,
+               context: context,
+               base: EX,
+               use_native_types: true,
+               use_rdf_type: true,
+               pretty: true
+             ) == expected_result
     end
   end
 

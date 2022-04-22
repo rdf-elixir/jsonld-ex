@@ -16,6 +16,7 @@ This project adheres to [Semantic Versioning](http://semver.org/) and
 
 - context maps can be given now with atom keys or as `RDF.PropertyMap` to
   `JSON.LD.context/2` and `JSON.LD.compact/3`
+- `RDF.Vocabulary.Namespace` modules can be set as base IRI 
 
 
 [Compare v0.3.4...HEAD](https://github.com/rdf-elixir/jsonld-ex/compare/v0.3.4...HEAD)

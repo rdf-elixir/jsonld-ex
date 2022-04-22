@@ -5,6 +5,8 @@ defmodule JSON.LD.Options do
   as specified at <https://www.w3.org/TR/json-ld-api/#the-jsonldoptions-type>
   """
 
+  alias RDF.IRI
+
   @type t :: %__MODULE__{
           base: String.t() | nil,
           compact_arrays: boolean,
@@ -32,5 +34,14 @@ defmodule JSON.LD.Options do
 
   @spec new(convertible) :: t
   def new(%__MODULE__{} = options), do: options
-  def new(options), do: struct(__MODULE__, options)
+
+  def new(options) do
+    struct(__MODULE__, options)
+    |> set_base(options[:base])
+  end
+
+  @spec set_base(t, IRI.coercible()) :: t
+  def set_base(%__MODULE__{} = options, base) do
+    %__MODULE__{options | base: base && base |> IRI.coerce_base() |> to_string()}
+  end
 end
