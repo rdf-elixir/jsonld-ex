@@ -101,11 +101,8 @@ defmodule JSON.LD do
     |> do_context(options)
   end
 
-  defp do_context(%{"@context" => _} = object, options),
-    do: Context.create(object, options)
-
-  defp do_context(context, options),
-    do: Context.create(%{"@context" => stringify_keys(context)}, options)
+  defp do_context(%{"@context" => _} = object, options), do: Context.create(object, options)
+  defp do_context(context, options), do: Context.create(%{"@context" => context}, options)
 
   defp stringify_keys(map) when is_map(map) do
     Map.new(map, fn
