@@ -3,7 +3,7 @@ defmodule JSON.LD.EncoderTest do
 
   doctest JSON.LD.Encoder
 
-  alias RDF.{Dataset, Graph, Description}
+  alias RDF.{Dataset, Graph, Description, IRI}
   alias RDF.NS
 
   import RDF.Sigils
@@ -719,6 +719,54 @@ defmodule JSON.LD.EncoderTest do
                use_rdf_type: true,
                pretty: true
              ) == expected_result
+    end
+
+    test "base_iri of a RDF.Graph is used as the default for :base" do
+      context = %{
+        "p" => %{
+          "@id" => IRI.to_string(EX.p()),
+          "@type" => "@id"
+        }
+      }
+
+      assert JSON.LD.Encoder.encode!(
+               Graph.new({EX.S, EX.p(), EX.O}, base_iri: EX),
+               context: context,
+               pretty: true
+             ) ==
+               """
+               {
+                 "@context": {
+                   "p": {
+                     "@id": "#{EX.p()}",
+                     "@type": "@id"
+                   }
+                 },
+                 "@id": "S",
+                 "p": "O"
+               }
+               """
+               |> String.trim()
+
+      assert JSON.LD.Encoder.encode!(
+               Graph.new({EX.S, EX.p(), S.O}, base_iri: EX),
+               context: context,
+               base: S,
+               pretty: true
+             ) ==
+               """
+               {
+                 "@context": {
+                   "p": {
+                     "@id": "#{EX.p()}",
+                     "@type": "@id"
+                   }
+                 },
+                 "@id": "http://example.com/S",
+                 "p": "O"
+               }
+               """
+               |> String.trim()
     end
   end
 

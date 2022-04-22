@@ -16,6 +16,8 @@ This project adheres to [Semantic Versioning](http://semver.org/) and
 
 - context maps can be given now with atom keys or as `RDF.PropertyMap` to
   `JSON.LD.context/2` and `JSON.LD.compact/3`
+- the base IRI of a `RDF.Graph` or the `RDF.default_base_iri/0` is used as the  
+  default `:base` in the `JSON.LD.Encoder`
 - `RDF.Vocabulary.Namespace` modules can be set as base IRI 
 
 

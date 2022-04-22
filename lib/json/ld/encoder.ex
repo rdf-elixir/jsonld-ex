@@ -13,6 +13,8 @@ defmodule JSON.LD.Encoder do
     compaction is performed using this context
   - `:base`: : Allows to specify a base URI to be used during compaction
     (only when `:context` is provided).
+    Default is the base IRI of the encoded graph or if none present or in case of
+    encoded datasets the `RDF.default_base_iri/0`.
   - `:use_native_types`: If this flag is set to `true`, RDF literals with a datatype IRI
     that equals `xsd:integer` or `xsd:double` are converted to a JSON numbers and
     RDF literals with a datatype IRI that equals `xsd:boolean` are converted to `true`
@@ -54,9 +56,23 @@ defmodule JSON.LD.Encoder do
   @impl RDF.Serialization.Encoder
   @spec encode(RDF.Data.t(), keyword) :: {:ok, String.t()} | {:error, any}
   def encode(data, opts \\ []) do
+    opts = set_base_iri(data, opts)
+
     with {:ok, json_ld_object} <- from_rdf(data, opts),
          {:ok, json_ld_object} <- maybe_compact(json_ld_object, opts) do
       encode_json(json_ld_object, opts)
+    end
+  end
+
+  defp set_base_iri(%Graph{base_iri: base_iri}, opts) when not is_nil(base_iri) do
+    Keyword.put_new(opts, :base, IRI.to_string(base_iri))
+  end
+
+  defp set_base_iri(_, opts) do
+    if base = RDF.default_base_iri() do
+      Keyword.put_new(opts, :base, IRI.to_string(base))
+    else
+      opts
     end
   end
 
