@@ -4,6 +4,7 @@ defmodule JSON.LD do
   import RDF.Sigils
 
   alias JSON.LD.{Compaction, Context, Expansion, Flattening, Options}
+  alias RDF.PropertyMap
 
   @id ~I<http://www.w3.org/ns/formats/JSON-LD>
   @name :jsonld
@@ -93,26 +94,34 @@ defmodule JSON.LD do
 
   You can either pass a map with a `"@context"` key having the JSON-LD context
   object its value, or the JSON-LD context object directly.
+
+  This function can be used also to create `JSON.LD.Context` from a `RDF.PropertyMap`.
   """
-  @spec context(map, Options.t()) :: Context.t()
+  @spec context(map | RDF.PropertyMap.t(), Options.t()) :: Context.t()
   def context(context, options \\ %Options{}) do
     context
-    |> stringify_keys()
+    |> normalize_context()
     |> do_context(options)
   end
 
   defp do_context(%{"@context" => _} = object, options), do: Context.create(object, options)
   defp do_context(context, options), do: Context.create(%{"@context" => context}, options)
 
-  defp stringify_keys(map) when is_map(map) do
+  defp normalize_context(%PropertyMap{} = property_map) do
+    Map.new(property_map, fn {property, iri} ->
+      {to_string(property), to_string(iri)}
+    end)
+  end
+
+  defp normalize_context(map) when is_map(map) do
     Map.new(map, fn
-      {key, value} when is_map(value) -> {to_string(key), stringify_keys(value)}
+      {key, value} when is_map(value) -> {to_string(key), normalize_context(value)}
       {key, value} -> {to_string(key), value}
     end)
   end
 
-  defp stringify_keys(list) when is_list(list), do: Enum.map(list, &stringify_keys/1)
-  defp stringify_keys(value), do: value
+  defp normalize_context(list) when is_list(list), do: Enum.map(list, &normalize_context/1)
+  defp normalize_context(value), do: value
 
   @doc """
   Generator function for JSON-LD node maps.

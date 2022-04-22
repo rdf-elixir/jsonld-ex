@@ -14,8 +14,8 @@ This project adheres to [Semantic Versioning](http://semver.org/) and
 
 ### Changed
 
-- context maps can be given now with atom keys to `JSON.LD.context/2` and 
-  `JSON.LD.compact/3`
+- context maps can be given now with atom keys or as `RDF.PropertyMap` to
+  `JSON.LD.context/2` and `JSON.LD.compact/3`
 
 
 [Compare v0.3.4...HEAD](https://github.com/rdf-elixir/jsonld-ex/compare/v0.3.4...HEAD)

@@ -209,6 +209,23 @@ defmodule JSON.LD.ContextTest do
       assert JSON.LD.context(%{"@context" => context_with_atom_keys}) ==
                JSON.LD.context(@example_context_map)
     end
+
+    test "with a RDF.PropertyMap" do
+      expected_context = %{
+        "@context" => %{
+          "givenName" => "http://schema.org/givenName",
+          "familyName" => "http://schema.org/familyName"
+        }
+      }
+
+      property_map =
+        RDF.property_map(
+          givenName: "http://schema.org/givenName",
+          familyName: "http://schema.org/familyName"
+        )
+
+      assert JSON.LD.context(property_map) == JSON.LD.context(expected_context)
+    end
   end
 
   describe "errors" do
