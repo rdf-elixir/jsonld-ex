@@ -173,6 +173,44 @@ defmodule JSON.LD.ContextTest do
     end
   end
 
+  describe "JSON.LD.context/2" do
+    @example_context_map %{
+      "@context" => %{
+        "givenName" => "http://schema.org/givenName",
+        "familyName" => "http://schema.org/familyName",
+        "homepage" => %{
+          "@id" => "http://schema.org/url",
+          "@type" => "@id"
+        }
+      }
+    }
+
+    test "wraps everything under a @context" do
+      assert JSON.LD.context(@example_context_map["@context"]) ==
+               JSON.LD.context(@example_context_map)
+    end
+
+    test "with atom keys" do
+      context_with_atom_keys = %{
+        givenName: "http://schema.org/givenName",
+        familyName: "http://schema.org/familyName",
+        homepage: %{
+          "@id": "http://schema.org/url",
+          "@type": "@id"
+        }
+      }
+
+      assert JSON.LD.context(context_with_atom_keys) ==
+               JSON.LD.context(@example_context_map)
+
+      assert JSON.LD.context(%{"@context": context_with_atom_keys}) ==
+               JSON.LD.context(@example_context_map)
+
+      assert JSON.LD.context(%{"@context" => context_with_atom_keys}) ==
+               JSON.LD.context(@example_context_map)
+    end
+  end
+
   describe "errors" do
     %{
       "no @id, @type, or @container" => %{

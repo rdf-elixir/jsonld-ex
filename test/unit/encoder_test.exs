@@ -590,24 +590,39 @@ defmodule JSON.LD.EncoderTest do
         }
       }
 
+      expected_result =
+        """
+        {
+          "@context": {
+            "familyName": "http://schema.org/familyName",
+            "givenName": "http://schema.org/givenName",
+            "homepage": {
+              "@id": "http://schema.org/url",
+              "@type": "@id"
+            }
+          },
+          "@id": "http://manu.sporny.org/about#manu",
+          "familyName": "Sporny",
+          "givenName": "Manu",
+          "homepage": "http://manu.sporny.org/"
+        }
+        """
+        |> String.trim()
+
       assert JSON.LD.Encoder.encode!(graph, context: context, pretty: true) ==
-               """
-               {
-                 "@context": {
-                   "familyName": "http://schema.org/familyName",
-                   "givenName": "http://schema.org/givenName",
-                   "homepage": {
-                     "@id": "http://schema.org/url",
-                     "@type": "@id"
-                   }
-                 },
-                 "@id": "http://manu.sporny.org/about#manu",
-                 "familyName": "Sporny",
-                 "givenName": "Manu",
-                 "homepage": "http://manu.sporny.org/"
-               }
-               """
-               |> String.trim()
+               expected_result
+
+      context_with_atom_keys = %{
+        givenName: "http://schema.org/givenName",
+        familyName: "http://schema.org/familyName",
+        homepage: %{
+          "@id": "http://schema.org/url",
+          "@type": "@id"
+        }
+      }
+
+      assert JSON.LD.Encoder.encode!(graph, context: context_with_atom_keys, pretty: true) ==
+               expected_result
     end
 
     test ":context with a remote context" do

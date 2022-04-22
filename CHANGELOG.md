@@ -11,7 +11,13 @@ This project adheres to [Semantic Versioning](http://semver.org/) and
 
 - the `JSON.LD.Encoder` now supports implicit compaction by providing a context
   as a map or a URL string for a remote context with the new `:context` option
-  
+
+### Changed
+
+- context maps can be given now with atom keys to `JSON.LD.context/2` and 
+  `JSON.LD.compact/3`
+
+
 [Compare v0.3.4...HEAD](https://github.com/rdf-elixir/jsonld-ex/compare/v0.3.4...HEAD)
 
 

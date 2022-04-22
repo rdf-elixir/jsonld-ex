@@ -95,13 +95,27 @@ defmodule JSON.LD do
   object its value, or the JSON-LD context object directly.
   """
   @spec context(map, Options.t()) :: Context.t()
-  def context(args, opts \\ %Options{})
+  def context(context, options \\ %Options{}) do
+    context
+    |> stringify_keys()
+    |> do_context(options)
+  end
 
-  def context(%{"@context" => _} = object, options),
+  defp do_context(%{"@context" => _} = object, options),
     do: Context.create(object, options)
 
-  def context(context, options),
-    do: Context.create(%{"@context" => context}, options)
+  defp do_context(context, options),
+    do: Context.create(%{"@context" => stringify_keys(context)}, options)
+
+  defp stringify_keys(map) when is_map(map) do
+    Map.new(map, fn
+      {key, value} when is_map(value) -> {to_string(key), stringify_keys(value)}
+      {key, value} -> {to_string(key), value}
+    end)
+  end
+
+  defp stringify_keys(list) when is_list(list), do: Enum.map(list, &stringify_keys/1)
+  defp stringify_keys(value), do: value
 
   @doc """
   Generator function for JSON-LD node maps.
