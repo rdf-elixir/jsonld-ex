@@ -121,10 +121,16 @@ dataset = JSON.LD.read_file!("file.jsonld")
 JSON.LD.write_file!(dataset, "file.jsonld")
 ```
 
+When a context is provided via the `:context` option (as a map, a `RDF.PropertyMap` or a string with a URL to a remote context), the document gets automatically compacted on serialization.
+
+```elixir
+JSON.LD.write_file!(dataset, "file.jsonld", context: %{ex: "https://example.com/"})
+JSON.LD.write_file!(dataset, "file.jsonld", context: "https://schema.org/")
+```
 
 ## Pretty printing
 
-Pretty printing is possible on all writer functions with all of the formatter options of [Jason](https://hexdocs.pm/jason/Jason.Formatter.html#pretty_print/2), the underlying JSON encoder, to which the given options are passed through.
+Pretty printing is possible on all writer functions with all the formatter options of [Jason](https://hexdocs.pm/jason/Jason.Formatter.html#pretty_print/2), the underlying JSON encoder, to which the given options are passed through.
 
 ```elixir
 JSON.LD.write_file!(dataset, "file.jsonld", pretty: true)
