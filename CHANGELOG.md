@@ -5,23 +5,24 @@ This project adheres to [Semantic Versioning](http://semver.org/) and
 [Keep a CHANGELOG](http://keepachangelog.com).
 
 
-## Unreleased
+## 0.3.5 - 2022-04-26
 
 ### Added
 
 - the `JSON.LD.Encoder` now supports implicit compaction by providing a context
-  as a map or a URL string for a remote context with the new `:context` option
+  as a map, a `RDF.PropertyMap` or a URL string for a remote context with the 
+  new `:context` option
 
 ### Changed
 
-- context maps can be given now with atom keys or as `RDF.PropertyMap` to
+- context maps can be given now with atom keys or as a `RDF.PropertyMap` to
   `JSON.LD.context/2` and `JSON.LD.compact/3`
 - the base IRI of a `RDF.Graph` or the `RDF.default_base_iri/0` is used as the  
   default `:base` in the `JSON.LD.Encoder`
 - `RDF.Vocabulary.Namespace` modules can be set as base IRI 
 
 
-[Compare v0.3.4...HEAD](https://github.com/rdf-elixir/jsonld-ex/compare/v0.3.4...HEAD)
+[Compare v0.3.4...v0.3.5](https://github.com/rdf-elixir/jsonld-ex/compare/v0.3.4...v0.3.5)
 
 
 
