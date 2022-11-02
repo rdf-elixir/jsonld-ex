@@ -9,14 +9,6 @@ defmodule JSON.LD.DecoderTest do
 
   import RDF.Sigils
 
-  defmodule TestNS do
-    use RDF.Vocabulary.Namespace
-    defvocab EX, base_iri: "http://example.org/#", terms: [], strict: false
-    defvocab S, base_iri: "http://schema.org/", terms: [], strict: false
-  end
-
-  alias TestNS.{EX, S}
-
   test "an empty JSON document is deserialized to an empty graph" do
     assert JSON.LD.Decoder.decode!("{}") == Dataset.new()
   end
