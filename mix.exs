@@ -9,7 +9,7 @@ defmodule JSON.LD.Mixfile do
     [
       app: :json_ld,
       version: @version,
-      elixir: "~> 1.10",
+      elixir: "~> 1.11",
       build_embedded: Mix.env() == :prod,
       start_permanent: Mix.env() == :prod,
       deps: deps(),
@@ -63,7 +63,7 @@ defmodule JSON.LD.Mixfile do
 
   defp deps do
     [
-      rdf_ex_dep(:rdf, "~> 0.9"),
+      rdf_ex_dep(:rdf, "~> 1.0"),
       {:jason, "~> 1.2"},
       {:httpoison, "~> 1.6"},
       {:dialyxir, "~> 1.2", only: :dev, runtime: false},

@@ -5,6 +5,16 @@ This project adheres to [Semantic Versioning](http://semver.org/) and
 [Keep a CHANGELOG](http://keepachangelog.com).
 
 
+## Unreleased
+
+This version is just upgraded to RDF.ex 1.0.
+
+Elixir versions < 1.11 are no longer supported
+
+[Compare v0.3.5...HEAD](https://github.com/rdf-elixir/jsonld-ex/compare/v0.3.5...HEAD)
+
+
+
 ## 0.3.5 - 2022-04-26
 
 ### Added
