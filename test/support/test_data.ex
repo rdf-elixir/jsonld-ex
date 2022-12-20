@@ -1,4 +1,8 @@
 defmodule JSON.LD.TestData do
+  @moduledoc """
+  Helpers to access test data.
+  """
+
   @dir Path.join(File.cwd!(), "test/data/")
   def dir, do: @dir
 

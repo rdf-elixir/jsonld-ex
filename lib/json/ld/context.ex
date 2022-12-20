@@ -1,4 +1,8 @@
 defmodule JSON.LD.Context do
+  @moduledoc """
+  Implementation of the JSON-LD 1.0 Context Processing Algorithms.
+  """
+
   import JSON.LD.{IRIExpansion, Utils}
 
   alias JSON.LD.Context.TermDefinition

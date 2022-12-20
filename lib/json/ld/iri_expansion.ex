@@ -1,4 +1,8 @@
 defmodule JSON.LD.IRIExpansion do
+  @moduledoc """
+  Implementation of the JSON-LD 1.0 IRI Expansion algorithm.
+  """
+
   import JSON.LD.Utils
 
   alias JSON.LD.Context

@@ -1,4 +1,6 @@
 defmodule JSON.LD.Utils do
+  @moduledoc nil
+
   alias RDF.IRI
 
   @doc """

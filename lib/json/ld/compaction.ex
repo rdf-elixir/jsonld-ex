@@ -1,5 +1,7 @@
 defmodule JSON.LD.Compaction do
-  @moduledoc nil
+  @moduledoc """
+  Implementation of the JSON-LD 1.0 Compaction Algorithms.
+  """
 
   import JSON.LD.Utils
 

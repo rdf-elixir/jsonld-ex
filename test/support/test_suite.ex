@@ -1,4 +1,8 @@
 defmodule JSON.LD.TestSuite do
+  @moduledoc """
+  Helpers to run the test of the W3C JSON-LD test suite.
+  """
+
   @test_suite_dir "json-ld.org-test-suite"
   def test_suite_dir, do: @test_suite_dir
 

@@ -1,5 +1,7 @@
 defmodule JSON.LD.Flattening do
-  @moduledoc nil
+  @moduledoc """
+  Implementation of the JSON-LD 1.0 Flattening Algorithms.
+  """
 
   import JSON.LD.{NodeIdentifierMap, Utils}
 
@@ -43,7 +45,7 @@ defmodule JSON.LD.Flattening do
       default_graph
       |> Enum.sort_by(fn {id, _} -> id end)
       |> Enum.reduce([], fn {_, node}, flattened ->
-        if not (Enum.count(node) == 1 and Map.has_key?(node, "@id")) do
+        unless Enum.count(node) == 1 and Map.has_key?(node, "@id") do
           [node | flattened]
         else
           flattened

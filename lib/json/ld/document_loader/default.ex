@@ -1,4 +1,8 @@
 defmodule JSON.LD.DocumentLoader.Default do
+  @moduledoc """
+  Default implementation of the `JSON.LD.DocumentLoader` behaviour.
+  """
+
   @behaviour JSON.LD.DocumentLoader
 
   alias JSON.LD.DocumentLoader.RemoteDocument

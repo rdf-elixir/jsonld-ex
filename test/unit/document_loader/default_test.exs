@@ -1,3 +1,5 @@
+# credo:disable-for-this-file Credo.Check.Readability.LargeNumbers
+
 defmodule JSON.LD.DocumentLoader.DefaultTest do
   use ExUnit.Case, async: false
 

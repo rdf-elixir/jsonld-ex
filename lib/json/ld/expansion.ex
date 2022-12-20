@@ -1,5 +1,7 @@
 defmodule JSON.LD.Expansion do
-  @moduledoc nil
+  @moduledoc """
+  Implementation of the JSON-LD 1.0 Expansion Algorithms.
+  """
 
   import JSON.LD.{IRIExpansion, Utils}
 

@@ -1,4 +1,8 @@
 defmodule JSON.LD.DocumentLoader.Test do
+  @moduledoc """
+  Mock implementation of the `JSON.LD.DocumentLoader` behaviour.
+  """
+
   @behaviour JSON.LD.DocumentLoader
 
   alias JSON.LD.DocumentLoader.RemoteDocument

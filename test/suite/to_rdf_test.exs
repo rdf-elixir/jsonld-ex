@@ -1,3 +1,5 @@
+# credo:disable-for-this-file Credo.Check.Readability.LargeNumbers
+
 defmodule JSON.LD.TestSuite.ToRdfTest do
   use ExUnit.Case, async: false
 
@@ -24,7 +26,7 @@ defmodule JSON.LD.TestSuite.ToRdfTest do
     @tag data: test_case
     test "#{input}: #{name}",
          %{data: %{"input" => input, "expect" => output} = test_case, base_iri: base_iri} do
-      # This requires a special handling, since the N-Quad ouput file is not valid, by using blank nodes as predicates
+      # This requires a special handling, since the N-Quad output file is not valid, by using blank nodes as predicates
       dataset =
         if input == "toRdf-0118-in.jsonld",
           do: toRdf_0118_dataset(),
@@ -34,6 +36,7 @@ defmodule JSON.LD.TestSuite.ToRdfTest do
     end
   end)
 
+  # credo:disable-for-next-line Credo.Check.Readability.FunctionNames
   def toRdf_0118_dataset do
     RDF.Dataset.new([
       {RDF.bnode("b0"), ~I<http://www.w3.org/1999/02/22-rdf-syntax-ns#type>, RDF.bnode("b0")},

@@ -1,4 +1,8 @@
 defmodule JSON.LD.Context.TermDefinition do
+  @moduledoc """
+  Struct for the term definitions in a `JSON.LD.Context`.
+  """
+
   @type t :: %__MODULE__{
           iri_mapping: String.t() | nil,
           reverse_property: boolean,
