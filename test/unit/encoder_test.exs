@@ -251,7 +251,7 @@ defmodule JSON.LD.EncoderTest do
       integer: 1,
       unsignedInt: 1,
       nonNegativeInteger: 1,
-      float: 1.0,
+      float: "1.0E0",
       nonPositiveInteger: -1,
       negativeInteger: -1
     }

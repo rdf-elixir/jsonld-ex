@@ -1,5 +1,4 @@
 # credo:disable-for-this-file Credo.Check.Readability.LargeNumbers
-
 defmodule JSON.LD.TestSuite.ToRdfTest do
   use ExUnit.Case, async: false
 
@@ -11,16 +10,7 @@ defmodule JSON.LD.TestSuite.ToRdfTest do
   end
 
   test_cases("toRdf")
-  # TODO: Ordering problems
-  #  |> Enum.filter(fn %{"@id" => id} -> id in ~w[#t0118] end)
   |> Enum.each(fn %{"name" => name, "input" => input} = test_case ->
-    if input in ~w[toRdf-0118-in.jsonld] do
-      @tag skip: """
-             Actually an isomorphic graph is generated, but due to different ordering
-             during expansion the generated blank nodes are named different.
-           """
-    end
-
     @tag :test_suite
     @tag :to_rdf_test_suite
     @tag data: test_case
@@ -32,7 +22,10 @@ defmodule JSON.LD.TestSuite.ToRdfTest do
           do: toRdf_0118_dataset(),
           else: RDF.NQuads.read_file!(file(output))
 
-      assert JSON.LD.read_file!(file(input), test_case_options(test_case, base_iri)) == dataset
+      assert RDF.Dataset.isomorphic?(
+               JSON.LD.read_file!(file(input), test_case_options(test_case, base_iri)),
+               dataset
+             )
     end
   end)
 
