@@ -2,9 +2,15 @@
 
 # JSON-LD.ex
 
-[![CI](https://github.com/rdf-elixir/jsonld-ex/workflows/CI/badge.svg?branch=master)](https://github.com/rdf-elixir/jsonld-ex/actions?query=branch%3Amaster+workflow%3ACI)
 [![Hex.pm](https://img.shields.io/hexpm/v/json_ld.svg?style=flat-square)](https://hex.pm/packages/json_ld)
+[![Hex Docs](https://img.shields.io/badge/hex-docs-lightgreen.svg)](https://hexdocs.pm/json_ld/)
 [![Coverage Status](https://coveralls.io/repos/github/rdf-elixir/jsonld-ex/badge.svg?branch=master)](https://coveralls.io/github/rdf-elixir/jsonld-ex?branch=master)
+[![Total Download](https://img.shields.io/hexpm/dt/json_ld.svg)](https://hex.pm/packages/json_ld)
+[![License](https://img.shields.io/hexpm/l/json_ld.svg)](https://github.com/rdf-elixir/jsonld-ex/blob/master/LICENSE.md)
+
+[![ExUnit Tests](https://github.com/rdf-elixir/jsonld-ex/actions/workflows/elixir-build-and-test.yml/badge.svg)](https://github.com/rdf-elixir/jsonld-ex/actions/workflows/elixir-build-and-test.yml)
+[![Dialyzer](https://github.com/rdf-elixir/jsonld-ex/actions/workflows/elixir-dialyzer.yml/badge.svg)](https://github.com/rdf-elixir/jsonld-ex/actions/workflows/elixir-dialyzer.yml)
+[![Quality Checks](https://github.com/rdf-elixir/jsonld-ex/actions/workflows/elixir-quality-checks.yml/badge.svg)](https://github.com/rdf-elixir/jsonld-ex/actions/workflows/elixir-quality-checks.yml)
 
 
 An implementation of the [JSON-LD] standard for Elixir and [RDF.ex].
@@ -14,7 +20,7 @@ The API documentation can be found [here](https://hexdocs.pm/json_ld/). For a gu
 
 ## Features
 
-- fully conforming JSON-LD API processor
+- fully conforming JSON-LD 1.0 API processor
 - JSON-LD reader/writer for [RDF.ex]
 - tests of the [JSON-LD test suite][] (see [here](https://github.com/rdf-elixir/jsonld-ex/wiki/JSON-LD.ex-implementation-report) for a detailed status report)
 
