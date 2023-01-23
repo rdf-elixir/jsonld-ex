@@ -5,6 +5,16 @@ This project adheres to [Semantic Versioning](http://semver.org/) and
 [Keep a CHANGELOG](http://keepachangelog.com).
 
 
+## 0.3.7 - 2023-01-23
+
+### Added
+
+- Support Link header when fetching remote contexts ([@cheerfulstoic](https://github.com/cheerfulstoic))
+
+[Compare v0.3.6...v0.3.7](https://github.com/rdf-elixir/jsonld-ex/compare/v0.3.6...v0.3.7)
+
+
+
 ## 0.3.6 - 2022-11-03
 
 This version is just upgraded to RDF.ex 1.0.
