@@ -5,6 +5,16 @@ This project adheres to [Semantic Versioning](http://semver.org/) and
 [Keep a CHANGELOG](http://keepachangelog.com).
 
 
+## 0.3.8 - 2023-12-18
+
+### Added
+
+- Support for httpoison 2.0 ([@maennchen](https://github.com/maennchen))
+
+[Compare v0.3.7...v0.3.8](https://github.com/rdf-elixir/jsonld-ex/compare/v0.3.7...v0.3.8)
+
+
+
 ## 0.3.7 - 2023-01-23
 
 ### Added
