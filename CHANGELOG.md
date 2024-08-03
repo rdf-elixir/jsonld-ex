@@ -5,6 +5,14 @@ This project adheres to [Semantic Versioning](http://semver.org/) and
 [Keep a CHANGELOG](http://keepachangelog.com).
 
 
+## Unreleased
+
+Elixir versions < 1.13 and OTP version < 23 are no longer supported
+
+[Compare v0.3.8...HEAD](https://github.com/rdf-elixir/jsonld-ex/compare/v0.3.8...HEAD)
+
+
+
 ## 0.3.8 - 2023-12-18
 
 ### Added
