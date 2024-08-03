@@ -621,8 +621,10 @@ defmodule JSON.LD.EncoderTest do
         }
       }
 
-      assert JSON.LD.Encoder.encode!(graph, context: context_with_atom_keys, pretty: true) ==
-               expected_result
+      assert graph
+             |> JSON.LD.Encoder.encode!(context: context_with_atom_keys, pretty: true)
+             |> Jason.decode!() ==
+               Jason.decode!(expected_result)
     end
 
     test ":context with a remote context" do
