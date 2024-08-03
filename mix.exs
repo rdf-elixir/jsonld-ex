@@ -69,7 +69,7 @@ defmodule JSON.LD.Mixfile do
       {:castore, "~> 1.0", only: [:dev, :test], runtime: false},
       {:dialyxir, "~> 1.2", only: :dev, runtime: false},
       {:credo, "~> 1.6", only: [:dev, :test], runtime: false},
-      {:ex_doc, "~> 0.29", only: :dev, runtime: false},
+      {:ex_doc, "~> 0.34", only: :dev, runtime: false},
       {:bypass, "~> 2.1", only: :test},
       {:excoveralls, "~> 0.15", only: :test}
     ]
