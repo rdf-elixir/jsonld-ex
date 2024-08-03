@@ -321,12 +321,12 @@ defmodule JSON.LD.IRICompactionTest do
 
     %{
       "term" => [
-        '{ "@value": "v0.1", "@language": "de" }',
-        '{ "@value": "v0.2", "@language": "en" }',
-        '{ "@value": "v0.3"}',
-        '{ "@value": 4}',
-        '{ "@value": true}',
-        '{ "@value": false}'
+        ~s'{ "@value": "v0.1", "@language": "de" }',
+        ~s'{ "@value": "v0.2", "@language": "en" }',
+        ~s'{ "@value": "v0.3"}',
+        ~s'{ "@value": 4}',
+        ~s'{ "@value": true}',
+        ~s'{ "@value": false}'
       ],
       "term1" => """
       {
