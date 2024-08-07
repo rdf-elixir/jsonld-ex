@@ -5,13 +5,13 @@ This project adheres to [Semantic Versioning](http://semver.org/) and
 [Keep a CHANGELOG](http://keepachangelog.com).
 
 
-## Unreleased
+## 0.3.9 - 2024-08-07
 
 This version is just upgraded to RDF.ex 2.0.
 
 Elixir versions < 1.13 and OTP version < 23 are no longer supported
 
-[Compare v0.3.8...HEAD](https://github.com/rdf-elixir/jsonld-ex/compare/v0.3.8...HEAD)
+[Compare v0.3.8...v0.3.9](https://github.com/rdf-elixir/jsonld-ex/compare/v0.3.8...v0.3.9)
 
 
 
