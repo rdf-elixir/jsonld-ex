@@ -37,56 +37,62 @@ defmodule JSON.LD.Decoder do
       |> JSON.LD.node_map(node_id_map)
       |> Enum.sort_by(fn {graph_name, _} -> graph_name end)
       |> Enum.reduce(Dataset.new(), fn {graph_name, graph}, dataset ->
-        unless relative_iri?(graph_name) do
+        # 1.1)
+        if graph_name != "@default" and not well_formed_iri?(graph_name) and
+             not blank_node_id?(graph_name) do
+          dataset
+        else
+          # 1.3)
           rdf_graph =
             graph
             |> Enum.sort_by(fn {subject, _} -> subject end)
             |> Enum.reduce(Graph.new(), fn {subject, node}, rdf_graph ->
-              unless relative_iri?(subject) do
+              # 1.3.1)
+              if not well_formed_iri?(subject) and not blank_node_id?(subject) do
+                rdf_graph
+              else
+                # 1.3.2)
                 node
                 |> Enum.sort_by(fn {property, _} -> property end)
                 |> Enum.reduce(rdf_graph, fn {property, values}, rdf_graph ->
                   cond do
+                    # 1.3.2.1)
                     property == "@type" ->
-                      Graph.add(
-                        rdf_graph,
-                        {node_to_rdf(subject), NS.RDF.type(), Enum.map(values, &node_to_rdf/1)}
-                      )
+                      if subject = node_to_rdf(subject) do
+                        objects = values |> Enum.map(&node_to_rdf/1) |> Enum.reject(&is_nil/1)
 
+                        Graph.add(rdf_graph, {subject, NS.RDF.type(), objects})
+                      else
+                        rdf_graph
+                      end
+
+                    # 1.3.2.2)
                     JSON.LD.keyword?(property) ->
                       rdf_graph
 
+                    # 1.3.2.3)
                     not options.produce_generalized_rdf and blank_node_id?(property) ->
                       rdf_graph
 
-                    relative_iri?(property) ->
+                    # 1.3.2.4)
+                    not well_formed_iri?(property) ->
                       rdf_graph
 
+                    # 1.3.2.5)
                     true ->
-                      Enum.reduce(values, rdf_graph, fn
-                        %{"@list" => list}, rdf_graph ->
-                          with {list_triples, first} <- list_to_rdf(list, node_id_map) do
+                      Enum.reduce(values, rdf_graph, fn item, rdf_graph ->
+                        case object_to_rdf(item, node_id_map, options) do
+                          {_list_triples, nil} ->
                             rdf_graph
-                            |> Graph.add({node_to_rdf(subject), node_to_rdf(property), first})
+
+                          {list_triples, object} ->
+                            rdf_graph
+                            |> Graph.add({node_to_rdf(subject), node_to_rdf(property), object})
                             |> Graph.add(list_triples)
-                          end
-
-                        item, rdf_graph ->
-                          case object_to_rdf(item) do
-                            nil ->
-                              rdf_graph
-
-                            object ->
-                              Graph.add(
-                                rdf_graph,
-                                {node_to_rdf(subject), node_to_rdf(property), object}
-                              )
-                          end
+                        end
                       end)
                   end
                 end)
-              else
-                rdf_graph
               end
             end)
 
@@ -96,13 +102,15 @@ defmodule JSON.LD.Decoder do
             graph_name = if graph_name == "@default", do: nil, else: graph_name
             Dataset.add(dataset, rdf_graph, graph: graph_name)
           end
-        else
-          dataset
         end
       end)
     after
       NodeIdentifierMap.stop(node_id_map)
     end
+  end
+
+  defp well_formed_iri?(iri) do
+    valid_uri?(iri)
   end
 
   @spec parse_json(String.t(), [Jason.decode_opt()]) ::
@@ -118,25 +126,51 @@ defmodule JSON.LD.Decoder do
 
   @spec node_to_rdf(String.t()) :: IRI.t() | BlankNode.t()
   def node_to_rdf(node) do
-    if blank_node_id?(node) do
-      node
-      |> String.trim_leading("_:")
-      |> RDF.bnode()
-    else
-      RDF.uri(node)
+    cond do
+      blank_node_id?(node) -> node |> String.trim_leading("_:") |> RDF.bnode()
+      well_formed_iri?(node) -> RDF.uri(node)
+      true -> nil
     end
   end
 
-  @spec object_to_rdf(map) :: IRI.t() | BlankNode.t() | Literal.t() | nil
-  defp object_to_rdf(%{"@id" => id}) do
-    unless relative_iri?(id), do: node_to_rdf(id)
+  # Object to RDF Conversion - https://www.w3.org/TR/json-ld11-api/#object-to-rdf-conversion
+  defp object_to_rdf(item, node_id_map, options)
+  # 1) and 2)
+  defp object_to_rdf(%{"@id" => id}, _node_id_map, _options) do
+    {[], node_to_rdf(id)}
   end
 
-  defp object_to_rdf(%{"@value" => value} = item) do
+  # 3)
+  defp object_to_rdf(%{"@list" => list}, node_id_map, options) do
+    list_to_rdf(list, node_id_map, options)
+  end
+
+  # 4)
+  defp object_to_rdf(%{"@value" => value} = item, _node_id_map, options) do
+    # 5)
     datatype = item["@type"]
 
     {value, datatype} =
       cond do
+        # 6)
+        not is_nil(datatype) and relative_iri?(datatype) and datatype != "@json" ->
+          {nil, datatype}
+
+        # 7)
+        Map.has_key?(item, "@language") and not relative_iri?(item["@language"]) ->
+          {nil, datatype}
+
+        # 8)
+        datatype == "@json" ->
+          value =
+            value
+            |> RDF.JSON.new(as_value: true)
+            |> RDF.JSON.canonical()
+            |> RDF.JSON.lexical()
+
+          {value, RDF.iri(RDF.JSON)}
+
+        # 9)
         is_boolean(value) ->
           value =
             value
@@ -147,7 +181,10 @@ defmodule JSON.LD.Decoder do
           datatype = if is_nil(datatype), do: NS.XSD.boolean(), else: datatype
           {value, datatype}
 
-        is_float(value) or (is_number(value) and datatype == to_string(NS.XSD.double())) ->
+        # 10)
+        is_number(value) and
+            (datatype == to_string(NS.XSD.double()) or value != trunc(value) or
+               value >= 1.0e21) ->
           value =
             value
             |> XSD.Double.new()
@@ -157,9 +194,10 @@ defmodule JSON.LD.Decoder do
           datatype = if is_nil(datatype), do: NS.XSD.double(), else: datatype
           {value, datatype}
 
-        is_integer(value) or (is_number(value) and datatype == to_string(NS.XSD.integer())) ->
+        # 11)
+        is_number(value) ->
           value =
-            value
+            if(is_float(value), do: trunc(value), else: value)
             |> XSD.Integer.new()
             |> XSD.Integer.canonical()
             |> XSD.Integer.lexical()
@@ -167,6 +205,7 @@ defmodule JSON.LD.Decoder do
           datatype = if is_nil(datatype), do: NS.XSD.integer(), else: datatype
           {value, datatype}
 
+        # 12)
         is_nil(datatype) ->
           datatype =
             if Map.has_key?(item, "@language"), do: RDF.langString(), else: NS.XSD.string()
@@ -177,37 +216,70 @@ defmodule JSON.LD.Decoder do
           {value, datatype}
       end
 
-    if language = item["@language"] do
-      Literal.new(value, language: language, canonicalize: true)
-    else
-      Literal.new(value, datatype: datatype, canonicalize: true)
+    cond do
+      is_nil(value) ->
+        {[], nil}
+
+      # 13)
+      Map.has_key?(item, "@direction") and not is_nil(options.rdf_direction) ->
+        # 13.1)
+        language = String.downcase(item["@language"] || "")
+        direction = item["@direction"]
+
+        case options.rdf_direction do
+          # 13.2)
+          "i18n-datatype" ->
+            {[],
+             Literal.new(value, datatype: "https://www.w3.org/ns/i18n##{language}_#{direction}")}
+
+          # 13.3)
+          "compound-literal" ->
+            literal = RDF.bnode()
+
+            list_triples =
+              [
+                {literal, RDF.value(), value},
+                {literal, RDF.iri(RDF.__base_iri__() <> "direction"), direction}
+              ]
+
+            list_triples =
+              if Map.has_key?(item, "@language") do
+                [{literal, RDF.iri(RDF.__base_iri__() <> "language"), language} | list_triples]
+              else
+                list_triples
+              end
+
+            {list_triples, literal}
+        end
+
+      # 14)
+      language = item["@language"] ->
+        {
+          [],
+          if(valid_language?(language),
+            do: Literal.new(value, language: language, canonicalize: true)
+          )
+        }
+
+      true ->
+        {[], Literal.new(value, datatype: datatype, canonicalize: true)}
     end
   end
 
-  @spec list_to_rdf([map], pid) :: {[Statement.t()], IRI.t() | BlankNode.t()}
-  defp list_to_rdf(list, node_id_map) do
+  @spec list_to_rdf([map], pid, Options.t()) :: {[Statement.t()], IRI.t() | BlankNode.t()}
+  defp list_to_rdf(list, node_id_map, options) do
     {list_triples, first, last} =
       Enum.reduce(list, {[], nil, nil}, fn item, {list_triples, first, last} ->
-        case object_to_rdf(item) do
-          nil ->
-            {list_triples, first, last}
-
-          object ->
-            bnode = node_to_rdf(generate_blank_node_id(node_id_map))
+        case object_to_rdf(item, node_id_map, options) do
+          {more_list_triples, object} ->
+            bnode = RDF.bnode(generate_blank_node_id(node_id_map))
+            list_triples = more_list_triples ++ list_triples
+            object_triples = if object, do: [{bnode, NS.RDF.first(), object}], else: []
 
             if last do
-              {
-                list_triples ++
-                  [{last, NS.RDF.rest(), bnode}, {bnode, NS.RDF.first(), object}],
-                first,
-                bnode
-              }
+              {list_triples ++ [{last, NS.RDF.rest(), bnode} | object_triples], first, bnode}
             else
-              {
-                list_triples ++ [{bnode, NS.RDF.first(), object}],
-                bnode,
-                bnode
-              }
+              {object_triples ++ list_triples, bnode, bnode}
             end
         end
       end)
@@ -218,24 +290,4 @@ defmodule JSON.LD.Decoder do
       {[], NS.RDF.nil()}
     end
   end
-
-  # This is a much nicer and faster version, but the blank node numbering is reversed.
-  # Although this isn't relevant, I prefer to be more spec conform (for now).
-  # defp list_to_rdf(list, node_id_map) do
-  #   list
-  #   |> Enum.reverse
-  #   |> Enum.reduce({[], RDF.NS.RDF.nil}, fn (item, {list_triples, last}) ->
-  #        case object_to_rdf(item) do
-  #          nil    -> {list_triples, last}
-  #          object ->
-  #            with bnode = node_to_rdf(generate_blank_node_id(node_id_map)) do
-  #              {
-  #                [{bnode, RDF.NS.RDF.first, object},
-  #                 {bnode, RDF.NS.RDF.rest,  last  } | list_triples],
-  #                bnode
-  #              }
-  #            end
-  #        end
-  #      end)
-  # end
 end

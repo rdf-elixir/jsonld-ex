@@ -1,12 +1,31 @@
 defmodule JSON.LD.TestSuite do
   @moduledoc """
-  Helpers to run the test of the W3C JSON-LD test suite.
+  General helper functions for the W3C test suites.
   """
 
-  @test_suite_dir "json-ld.org-test-suite"
-  def test_suite_dir, do: @test_suite_dir
+  defmodule NS do
+    @moduledoc false
+    use RDF.Vocabulary.Namespace
 
-  def file(name), do: JSON.LD.TestData.file(Path.join(@test_suite_dir, name))
+    defvocab MF,
+      base_iri: "http://www.w3.org/2001/sw/DataAccess/tests/test-manifest#",
+      terms: [],
+      strict: false
+
+    defvocab JLD,
+      base_iri: "https://w3c.github.io/json-ld-api/tests/vocab#",
+      file: Path.absname("test/data/json-ld-api-tests/vocab.ttl"),
+      strict: false
+  end
+
+  @compile {:no_warn_undefined, JSON.LD.TestSuite.NS.MF}
+  @compile {:no_warn_undefined, JSON.LD.TestSuite.NS.JLD}
+
+  @path JSON.LD.TestData.file("json-ld-api-tests")
+
+  def file({type, name}), do: file(type, name)
+  def file(name), do: Path.join(@path, name)
+  def file(type, name), do: Path.join([@path, to_string(type), name])
 
   def parse_json_file!(file) do
     case File.read(file(file)) do
@@ -15,17 +34,24 @@ defmodule JSON.LD.TestSuite do
     end
   end
 
-  def j(file), do: parse_json_file!(file)
+  defdelegate j(file), to: __MODULE__, as: :parse_json_file!
 
-  def manifest_filename(type), do: "#{to_string(type)}-manifest.jsonld"
+  def manifest_file(type), do: "#{type}-manifest.jsonld"
 
   def manifest(type) do
     type
-    |> manifest_filename
-    |> parse_json_file!
+    |> manifest_file()
+    |> parse_json_file!()
   end
 
-  def test_cases(type), do: manifest(type)["sequence"]
+  def base_iri(%{"baseIri" => base_iri}), do: base_iri
+
+  def expanded_base_iri(%{"baseIri" => base_iri}) do
+    base_iri
+  end
+
+  def test_cases(type) when is_binary(type), do: type |> manifest() |> test_cases()
+  def test_cases(manifest), do: manifest["sequence"]
 
   def test_cases_by_type(test_cases) do
     Enum.group_by(test_cases, fn %{"@type" => type} ->
@@ -64,5 +90,13 @@ defmodule JSON.LD.TestSuite do
       |> String.replace("_", "")
 
     String.to_existing_atom("Elixir.JSON.LD.#{error}Error")
+  end
+
+  defmacro skip_json_ld_1_0_test(test_case) do
+    quote do
+      if get_in(unquote(test_case), ["option", "specVersion"]) == "json-ld-1.0" do
+        @tag skip: "JSON-LD 1.0 test"
+      end
+    end
   end
 end

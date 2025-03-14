@@ -1,23 +1,7 @@
 defmodule JSON.LD.EncoderTest do
-  use ExUnit.Case, async: false
+  use JSON.LD.Case, async: false
 
   doctest JSON.LD.Encoder
-
-  alias RDF.{Dataset, Graph, Description, IRI}
-  alias RDF.NS
-
-  import RDF.Sigils
-
-  defmodule TestNS do
-    use RDF.Vocabulary.Namespace
-    defvocab EX, base_iri: "http://example.com/", terms: [], strict: false
-    defvocab S, base_iri: "http://schema.org/", terms: [], strict: false
-  end
-
-  alias TestNS.{EX, S}
-
-  @compile {:no_warn_undefined, JSON.LD.EncoderTest.TestNS.EX}
-  @compile {:no_warn_undefined, JSON.LD.EncoderTest.TestNS.S}
 
   def gets_serialized_to(input, output, opts \\ []) do
     data_structs = Keyword.get(opts, :data_structs, [Dataset, Graph])
@@ -198,10 +182,8 @@ defmodule JSON.LD.EncoderTest do
       )
     end
 
-    @tag skip:
-           "TODO: Is this spec conformant or RDF.rb specific? RDF.rb doesn't use the specified RDF to Object Conversion algorithm but reuses a generalized expand_value algorithm"
     test "decimal" do
-      {EX.a(), EX.b(), RDF.literal(1.0)}
+      {EX.a(), EX.b(), RDF.XSD.decimal(1.0)}
       |> gets_serialized_to(
         [
           %{
@@ -212,6 +194,21 @@ defmodule JSON.LD.EncoderTest do
           }
         ],
         use_native_types: true
+      )
+    end
+
+    test "decimal (non-native)" do
+      {EX.a(), EX.b(), RDF.XSD.decimal(1.0)}
+      |> gets_serialized_to(
+        [
+          %{
+            "@id" => "http://example.com/a",
+            "http://example.com/b" => [
+              %{"@value" => "1.0", "@type" => "http://www.w3.org/2001/XMLSchema#decimal"}
+            ]
+          }
+        ],
+        use_native_types: false
       )
     end
 
@@ -228,8 +225,6 @@ defmodule JSON.LD.EncoderTest do
       )
     end
 
-    @tag skip:
-           "TODO: Is this spec conformant or RDF.rb specific? RDF.rb doesn't use the specified RDF to Object Conversion algorithm but reuses a generalized expand_value algorithm"
     test "double (non-native)" do
       {EX.a(), EX.b(), RDF.literal(1.0e0)}
       |> gets_serialized_to(
@@ -243,6 +238,88 @@ defmodule JSON.LD.EncoderTest do
         ],
         use_native_types: false
       )
+    end
+  end
+
+  describe "rdf:JSON literals" do
+    test "with @type: @json for boolean true" do
+      {EX.id(), EX.bool(), RDF.literal("true", datatype: NS.RDF.JSON)}
+      |> gets_serialized_to([
+        %{
+          "@id" => "http://example.com/id",
+          "http://example.com/bool" => [%{"@value" => true, "@type" => "@json"}]
+        }
+      ])
+    end
+
+    test "with @type: @json for boolean false" do
+      {EX.id(), EX.bool(), RDF.literal("false", datatype: NS.RDF.JSON)}
+      |> gets_serialized_to([
+        %{
+          "@id" => "http://example.com/id",
+          "http://example.com/bool" => [%{"@value" => false, "@type" => "@json"}]
+        }
+      ])
+    end
+
+    test "with @type: @json for double" do
+      {EX.id(), EX.double(), RDF.literal("1.23E0", datatype: NS.RDF.JSON)}
+      |> gets_serialized_to([
+        %{
+          "@id" => "http://example.com/id",
+          "http://example.com/double" => [%{"@value" => 1.23e0, "@type" => "@json"}]
+        }
+      ])
+    end
+
+    test "with @type: @json for integer" do
+      {EX.id(), EX.integer(), RDF.literal("123", datatype: NS.RDF.JSON)}
+      |> gets_serialized_to([
+        %{
+          "@id" => "http://example.com/id",
+          "http://example.com/integer" => [%{"@value" => 123, "@type" => "@json"}]
+        }
+      ])
+    end
+
+    test "with @type: @json for string" do
+      {EX.id(), EX.string(), RDF.literal("\"string\"", datatype: NS.RDF.JSON)}
+      |> gets_serialized_to([
+        %{
+          "@id" => "http://example.com/id",
+          "http://example.com/string" => [%{"@value" => "string", "@type" => "@json"}]
+        }
+      ])
+    end
+
+    test "with @type: @json for null" do
+      {EX.id(), EX.null(), RDF.literal("null", datatype: NS.RDF.JSON)}
+      |> gets_serialized_to([
+        %{
+          "@id" => "http://example.com/id",
+          "http://example.com/null" => [%{"@value" => nil, "@type" => "@json"}]
+        }
+      ])
+    end
+
+    test "with @type: @json for object" do
+      {EX.id(), EX.object(), RDF.literal("{\"foo\":\"bar\"}", datatype: NS.RDF.JSON)}
+      |> gets_serialized_to([
+        %{
+          "@id" => "http://example.com/id",
+          "http://example.com/object" => [%{"@value" => %{"foo" => "bar"}, "@type" => "@json"}]
+        }
+      ])
+    end
+
+    test "with @type: @json for array" do
+      {EX.id(), EX.array(), RDF.literal("[{\"foo\":\"bar\"}]", datatype: NS.RDF.JSON)}
+      |> gets_serialized_to([
+        %{
+          "@id" => "http://example.com/id",
+          "http://example.com/array" => [%{"@value" => [%{"foo" => "bar"}], "@type" => "@json"}]
+        }
+      ])
     end
   end
 
@@ -297,6 +374,81 @@ defmodule JSON.LD.EncoderTest do
         "http://example.com/b" => [%{"@value" => "foo", "@language" => "en-us"}]
       }
     ])
+  end
+
+  describe "@direction (with rdfDirection: i18n-datatype)" do
+    test "no language rtl datatype" do
+      {EX.a(), EX.label(),
+       RDF.literal("no language", datatype: ~I<https://www.w3.org/ns/i18n#_rtl>)}
+      |> gets_serialized_to(
+        [
+          %{
+            "@id" => "http://example.com/a",
+            "http://example.com/label" => [
+              %{"@value" => "no language", "@direction" => "rtl"}
+            ]
+          }
+        ],
+        rdf_direction: "i18n-datatype"
+      )
+    end
+
+    test "with language rtl datatype" do
+      {EX.a(), EX.label(),
+       RDF.literal("en-US", datatype: ~I<https://www.w3.org/ns/i18n#en-US_rtl>)}
+      |> gets_serialized_to(
+        [
+          %{
+            "@id" => "http://example.com/a",
+            "http://example.com/label" => [
+              %{"@value" => "en-US", "@language" => "en-US", "@direction" => "rtl"}
+            ]
+          }
+        ],
+        rdf_direction: "i18n-datatype"
+      )
+    end
+  end
+
+  describe "@direction (with rdfDirection: compound-literal)" do
+    test "no language rtl compound-literal" do
+      [
+        {EX.a(), EX.label(), RDF.bnode(:cl1)},
+        {RDF.bnode(:cl1), NS.RDF.value(), RDF.literal("no language")},
+        {RDF.bnode(:cl1), RDF.iri(RDF.__base_iri__() <> "direction"), RDF.literal("rtl")}
+      ]
+      |> gets_serialized_to(
+        [
+          %{
+            "@id" => "http://example.com/a",
+            "http://example.com/label" => [
+              %{"@value" => "no language", "@direction" => "rtl"}
+            ]
+          }
+        ],
+        rdf_direction: "compound-literal"
+      )
+    end
+
+    test "with language rtl compound-literal" do
+      [
+        {EX.a(), EX.label(), RDF.bnode(:cl1)},
+        {RDF.bnode(:cl1), NS.RDF.value(), RDF.literal("en-US")},
+        {RDF.bnode(:cl1), RDF.iri(RDF.__base_iri__() <> "language"), RDF.literal("en-US")},
+        {RDF.bnode(:cl1), RDF.iri(RDF.__base_iri__() <> "direction"), RDF.literal("rtl")}
+      ]
+      |> gets_serialized_to(
+        [
+          %{
+            "@id" => "http://example.com/a",
+            "http://example.com/label" => [
+              %{"@value" => "en-US", "@language" => "en-US", "@direction" => "rtl"}
+            ]
+          }
+        ],
+        rdf_direction: "compound-literal"
+      )
+    end
   end
 
   describe "blank nodes" do
@@ -427,7 +579,7 @@ defmodule JSON.LD.EncoderTest do
         ],
         [
           %{
-            "@id" => "http://www.example.com/G",
+            "@id" => "http://example.com/G",
             "@graph" => [
               %{
                 "@id" => "_:z0",
@@ -440,17 +592,17 @@ defmodule JSON.LD.EncoderTest do
                 "http://www.w3.org/1999/02/22-rdf-syntax-ns#rest" => [%{"@list" => []}]
               },
               %{
-                "@id" => "http://www.example.com/z",
-                "http://www.example.com/q" => [%{"@id" => "_:z0"}]
+                "@id" => "http://example.com/z",
+                "http://example.com/q" => [%{"@id" => "_:z0"}]
               }
             ]
           },
           %{
-            "@id" => "http://www.example.com/G1",
+            "@id" => "http://example.com/G1",
             "@graph" => [
               %{
-                "@id" => "http://www.example.com/x",
-                "http://www.example.com/p" => [%{"@id" => "_:z1"}]
+                "@id" => "http://example.com/x",
+                "http://example.com/p" => [%{"@id" => "_:z1"}]
               }
             ]
           }
@@ -769,6 +921,41 @@ defmodule JSON.LD.EncoderTest do
                }
                """
                |> String.trim()
+    end
+
+    test "rdf_direction option with i18n-datatype" do
+      {EX.a(), EX.label(),
+       RDF.literal("text with direction", datatype: ~I<https://www.w3.org/ns/i18n#_rtl>)}
+      |> gets_serialized_to(
+        [
+          %{
+            "@id" => "http://example.com/a",
+            "http://example.com/label" => [
+              %{"@value" => "text with direction", "@direction" => "rtl"}
+            ]
+          }
+        ],
+        rdf_direction: "i18n-datatype"
+      )
+    end
+
+    test "rdf_direction option with compound-literal" do
+      [
+        {EX.a(), EX.label(), RDF.bnode(:cl1)},
+        {RDF.bnode(:cl1), NS.RDF.value(), RDF.literal("text with direction")},
+        {RDF.bnode(:cl1), RDF.iri(RDF.__base_iri__() <> "direction"), RDF.literal("rtl")}
+      ]
+      |> gets_serialized_to(
+        [
+          %{
+            "@id" => "http://example.com/a",
+            "http://example.com/label" => [
+              %{"@value" => "text with direction", "@direction" => "rtl"}
+            ]
+          }
+        ],
+        rdf_direction: "compound-literal"
+      )
     end
   end
 

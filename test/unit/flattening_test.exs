@@ -1,5 +1,7 @@
 defmodule JSON.LD.FlatteningTest do
-  use ExUnit.Case, async: false
+  use JSON.LD.Case, async: false
+
+  doctest JSON.LD.Flattening
 
   alias RDF.NS.RDFS
 
@@ -278,6 +280,239 @@ defmodule JSON.LD.FlatteningTest do
           ]
         """),
       options: %{}
+    },
+    "@list with embedded object" => %{
+      input:
+        Jason.decode!("""
+          [{
+            "http://example.com/foo": [{
+              "@list": [{
+                "@id": "http://example.com/baz",
+                "http://example.com/bar": "buz"}
+              ]}
+            ]}
+          ]
+        """),
+      output:
+        Jason.decode!("""
+          [
+            {
+              "@id": "_:b0",
+              "http://example.com/foo": [{
+                "@list": [
+                  {
+                    "@id": "http://example.com/baz"
+                  }
+                ]
+              }]
+            },
+            {
+              "@id": "http://example.com/baz",
+              "http://example.com/bar": [{"@value": "buz"}]
+            }
+          ]
+        """)
+    },
+    "coerced @list containing an deep list" => %{
+      input:
+        Jason.decode!("""
+          [{
+            "http://example.com/foo": [{"@list": [{"@list": [{"@list": [{"@value": "baz"}]}]}]}]
+          }]
+        """),
+      output:
+        Jason.decode!("""
+          [{
+            "@id": "_:b0",
+            "http://example.com/foo": [{"@list": [{"@list": [{"@list": [{"@value": "baz"}]}]}]}]
+          }]
+        """)
+    },
+    "@list containing empty @list" => %{
+      input:
+        Jason.decode!("""
+          {
+            "http://example.com/foo": {"@list": [{"@list": []}]}
+          }
+        """),
+      output:
+        Jason.decode!("""
+          [{
+            "@id": "_:b0",
+            "http://example.com/foo": [{"@list": [{"@list": []}]}]
+          }]
+        """)
+    },
+    "coerced @list containing mixed list values" => %{
+      input:
+        Jason.decode!("""
+          {
+            "@context": {"foo": {"@id": "http://example.com/foo", "@container": "@list"}},
+            "foo": [
+              [{"@id": "http://example/a", "@type": "http://example/Bar"}],
+              {"@id": "http://example/b", "@type": "http://example/Baz"}]
+          }
+        """),
+      output:
+        Jason.decode!("""
+          [{
+            "@id": "_:b0",
+            "http://example.com/foo": [{"@list": [
+              {"@list": [{"@id": "http://example/a"}]},
+              {"@id": "http://example/b"}
+            ]}]
+          },
+          {
+            "@id": "http://example/a",
+            "@type": [
+              "http://example/Bar"
+            ]
+          },
+          {
+            "@id": "http://example/b",
+            "@type": [
+              "http://example/Baz"
+            ]
+          }]
+        """)
+    },
+    "Basic Included array" => %{
+      input:
+        Jason.decode!("""
+          {
+            "@context": {
+              "@version": 1.1,
+              "@vocab": "http://example.org/"
+            },
+            "prop": "value",
+            "@included": [{
+              "prop": "value2"
+            }]
+          }
+        """),
+      output:
+        Jason.decode!("""
+          [{
+            "@id": "_:b0",
+            "http://example.org/prop": [{"@value": "value"}]
+          }, {
+            "@id": "_:b1",
+            "http://example.org/prop": [{"@value": "value2"}]
+          }]
+        """)
+    },
+    "Basic Included object" => %{
+      input:
+        Jason.decode!("""
+          {
+            "@context": {
+              "@version": 1.1,
+              "@vocab": "http://example.org/"
+            },
+            "prop": "value",
+            "@included": {
+              "prop": "value2"
+            }
+          }
+        """),
+      output:
+        Jason.decode!("""
+          [{
+            "@id": "_:b0",
+            "http://example.org/prop": [{"@value": "value"}]
+          }, {
+            "@id": "_:b1",
+            "http://example.org/prop": [{"@value": "value2"}]
+          }]
+        """)
+    },
+    "Multiple properties mapping to @included are folded together" => %{
+      input:
+        Jason.decode!("""
+          {
+            "@context": {
+              "@version": 1.1,
+              "@vocab": "http://example.org/",
+              "included1": "@included",
+              "included2": "@included"
+            },
+            "included1": {"prop": "value1"},
+            "included2": {"prop": "value2"}
+          }
+        """),
+      output:
+        Jason.decode!("""
+          [{
+            "@id": "_:b1",
+            "http://example.org/prop": [{"@value": "value2"}]
+          }, {
+            "@id": "_:b2",
+            "http://example.org/prop": [{"@value": "value1"}]
+          }]
+        """)
+    },
+    "Included containing @included" => %{
+      input:
+        Jason.decode!("""
+          {
+            "@context": {
+              "@version": 1.1,
+              "@vocab": "http://example.org/"
+            },
+            "prop": "value",
+            "@included": {
+              "prop": "value2",
+              "@included": {
+                "prop": "value3"
+              }
+            }
+          }
+        """),
+      output:
+        Jason.decode!("""
+          [{
+            "@id": "_:b0",
+            "http://example.org/prop": [{"@value": "value"}]
+          }, {
+            "@id": "_:b1",
+            "http://example.org/prop": [{"@value": "value2"}]
+          }, {
+            "@id": "_:b2",
+            "http://example.org/prop": [{"@value": "value3"}]
+          }]
+        """)
+    },
+    "Property value with @included" => %{
+      input:
+        Jason.decode!("""
+          {
+            "@context": {
+              "@version": 1.1,
+              "@vocab": "http://example.org/"
+            },
+            "prop": {
+              "@type": "Foo",
+              "@included": {
+                "@type": "Bar"
+              }
+            }
+          }
+        """),
+      output:
+        Jason.decode!("""
+          [{
+            "@id": "_:b0",
+            "http://example.org/prop": [
+              {"@id": "_:b1"}
+            ]
+          }, {
+            "@id": "_:b1",
+            "@type": ["http://example.org/Foo"]
+          }, {
+            "@id": "_:b2",
+            "@type": ["http://example.org/Bar"]
+          }]
+        """)
     }
   }
   |> Enum.each(fn {title, data} ->
@@ -286,4 +521,146 @@ defmodule JSON.LD.FlatteningTest do
       assert JSON.LD.flatten(data.input) == data.output
     end
   end)
+
+  test "json.api example" do
+    input =
+      Jason.decode!("""
+        {
+          "@context": {
+            "@version": 1.1,
+            "@vocab": "http://example.org/vocab#",
+            "@base": "http://example.org/base/",
+            "id": "@id",
+            "type": "@type",
+            "data": "@nest",
+            "attributes": "@nest",
+            "links": "@nest",
+            "relationships": "@nest",
+            "included": "@included",
+            "self": {"@type": "@id"},
+            "related": {"@type": "@id"},
+            "comments": {
+              "@context": {
+                "data": null
+              }
+            }
+          },
+          "data": [{
+            "type": "articles",
+            "id": "1",
+            "attributes": {
+              "title": "JSON:API paints my bikeshed!"
+            },
+            "links": {
+              "self": "http://example.com/articles/1"
+            },
+            "relationships": {
+              "author": {
+                "links": {
+                  "self": "http://example.com/articles/1/relationships/author",
+                  "related": "http://example.com/articles/1/author"
+                },
+                "data": { "type": "people", "id": "9" }
+              },
+              "comments": {
+                "links": {
+                  "self": "http://example.com/articles/1/relationships/comments",
+                  "related": "http://example.com/articles/1/comments"
+                },
+                "data": [
+                  { "type": "comments", "id": "5" },
+                  { "type": "comments", "id": "12" }
+                ]
+              }
+            }
+          }],
+          "included": [{
+            "type": "people",
+            "id": "9",
+            "attributes": {
+              "first-name": "Dan",
+              "last-name": "Gebhardt",
+              "twitter": "dgeb"
+            },
+            "links": {
+              "self": "http://example.com/people/9"
+            }
+          }, {
+            "type": "comments",
+            "id": "5",
+            "attributes": {
+              "body": "First!"
+            },
+            "relationships": {
+              "author": {
+                "data": { "type": "people", "id": "2" }
+              }
+            },
+            "links": {
+              "self": "http://example.com/comments/5"
+            }
+          }, {
+            "type": "comments",
+            "id": "12",
+            "attributes": {
+              "body": "I like XML better"
+            },
+            "relationships": {
+              "author": {
+                "data": { "type": "people", "id": "9" }
+              }
+            },
+            "links": {
+              "self": "http://example.com/comments/12"
+            }
+          }]
+        }
+      """)
+
+    output =
+      Jason.decode!("""
+        [{
+          "@id": "_:b0",
+          "http://example.org/vocab#self": [{"@id": "http://example.com/articles/1/relationships/comments"}
+          ],
+          "http://example.org/vocab#related": [{"@id": "http://example.com/articles/1/comments"}]
+        }, {
+          "@id": "http://example.org/base/1",
+          "@type": ["http://example.org/vocab#articles"],
+          "http://example.org/vocab#title": [{"@value": "JSON:API paints my bikeshed!"}],
+          "http://example.org/vocab#self": [{"@id": "http://example.com/articles/1"}],
+          "http://example.org/vocab#author": [{"@id": "http://example.org/base/9"}],
+          "http://example.org/vocab#comments": [{"@id": "_:b0"}]
+        }, {
+          "@id": "http://example.org/base/12",
+          "@type": ["http://example.org/vocab#comments"],
+          "http://example.org/vocab#body": [{"@value": "I like XML better"}],
+          "http://example.org/vocab#author": [{"@id": "http://example.org/base/9"}],
+          "http://example.org/vocab#self": [{"@id": "http://example.com/comments/12"}]
+        }, {
+          "@id": "http://example.org/base/2",
+          "@type": ["http://example.org/vocab#people"]
+        }, {
+          "@id": "http://example.org/base/5",
+          "@type": ["http://example.org/vocab#comments"],
+          "http://example.org/vocab#body": [{"@value": "First!"}
+          ],
+          "http://example.org/vocab#author": [{"@id": "http://example.org/base/2"}],
+          "http://example.org/vocab#self": [{"@id": "http://example.com/comments/5"}]
+        }, {
+          "@id": "http://example.org/base/9",
+          "@type": ["http://example.org/vocab#people"],
+          "http://example.org/vocab#first-name": [{"@value": "Dan"}],
+          "http://example.org/vocab#last-name": [{"@value": "Gebhardt"}],
+          "http://example.org/vocab#twitter": [{"@value": "dgeb"}],
+          "http://example.org/vocab#self": [
+            {"@id": "http://example.com/people/9"},
+            {"@id": "http://example.com/articles/1/relationships/author"}
+          ],
+          "http://example.org/vocab#related": [{"@id": "http://example.com/articles/1/author"}]
+        }]
+      """)
+
+    assert JSON.LD.flatten(input) == output
+  end
 end

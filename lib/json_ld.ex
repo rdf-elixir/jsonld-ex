@@ -20,22 +20,32 @@ defmodule JSON.LD do
   @media_type "application/ld+json"
 
   @keywords ~w[
-    @base
-    @container
-    @context
-    @default
-    @graph
-    @id
-    @index
-    @language
-    @list
-    @reverse
-    @set
-    @type
-    @value
-    @vocab
-    :
-  ]
+               @type
+               @base
+               @container
+               @context
+               @default
+               @direction
+               @graph
+               @id
+               @import
+               @included
+               @index
+               @json
+               @language
+               @list
+               @nest
+               @none
+               @prefix
+               @propagate
+               @protected
+               @reverse
+               @set
+               @value
+               @version
+               @vocab
+               :
+              ]
 
   @spec options :: Options.t()
   def options, do: Options.new()

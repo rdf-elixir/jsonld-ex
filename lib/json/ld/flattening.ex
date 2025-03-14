@@ -1,6 +1,8 @@
 defmodule JSON.LD.Flattening do
   @moduledoc """
-  Implementation of the JSON-LD 1.0 Flattening Algorithms.
+  Implementation of the JSON-LD 1.1 Flattening Algorithms.
+
+  <https://www.w3.org/TR/json-ld11-api/#flattening-algorithms>
   """
 
   import JSON.LD.{NodeIdentifierMap, Utils}
@@ -13,47 +15,47 @@ defmodule JSON.LD.Flattening do
     expanded = JSON.LD.expand(input, options)
     node_map = node_map(expanded)
 
-    default_graph =
-      Enum.reduce(node_map, node_map["@default"], fn
-        {"@default", _}, default_graph ->
-          default_graph
+    {default_graph, named_graphs} = Map.pop(node_map, "@default")
 
-        {graph_name, graph}, default_graph ->
-          entry =
-            if Map.has_key?(default_graph, graph_name) do
-              default_graph[graph_name]
-            else
-              %{"@id" => graph_name}
-            end
+    graph_maps =
+      named_graphs
+      |> maybe_sort_by(options.ordered, fn {graph_name, _} -> graph_name end)
+      |> Enum.reduce(default_graph, fn {graph_name, graph}, graph_maps ->
+        entry =
+          if Map.has_key?(graph_maps, graph_name) do
+            graph_maps[graph_name]
+          else
+            %{"@id" => graph_name}
+          end
 
-          graph_entry =
-            graph
-            |> Stream.reject(fn {_, node} ->
-              Map.has_key?(node, "@id") and map_size(node) == 1
-            end)
-            |> Enum.sort_by(fn {id, _} -> id end)
-            # TODO: Spec fixme: Spec doesn't handle the case, when a "@graph" member already exists
-            |> Enum.reduce(Map.get(entry, "@graph", []), fn {_, node}, graph_entry ->
-              [node | graph_entry]
-            end)
-            |> Enum.reverse()
+        graph =
+          Enum.reject(graph, fn {_, node} ->
+            Map.has_key?(node, "@id") and map_size(node) == 1
+          end)
 
-          Map.put(default_graph, graph_name, Map.put(entry, "@graph", graph_entry))
+        graph_entry =
+          graph
+          |> maybe_sort_by(options.ordered, fn {id, _node} -> id end)
+          |> Enum.map(fn {_id, node} -> node end)
+
+        Map.put(
+          graph_maps,
+          graph_name,
+          Map.update(entry, "@graph", graph_entry, fn existing -> existing ++ graph_entry end)
+        )
       end)
 
     flattened =
-      default_graph
-      |> Enum.sort_by(fn {id, _} -> id end)
-      |> Enum.reduce([], fn {_, node}, flattened ->
-        unless Enum.count(node) == 1 and Map.has_key?(node, "@id") do
-          [node | flattened]
+      graph_maps
+      |> maybe_sort_by(options.ordered, fn {id, _node} -> id end)
+      |> Enum.flat_map(fn {_, node} ->
+        if Enum.count(node) == 1 and Map.has_key?(node, "@id") do
+          []
         else
-          flattened
+          [node]
         end
       end)
-      |> Enum.reverse()
 
-    # TODO: Spec fixme: !Enum.empty?(flattened) is not in the spec, but in other implementations (Ruby, Java, Go, ...)
     if context && !Enum.empty?(flattened) do
       JSON.LD.compact(flattened, context, options)
     else
@@ -81,7 +83,7 @@ defmodule JSON.LD.Flattening do
   @doc """
   Node Map Generation
 
-  Details at <https://www.w3.org/TR/json-ld-api/#node-map-generation>
+  <https://www.w3.org/TR/json-ld11-api/#node-map-generation>
   """
   @spec generate_node_map(
           [map] | map,
@@ -144,12 +146,11 @@ defmodule JSON.LD.Flattening do
     element =
       if old_types = Map.get(element, "@type") do
         new_types =
-          Enum.reduce(List.wrap(old_types), [], fn item, types ->
+          Enum.map(List.wrap(old_types), fn item ->
             if blank_node_id?(item) do
-              identifier = generate_blank_node_id(node_id_map, item)
-              types ++ [identifier]
+              generate_blank_node_id(node_id_map, item)
             else
-              types ++ [item]
+              item
             end
           end)
 
@@ -169,7 +170,7 @@ defmodule JSON.LD.Flattening do
           if node do
             update_in(node_map, [active_graph, active_subject, active_property], fn
               nil -> [element]
-              items -> unless element in items, do: items ++ [element], else: items
+              items -> if element not in items, do: items ++ [element], else: items
             end)
           else
             node_map
@@ -201,12 +202,17 @@ defmodule JSON.LD.Flattening do
             terminate_list(result_list)
           end
 
-        if node do
-          update_in(node_map, [active_graph, active_subject, active_property], fn
-            nil -> [result]
-            items -> items ++ [result]
-          end)
+        if is_nil(list) do
+          if node do
+            update_in(node_map, [active_graph, active_subject, active_property], fn
+              nil -> [result]
+              items -> items ++ [result]
+            end)
+          else
+            node_map
+          end
         else
+          append_to_list(list, result)
           node_map
         end
 
@@ -226,7 +232,7 @@ defmodule JSON.LD.Flattening do
 
         # 6.3)
         node_map =
-          unless Map.has_key?(node_map[active_graph], id) do
+          if not Map.has_key?(node_map[active_graph], id) do
             Map.update!(node_map, active_graph, fn graph ->
               Map.put_new(graph, id, %{"@id" => id})
             end)
@@ -234,19 +240,19 @@ defmodule JSON.LD.Flattening do
             node_map
           end
 
-        # 6.4) TODO: Spec fixme: "this line is asked for by the spec, but it breaks various tests" (according to Java and Go implementation, which perform this step before 6.7) instead)
+        # 6.4)
         node = node_map[active_graph][id]
 
         # 6.5)
         node_map =
           if is_map(active_subject) do
-            unless Map.has_key?(node, active_property) do
+            if not Map.has_key?(node, active_property) do
               update_in(node_map, [active_graph, id, active_property], fn
                 nil ->
                   [active_subject]
 
                 items ->
-                  unless active_subject in items, do: items ++ [active_subject], else: items
+                  if active_subject not in items, do: items ++ [active_subject], else: items
               end)
             else
               node_map
@@ -254,20 +260,16 @@ defmodule JSON.LD.Flattening do
 
             # 6.6)
           else
-            unless is_nil(active_property) do
+            if not is_nil(active_property) do
               reference = %{"@id" => id}
 
               if is_nil(list) do
                 update_in(node_map, [active_graph, active_subject, active_property], fn
-                  nil ->
-                    [reference]
-
-                  items ->
-                    unless reference in items, do: items ++ [reference], else: items
+                  nil -> [reference]
+                  items -> if reference not in items, do: items ++ [reference], else: items
                 end)
-
-                # 6.6.3) TODO: Spec fixme: specs says to add ELEMENT to @list member, should be REFERENCE
               else
+                # 6.6.3)
                 append_to_list(list, reference)
                 node_map
               end
@@ -283,12 +285,11 @@ defmodule JSON.LD.Flattening do
               Enum.reduce(element["@type"], node_map, fn type, node_map ->
                 update_in(node_map, [active_graph, id, "@type"], fn
                   nil -> [type]
-                  items -> unless type in items, do: items ++ [type], else: items
+                  items -> if type not in items, do: items ++ [type], else: items
                 end)
               end)
 
-            element = Map.delete(element, "@type")
-            {node_map, element}
+            {node_map, Map.delete(element, "@type")}
           else
             {node_map, element}
           end
@@ -350,6 +351,15 @@ defmodule JSON.LD.Flattening do
           end
 
         # 6.11)
+        {node_map, element} =
+          if Map.has_key?(element, "@included") do
+            {included, element} = Map.pop(element, "@included")
+            {generate_node_map(included, node_map, node_id_map, active_graph), element}
+          else
+            {node_map, element}
+          end
+
+        # 6.12)
         element
         |> Enum.sort_by(fn {property, _} -> property end)
         |> Enum.reduce(node_map, fn {property, value}, node_map ->
@@ -361,7 +371,7 @@ defmodule JSON.LD.Flattening do
             end
 
           node_map =
-            unless Map.has_key?(node_map[active_graph][id], property) do
+            if not Map.has_key?(node_map[active_graph][id], property) do
               update_in(node_map, [active_graph, id], fn node -> Map.put(node, property, []) end)
             else
               node_map

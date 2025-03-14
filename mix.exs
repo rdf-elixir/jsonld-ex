@@ -65,7 +65,7 @@ defmodule JSON.LD.Mixfile do
 
   defp deps do
     [
-      rdf_ex_dep(:rdf, "~> 1.0 or ~> 2.0"),
+      rdf_ex_dep(:rdf, "~> 2.1"),
       {:jason, "~> 1.2"},
       {:httpoison, "~> 1.6 or ~> 2.0"},
       {:castore, "~> 1.0", only: [:dev, :test], runtime: false},

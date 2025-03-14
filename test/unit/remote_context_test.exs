@@ -1,5 +1,5 @@
 defmodule JSON.LD.RemoteContextTest do
-  use ExUnit.Case, async: false
+  use JSON.LD.Case, async: false
 
   alias JSON.LD.{DocumentLoader, LoadingRemoteContextFailedError, Options}
 
@@ -52,6 +52,77 @@ defmodule JSON.LD.RemoteContextTest do
 
     assert_raise LoadingRemoteContextFailedError, fn ->
       JSON.LD.flatten(remote, nil, %Options{document_loader: DocumentLoader.Test})
+    end
+  end
+
+  describe "@import functionality" do
+    setup do
+      bypass = Bypass.open()
+      {:ok, bypass: bypass}
+    end
+
+    test "loads a remote context via @import", %{bypass: bypass} do
+      Bypass.expect(bypass, fn conn ->
+        assert "GET" == conn.method
+        assert "/context" == conn.request_path
+
+        json_content =
+          Jason.encode!(%{
+            "@context": %{
+              imported: "http://example.org/imported"
+            }
+          })
+
+        Plug.Conn.resp(conn, 200, json_content)
+      end)
+
+      context =
+        JSON.LD.context(%{
+          "@version": 1.1,
+          "@import": "http://localhost:#{bypass.port}/context"
+        })
+
+      assert context.term_defs["imported"]
+      assert context.term_defs["imported"].iri_mapping == "http://example.org/imported"
+    end
+
+    test "merges @import with local context", %{bypass: bypass} do
+      Bypass.expect(bypass, fn conn ->
+        assert "GET" == conn.method
+        assert "/context" == conn.request_path
+
+        json_content =
+          Jason.encode!(%{
+            "@context": %{
+              imported: "http://example.org/imported",
+              common: "http://example.org/common-imported"
+            }
+          })
+
+        Plug.Conn.resp(conn, 200, json_content)
+      end)
+
+      context =
+        JSON.LD.context(%{
+          "@version": 1.1,
+          "@import": "http://localhost:#{bypass.port}/context",
+          local: "http://example.org/local",
+          common: "http://example.org/common-local"
+        })
+
+      assert context.term_defs["imported"].iri_mapping == "http://example.org/imported"
+      assert context.term_defs["local"].iri_mapping == "http://example.org/local"
+      # Later contexts override earlier ones
+      assert context.term_defs["common"].iri_mapping == "http://example.org/common-local"
+    end
+
+    test "rejects non-string @import value" do
+      assert_raise JSON.LD.InvalidImportValueError, fn ->
+        JSON.LD.context(%{
+          "@version": 1.1,
+          "@import": true
+        })
+      end
     end
   end
 end
