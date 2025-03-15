@@ -1172,7 +1172,7 @@ defmodule JSON.LD.Compaction do
     else
       # 9) To ensure that the IRI var is not confused with a compact IRI, if the IRI scheme of var matches any term in active context with prefix flag set to true, and var has no IRI authority (preceded by double-forward-slash (//), an IRI confused with prefix error has been detected, and processing is aborted.
       Enum.each(active_context.term_defs, fn {term, term_def} ->
-        if term_def && term_def.prefix_flag and String.starts_with?(var, "#{term}:") do
+        if (term_def && term_def.prefix_flag) and String.starts_with?(var, "#{term}:") do
           raise JSON.LD.IRIConfusedWithPrefixError,
             message: "Absolute IRI '#{var}' confused with prefix '#{term}'"
         end

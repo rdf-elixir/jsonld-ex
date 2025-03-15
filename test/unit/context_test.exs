@@ -57,7 +57,9 @@ defmodule JSON.LD.ContextTest do
 
     test "associates @language container mapping with predicate" do
       c =
-        JSON.LD.context(%{"foo" => %{"@id" => "http://example.com/", "@container" => "@language"}})
+        JSON.LD.context(%{
+          "foo" => %{"@id" => "http://example.com/", "@container" => "@language"}
+        })
 
       assert c.term_defs["foo"]
       assert c.term_defs["foo"].iri_mapping == "http://example.com/"
