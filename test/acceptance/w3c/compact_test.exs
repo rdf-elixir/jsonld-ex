@@ -13,23 +13,40 @@ defmodule JSON.LD.W3C.CompactTest do
   @manifest manifest("compact")
   @base expanded_base_iri(@manifest)
 
+  @skipped skip_map([
+             {["#t0114"], "TODO:"}
+           ])
+
   @manifest
   |> test_cases()
   |> test_cases_by_type()
   |> Enum.each(fn
     {:positive_evaluation_test, test_cases} ->
       for %{"@id" => id, "name" => name} = test_case <- test_cases do
+        skip_test(id, @skipped)
         skip_json_ld_1_0_test(test_case)
-
-        if id == "#t0114" do
-          @tag skip: "TODO: "
-        end
-
         @tag :test_suite
         @tag :compact_test_suite
         @tag test_case: RDF.iri(@base <> id)
         @tag data: test_case
-        test "compact#{id}: #{name}", %{
+        test "compact#{id}: #{name} (ordered)", %{
+          data: %{"input" => input, "expect" => expected, "context" => context} = test_case
+        } do
+          assert JSON.LD.compact(
+                   j(input),
+                   j(context),
+                   test_case_options(test_case, @base) |> Keyword.put_new(:ordered, true)
+                 ) ==
+                   j(expected)
+        end
+
+        skip_test(id, @skipped)
+        skip_json_ld_1_0_test(test_case)
+        @tag :test_suite
+        @tag :compact_test_suite
+        @tag test_case: RDF.iri(@base <> id)
+        @tag data: test_case
+        test "compact#{id}: #{name} (unordered)", %{
           data: %{"input" => input, "expect" => expected, "context" => context} = test_case
         } do
           assert JSON.LD.compact(j(input), j(context), test_case_options(test_case, @base)) ==
@@ -40,7 +57,6 @@ defmodule JSON.LD.W3C.CompactTest do
     {:negative_evaluation_test, test_cases} ->
       for %{"@id" => id, "name" => name} = test_case <- test_cases do
         skip_json_ld_1_0_test(test_case)
-
         @tag :test_suite
         @tag :compact_test_suite
         @tag test_case: RDF.iri(@base <> id)

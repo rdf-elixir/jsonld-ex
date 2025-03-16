@@ -13,38 +13,50 @@ defmodule JSON.LD.W3C.FromRdfTest do
   @manifest manifest("fromRdf")
   @base expanded_base_iri(@manifest)
 
+  @skipped skip_map([
+             {[
+                "#t0001",
+                "#t0002",
+                "#t0017",
+                "#t0018",
+                "#t0019"
+              ],
+              "JSON-LD Object comparison - Actually correct values are produced, but the ordering is different."},
+             {[
+                "#tli03",
+                "#tli02",
+                "#tli01"
+              ], "TODO: fix nested list handling"}
+           ])
+
   @manifest
   |> test_cases()
   |> test_cases_by_type()
   |> Enum.each(fn
     {:positive_evaluation_test, test_cases} ->
       for %{"@id" => id, "name" => name} = test_case <- test_cases do
+        skip_test(id, @skipped)
         skip_json_ld_1_0_test(test_case)
-
-        if id in [
-             "#t0001",
-             "#t0002",
-             "#t0017",
-             "#t0018",
-             "#t0019"
-           ] do
-          @tag skip:
-                 "TODO: JSON-LD Object comparison - Actually correct values are produced, but the ordering is different."
-        end
-
-        if id in [
-             "#tli03",
-             "#tli02",
-             "#tli01"
-           ] do
-          @tag skip: "TODO: fix nested list handling"
-        end
-
         @tag :test_suite
         @tag :from_rdf_test_suite
         @tag test_case: RDF.iri(@base <> id)
         @tag data: test_case
-        test "fromRdf#{id}: #{name}", %{
+        test "fromRdf#{id}: #{name} (ordered)", %{
+          data: %{"input" => input, "expect" => expected} = test_case
+        } do
+          assert serialize(
+                   input,
+                   test_case_options(test_case, @base) |> Keyword.put_new(:ordered, true)
+                 ) == j(expected)
+        end
+
+        skip_test(id, @skipped)
+        skip_json_ld_1_0_test(test_case)
+        @tag :test_suite
+        @tag :from_rdf_test_suite
+        @tag test_case: RDF.iri(@base <> id)
+        @tag data: test_case
+        test "fromRdf#{id}: #{name} (unordered)", %{
           data: %{"input" => input, "expect" => expected} = test_case
         } do
           assert serialize(input, test_case_options(test_case, @base)) == j(expected)

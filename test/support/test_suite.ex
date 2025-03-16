@@ -92,6 +92,23 @@ defmodule JSON.LD.TestSuite do
     String.to_existing_atom("Elixir.JSON.LD.#{error}Error")
   end
 
+  def skip_map(skipped, mode \\ nil) do
+    Enum.flat_map(skipped, fn
+      {tests, message} -> Enum.map(tests, &{&1, message})
+      {^mode, tests, message} -> Enum.map(tests, &{&1, message})
+      {_mode, _tests, _message} -> []
+    end)
+    |> Map.new()
+  end
+
+  defmacro skip_test(id, skipped) do
+    quote do
+      if message = unquote(skipped)[unquote(id)] do
+        @tag skip: message
+      end
+    end
+  end
+
   defmacro skip_json_ld_1_0_test(test_case) do
     quote do
       if get_in(unquote(test_case), ["option", "specVersion"]) == "json-ld-1.0" do

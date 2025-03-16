@@ -813,7 +813,15 @@ defmodule JSON.LD.Expansion do
           active_context
         end
 
-      nested_values = List.wrap(element[nesting_key])
+      nested_values =
+        case element do
+          element when is_map(element) ->
+            element[nesting_key]
+
+          element when is_list(element) ->
+            Enum.find_value(element, fn {k, v} -> if k == nesting_key, do: v end)
+        end
+        |> List.wrap()
 
       Enum.reduce(nested_values, result, fn nested_value, result ->
         if not is_map(nested_value) or
