@@ -582,10 +582,9 @@ defmodule JSON.LD.Context do
       handle_type_definition(definition, active, local, value, defined, popts)
 
     {done, definition, active, defined} =
-      handle_reverse_definition(definition, active, local, value, defined, popts)
-
-    {done, definition, active, defined} =
-      unless done do
+      if Map.has_key?(value, "@reverse") do
+        handle_reverse_definition(definition, active, local, value, defined, popts)
+      else
         handle_id_definition(
           definition,
           active,
@@ -598,8 +597,6 @@ defmodule JSON.LD.Context do
           popts,
           opts
         )
-      else
-        {done, definition, active, defined}
       end
 
     definition =
@@ -746,7 +743,7 @@ defmodule JSON.LD.Context do
           end
 
         # 13.6) & 13.7)
-        {true, %TermDefinition{definition | reverse_property: true}, active, defined}
+        {false, %TermDefinition{definition | reverse_property: true}, active, defined}
     end
   end
 
