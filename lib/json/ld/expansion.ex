@@ -121,7 +121,6 @@ defmodule JSON.LD.Expansion do
   end
 
   # 6) - 20)
-  @dialyzer {:nowarn_function, do_expand: 5}
   defp do_expand(active_context, active_property, element, options, processor_options)
        when is_map(element) do
     # 7)
