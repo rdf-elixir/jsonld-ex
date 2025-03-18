@@ -81,16 +81,6 @@ defmodule JSON.LD.Encoder do
     end
   end
 
-  @impl RDF.Serialization.Encoder
-  @spec encode!(RDF.Data.t(), Options.convertible()) :: String.t()
-  @dialyzer {:nowarn_function, encode!: 1}
-  def encode!(data, opts \\ []) do
-    case encode(data, opts) do
-      {:ok, result} -> result
-      {:error, error} -> raise error
-    end
-  end
-
   defp maybe_compact(json_ld_object, opts) do
     if context = Keyword.get(opts, :context) do
       {:ok, Compaction.compact(json_ld_object, context, opts)}
