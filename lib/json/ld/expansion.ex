@@ -248,7 +248,7 @@ defmodule JSON.LD.Expansion do
                 message: "@value '#{inspect(value)}' is tagged with a language"
 
             # 15.5)
-            (type = result["@type"]) && !valid_uri?(type) ->
+            (type = result["@type"]) && !(is_binary(type) and valid_uri?(type)) ->
               raise JSON.LD.InvalidTypedValueError,
                 message: "@value '#{inspect(value)}' has invalid type #{inspect(type)}"
 

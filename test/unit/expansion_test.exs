@@ -2558,6 +2558,10 @@ defmodule JSON.LD.ExpansionTest do
         input: %{"http://example.com/foo" => %{"@value" => "foo", "@type" => nil}},
         exception: JSON.LD.InvalidTypeValueError
       },
+      "non-null @value and blank node @type" => %{
+        input: %{"http://example.com/foo" => %{"@value" => "foo", "@type" => "_:foo"}},
+        exception: JSON.LD.InvalidTypedValueError
+      },
       "non-null @value and null @language" => %{
         input: %{"http://example.com/foo" => %{"@value" => "foo", "@language" => nil}},
         exception: JSON.LD.InvalidLanguageTaggedStringError

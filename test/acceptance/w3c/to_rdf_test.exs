@@ -28,8 +28,6 @@ defmodule JSON.LD.W3C.ToRdfTest do
              "#t0123",
              "#t0124",
              "#t0125",
-             "#te111",
-             "#te112",
              # Bug in Elixir's URI.merge/2 resulting in '(ArgumentError) you must merge onto an absolute URI '
              "#t0130",
              "#t0131",

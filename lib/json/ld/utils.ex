@@ -5,7 +5,7 @@ defmodule JSON.LD.Utils do
   require Logger
 
   def valid_uri?(uri) do
-    RDF.uri?(uri) and not String.contains?(uri, [" ", "<", ">", "^", "`"])
+    RDF.IRI.Validation.valid?(uri)
   end
 
   def valid_language?(string) do
