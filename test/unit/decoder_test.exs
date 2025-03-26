@@ -304,10 +304,10 @@ defmodule JSON.LD.DecoderTest do
     |> Enum.each(fn {title, data} ->
       @tag data: data
       test title, %{data: {input, output}} do
-        assert RDF.Dataset.isomorphic?(
-                 JSON.LD.Decoder.decode!(input, rdf_direction: "compound-literal"),
-                 RDF.Dataset.new(output)
-               )
+        assert_rdf_isomorphic(
+          JSON.LD.Decoder.decode!(input, rdf_direction: "compound-literal"),
+          RDF.Dataset.new(output)
+        )
       end
     end)
   end
@@ -551,10 +551,10 @@ defmodule JSON.LD.DecoderTest do
     |> Enum.each(fn {title, data} ->
       @tag data: data
       test title, %{data: {input, output}} do
-        assert RDF.Dataset.isomorphic?(
-                 JSON.LD.Decoder.decode!(input),
-                 RDF.Dataset.new(output)
-               )
+        assert_rdf_isomorphic(
+          JSON.LD.Decoder.decode!(input),
+          RDF.Dataset.new(output)
+        )
       end
     end)
   end
@@ -791,7 +791,7 @@ defmodule JSON.LD.DecoderTest do
       {:ok, input: ~s({"@id": "http://example/subj", "_:foo": "bar"})}
     end
 
-    @tag skip: "TODO: missing Generalized RDF support"
+    @tag skip: "TODO: missing generalized RDF support"
     test "outputs statements with blank node predicates if :produceGeneralizedRdf is true",
          %{input: input} do
       dataset = JSON.LD.Decoder.decode!(input, produce_generalized_rdf: true)
@@ -898,10 +898,10 @@ defmodule JSON.LD.DecoderTest do
     |> Enum.each(fn {title, data} ->
       @tag data: data
       test title, %{data: {input, output}} do
-        assert RDF.Dataset.isomorphic?(
-                 JSON.LD.Decoder.decode!(input),
-                 RDF.Dataset.new(output)
-               )
+        assert_rdf_isomorphic(
+          JSON.LD.Decoder.decode!(input),
+          RDF.Dataset.new(output)
+        )
       end
     end)
   end

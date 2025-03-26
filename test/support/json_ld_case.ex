@@ -29,6 +29,7 @@ defmodule JSON.LD.Case do
 
       import RDF.Namespace.IRI
       import RDF.Sigils
+      import RDF.Test.Assertions
 
       import unquote(__MODULE__)
     end

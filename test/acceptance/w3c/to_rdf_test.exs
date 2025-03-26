@@ -10,6 +10,7 @@ defmodule JSON.LD.W3C.ToRdfTest do
 
   import JSON.LD.TestSuite
   import ExUnit.CaptureLog
+  import RDF.Test.Assertions
 
   @manifest manifest("toRdf")
   @base expanded_base_iri(@manifest)
@@ -59,19 +60,19 @@ defmodule JSON.LD.W3C.ToRdfTest do
           if test_case["@id"] in ~w[#te005 #tpr34 #tpr35 #tpr36 #tpr37 #tpr38 #tpr39 #te119 #te120] do
             log =
               capture_log(fn ->
-                assert RDF.Dataset.isomorphic?(
-                         JSON.LD.read_file!(file(input), test_case_options(test_case, @base)),
-                         dataset
-                       )
+                assert_rdf_isomorphic(
+                  JSON.LD.read_file!(file(input), test_case_options(test_case, @base)),
+                  dataset
+                )
               end)
 
             assert log =~
                      ~r/\[warning\] \w+ beginning with '@' are reserved for future use and ignored/
           else
-            assert RDF.Dataset.isomorphic?(
-                     JSON.LD.read_file!(file(input), test_case_options(test_case, @base)),
-                     dataset
-                   )
+            assert_rdf_isomorphic(
+              JSON.LD.read_file!(file(input), test_case_options(test_case, @base)),
+              dataset
+            )
           end
         end
       end
