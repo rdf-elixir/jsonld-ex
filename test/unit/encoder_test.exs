@@ -797,7 +797,9 @@ defmodule JSON.LD.EncoderTest do
           }
         }
 
-        Plug.Conn.resp(conn, 200, Jason.encode!(context))
+        conn
+        |> Plug.Conn.put_resp_header("content-type", "application/json")
+        |> Plug.Conn.resp(200, Jason.encode!(context))
       end)
 
       remote_context = "http://localhost:#{bypass.port}/test-context"

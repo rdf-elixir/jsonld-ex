@@ -73,7 +73,9 @@ defmodule JSON.LD.RemoteContextTest do
             }
           })
 
-        Plug.Conn.resp(conn, 200, json_content)
+        conn
+        |> Plug.Conn.put_resp_header("content-type", "application/json")
+        |> Plug.Conn.resp(200, json_content)
       end)
 
       context =
@@ -99,7 +101,9 @@ defmodule JSON.LD.RemoteContextTest do
             }
           })
 
-        Plug.Conn.resp(conn, 200, json_content)
+        conn
+        |> Plug.Conn.put_resp_header("content-type", "application/json")
+        |> Plug.Conn.resp(200, json_content)
       end)
 
       context =

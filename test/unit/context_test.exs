@@ -693,7 +693,10 @@ defmodule JSON.LD.ContextTest do
         assert "GET" == conn.method
         assert "/litepub-0.1.jsonld" == conn.request_path
         context = File.read!("test/fixtures/litepub-0.1.jsonld")
-        Plug.Conn.resp(conn, 200, context)
+
+        conn
+        |> Plug.Conn.put_resp_header("content-type", "application/json")
+        |> Plug.Conn.resp(200, context)
       end)
 
       assert context = JSON.LD.context("http://localhost:#{bypass.port}/litepub-0.1.jsonld")
@@ -721,7 +724,10 @@ defmodule JSON.LD.ContextTest do
             "avatar": {"@id": "http://xmlns.com/foaf/0.1/avatar", "@type": "@id"}
           }
         })
-        Plug.Conn.resp(conn, 200, json_content)
+
+        conn
+        |> Plug.Conn.put_resp_header("content-type", "application/json")
+        |> Plug.Conn.resp(200, json_content)
       end)
 
       assert context =

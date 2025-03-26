@@ -33,7 +33,9 @@ defmodule JSON.LD.DocumentLoader.DefaultTest do
         }
       }
 
-      Plug.Conn.resp(conn, 200, Jason.encode!(context))
+      conn
+      |> Plug.Conn.put_resp_header("content-type", "application/json")
+      |> Plug.Conn.resp(200, Jason.encode!(context))
     end)
 
     remote =
@@ -72,7 +74,9 @@ defmodule JSON.LD.DocumentLoader.DefaultTest do
         }
       }
 
-      Plug.Conn.resp(conn, 200, Jason.encode!(context))
+      conn
+      |> Plug.Conn.put_resp_header("Content-Type", "application/json")
+      |> Plug.Conn.resp(200, Jason.encode!(context))
     end)
 
     remote =
@@ -115,7 +119,9 @@ defmodule JSON.LD.DocumentLoader.DefaultTest do
         }
       }
 
-      Plug.Conn.resp(conn, 200, Jason.encode!(context))
+      conn
+      |> Plug.Conn.put_resp_header("Content-Type", "application/ld+json")
+      |> Plug.Conn.resp(200, Jason.encode!(context))
     end)
 
     remote =
@@ -156,7 +162,9 @@ defmodule JSON.LD.DocumentLoader.DefaultTest do
             }
           }
 
-          Plug.Conn.resp(conn, 200, Jason.encode!(context))
+          conn
+          |> Plug.Conn.put_resp_header("Content-Type", "application/json")
+          |> Plug.Conn.resp(200, Jason.encode!(context))
 
         other ->
           raise "Unexpected request: #{inspect(other)}"
@@ -199,7 +207,7 @@ defmodule JSON.LD.DocumentLoader.DefaultTest do
         }
 
         conn
-        |> Plug.Conn.put_resp_header("Content-Type", "text/html")
+        |> Plug.Conn.put_resp_header("Content-Type", "application/json")
         |> Plug.Conn.put_resp_header("Link", link_header_content)
         |> Plug.Conn.resp(200, Jason.encode!(context))
       end)
@@ -227,7 +235,9 @@ defmodule JSON.LD.DocumentLoader.DefaultTest do
 
       context = %{"@context": "http://localhost:#{bypass2.port}/test2-context"}
 
-      Plug.Conn.resp(conn, 200, Jason.encode!(context))
+      conn
+      |> Plug.Conn.put_resp_header("Content-Type", "application/json")
+      |> Plug.Conn.resp(200, Jason.encode!(context))
     end)
 
     Bypass.expect(bypass2, fn conn ->
@@ -241,7 +251,9 @@ defmodule JSON.LD.DocumentLoader.DefaultTest do
         }
       }
 
-      Plug.Conn.resp(conn, 200, Jason.encode!(context))
+      conn
+      |> Plug.Conn.put_resp_header("Content-Type", "application/json")
+      |> Plug.Conn.resp(200, Jason.encode!(context))
     end)
 
     remote =
@@ -254,5 +266,217 @@ defmodule JSON.LD.DocumentLoader.DefaultTest do
       """)
 
     assert JSON.LD.expand(local) == JSON.LD.expand(remote)
+  end
+
+  test "handles context link header for application/json content type" do
+    bypass = Bypass.open()
+
+    reference_doc = %{
+      "@context" => %{
+        "homepage" => %{"@id" => "http://xmlns.com/foaf/0.1/homepage", "@type" => "@id"},
+        "name" => "http://xmlns.com/foaf/0.1/name"
+      },
+      "name" => "Manu Sporny",
+      "homepage" => "http://manu.sporny.org/"
+    }
+
+    Bypass.expect(bypass, fn conn ->
+      cond do
+        conn.request_path == "/test-document" ->
+          document = %{
+            "name" => "Manu Sporny",
+            "homepage" => "http://manu.sporny.org/"
+          }
+
+          conn
+          |> Plug.Conn.put_resp_header("Content-Type", "application/json")
+          |> Plug.Conn.put_resp_header(
+            "Link",
+            "<http://localhost:#{bypass.port}/context-document>; rel=\"http://www.w3.org/ns/json-ld#context\""
+          )
+          |> Plug.Conn.resp(200, Jason.encode!(document))
+
+        conn.request_path == "/context-document" ->
+          context_doc = %{
+            "@context" => %{
+              "homepage" => %{"@id" => "http://xmlns.com/foaf/0.1/homepage", "@type" => "@id"},
+              "name" => "http://xmlns.com/foaf/0.1/name"
+            }
+          }
+
+          conn
+          |> Plug.Conn.put_resp_header("Content-Type", "application/ld+json")
+          |> Plug.Conn.resp(200, Jason.encode!(context_doc))
+
+        true ->
+          conn
+          |> Plug.Conn.resp(404, "Not Found")
+      end
+    end)
+
+    {:ok, remote_doc} =
+      JSON.LD.DocumentLoader.Default.load("http://localhost:#{bypass.port}/test-document")
+
+    assert remote_doc.context_url == "http://localhost:#{bypass.port}/context-document"
+
+    expanded_reference = JSON.LD.expand(reference_doc)
+
+    document_to_expand = %{
+      "@context" => "http://localhost:#{bypass.port}/context-document",
+      "name" => "Manu Sporny",
+      "homepage" => "http://manu.sporny.org/"
+    }
+
+    expanded_test = JSON.LD.expand(document_to_expand)
+    assert expanded_reference == expanded_test
+  end
+
+  test "rejects multiple context link headers" do
+    bypass = Bypass.open()
+
+    Bypass.expect(bypass, fn conn ->
+      document = %{
+        "name" => "Manu Sporny",
+        "homepage" => "http://manu.sporny.org/"
+      }
+
+      conn
+      |> Plug.Conn.put_resp_header("Content-Type", "application/json")
+      |> Plug.Conn.put_resp_header(
+        "Link",
+        "<http://localhost:#{bypass.port}/context1>; rel=\"http://www.w3.org/ns/json-ld#context\", " <>
+          "<http://localhost:#{bypass.port}/context2>; rel=\"http://www.w3.org/ns/json-ld#context\""
+      )
+      |> Plug.Conn.resp(200, Jason.encode!(document))
+    end)
+
+    assert {:error, %JSON.LD.MultipleContextLinkHeadersError{}} =
+             JSON.LD.DocumentLoader.Default.load("http://localhost:#{bypass.port}/test-context")
+  end
+
+  test "ignores context link header for application/ld+json content type", %{local: local} do
+    bypass = Bypass.open()
+
+    Bypass.expect(bypass, fn conn ->
+      assert "GET" == conn.method
+      assert "/test-context" == conn.request_path
+
+      document = %{
+        "@context" => %{
+          "homepage" => %{"@id" => "http://xmlns.com/foaf/0.1/homepage", "@type" => "@id"},
+          "name" => "http://xmlns.com/foaf/0.1/name"
+        },
+        "name" => "Manu Sporny",
+        "homepage" => "http://manu.sporny.org/"
+      }
+
+      conn
+      |> Plug.Conn.put_resp_header("Content-Type", "application/ld+json")
+      |> Plug.Conn.put_resp_header(
+        "Link",
+        "<http://localhost:#{bypass.port}/different-context>; rel=\"http://www.w3.org/ns/json-ld#context\""
+      )
+      |> Plug.Conn.resp(200, Jason.encode!(document))
+    end)
+
+    remote =
+      Jason.decode!("""
+        {
+          "@context": "http://localhost:#{bypass.port}/test-context",
+          "name": "Manu Sporny",
+          "homepage": "http://manu.sporny.org/"
+        }
+      """)
+
+    assert JSON.LD.expand(local) == JSON.LD.expand(remote)
+  end
+
+  test "supports profile parameter in content type", %{local: _local} do
+    bypass = Bypass.open()
+
+    Bypass.expect(bypass, fn conn ->
+      assert "GET" == conn.method
+      assert "/test-context" == conn.request_path
+
+      document = %{
+        "@context" => %{
+          "homepage" => %{"@id" => "http://xmlns.com/foaf/0.1/homepage", "@type" => "@id"},
+          "name" => "http://xmlns.com/foaf/0.1/name"
+        },
+        "name" => "Manu Sporny",
+        "homepage" => "http://manu.sporny.org/",
+        "profileInfo" => "This document uses a profile"
+      }
+
+      conn
+      |> Plug.Conn.put_resp_header(
+        "Content-Type",
+        "application/ld+json;profile=\"http://example.org/profile\""
+      )
+      |> Plug.Conn.resp(200, Jason.encode!(document))
+    end)
+
+    remote =
+      Jason.decode!("""
+        {
+          "@context": "http://localhost:#{bypass.port}/test-context",
+          "name": "Manu Sporny",
+          "homepage": "http://manu.sporny.org/"
+        }
+      """)
+
+    {:ok, remote_doc} =
+      JSON.LD.DocumentLoader.Default.load("http://localhost:#{bypass.port}/test-context")
+
+    assert remote_doc.profile == "http://example.org/profile"
+
+    JSON.LD.expand(remote)
+  end
+
+  test "supports request profile parameter", %{local: _local} do
+    bypass = Bypass.open()
+
+    remote_document =
+      %{
+        "@context" => %{
+          "homepage" => %{"@id" => "http://xmlns.com/foaf/0.1/homepage", "@type" => "@id"},
+          "name" => "http://xmlns.com/foaf/0.1/name"
+        },
+        "name" => "Manu Sporny",
+        "homepage" => "http://manu.sporny.org/"
+      }
+
+    Bypass.expect(bypass, fn conn ->
+      assert "GET" == conn.method
+      assert "/test-context" == conn.request_path
+
+      accept_header =
+        Enum.find_value(conn.req_headers, fn
+          {"accept", value} -> value
+          _ -> nil
+        end)
+
+      assert accept_header &&
+               String.contains?(accept_header, "profile=\"http://example.org/requested-profile\"")
+
+      conn
+      |> Plug.Conn.put_resp_header("Content-Type", "application/ld+json")
+      |> Plug.Conn.resp(200, Jason.encode!(remote_document))
+    end)
+
+    remote_doc_url = "http://localhost:#{bypass.port}/test-context"
+
+    assert JSON.LD.DocumentLoader.Default.load(
+             remote_doc_url,
+             request_profile: "http://example.org/requested-profile"
+           ) ==
+             {:ok,
+              %JSON.LD.DocumentLoader.RemoteDocument{
+                profile: nil,
+                document_url: remote_doc_url,
+                document: remote_document,
+                context_url: nil,
+                content_type: "application/ld+json"
+              }}
   end
 end

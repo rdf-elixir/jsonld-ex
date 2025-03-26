@@ -24,6 +24,10 @@ defmodule JSON.LD.Options do
           expand_context: map | nil,
           # If set to true, when extracting JSON-LD script elements from HTML, unless a specific fragment identifier is targeted, extracts all encountered JSON-LD script elements using an array form, if necessary.
           extract_all_scripts: boolean,
+          # When the resulting contentType is text/html or application/xhtml+xml, this option determines the profile to use for selecting JSON-LD script elements.
+          profile: String.t() | nil,
+          # One or more IRIs to use in the request as a profile parameter.
+          request_profile: String.t() | list(String.t()) | nil,
           # Enables
           # - special frame processing rules for the Expansion Algorithm.
           # - special rules for the Serialize RDF as JSON-LD Algorithm to use JSON-LD native types as values, where possible.
@@ -51,6 +55,8 @@ defmodule JSON.LD.Options do
             document_loader: nil,
             expand_context: nil,
             extract_all_scripts: false,
+            profile: nil,
+            request_profile: nil,
             frame_expansion: false,
             ordered: false,
             use_rdf_type: false,
