@@ -38,10 +38,6 @@ defmodule JSON.LD.W3C.ToRdfTest do
           @tag skip: "TODO: fix RDF.IRI.absolute/2"
         end
 
-        if id in ["#tjs13"] do
-          @tag skip: "TODO: Why does our JSON canonicalization produce a different ordering?"
-        end
-
         if get_in(test_case["option"]["produceGeneralizedRdf"]) do
           # affected test cases: t0118 and te075
           # see also: https://github.com/w3c/json-ld-api/issues/205 and https://github.com/w3c/json-ld-api/issues/546
