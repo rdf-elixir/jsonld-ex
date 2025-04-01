@@ -21,12 +21,7 @@ defmodule JSON.LD.W3C.FromRdfTest do
                 "#t0018",
                 "#t0019"
               ],
-              "JSON-LD Object comparison - Actually correct values are produced, but the ordering is different."},
-             {[
-                "#tli03",
-                "#tli02",
-                "#tli01"
-              ], "TODO: fix nested list handling"}
+              "JSON-LD Object comparison - Actually correct values are produced, but the ordering is different."}
            ])
 
   @manifest

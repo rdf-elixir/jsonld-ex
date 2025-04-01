@@ -607,6 +607,90 @@ defmodule JSON.LD.EncoderTest do
             ]
           }
         ]
+      },
+      "@list containing empty @list" => {
+        [
+          {EX.a(), EX.property(), RDF.bnode(:l1)},
+          {RDF.bnode(:l1), NS.RDF.first(), RDF.bnode(:l2)},
+          {RDF.bnode(:l1), NS.RDF.rest(), NS.RDF.nil()},
+          {RDF.bnode(:l2), NS.RDF.first(), NS.RDF.nil()},
+          {RDF.bnode(:l2), NS.RDF.rest(), NS.RDF.nil()}
+        ],
+        [
+          %{
+            "@id" => "http://example.com/a",
+            "http://example.com/property" => [%{"@list" => [%{"@list" => [%{"@list" => []}]}]}]
+          }
+        ]
+      },
+      "@list containing multiple lists" => {
+        [
+          {EX.a(), EX.property(), RDF.bnode(:l1)},
+          {RDF.bnode(:l1), NS.RDF.first(), RDF.bnode(:l2)},
+          {RDF.bnode(:l1), NS.RDF.rest(), RDF.bnode(:l3)},
+          {RDF.bnode(:l2), NS.RDF.first(), ~L"a"},
+          {RDF.bnode(:l2), NS.RDF.rest(), NS.RDF.nil()},
+          {RDF.bnode(:l3), NS.RDF.first(), RDF.bnode(:l4)},
+          {RDF.bnode(:l3), NS.RDF.rest(), NS.RDF.nil()},
+          {RDF.bnode(:l4), NS.RDF.first(), ~L"b"},
+          {RDF.bnode(:l4), NS.RDF.rest(), NS.RDF.nil()}
+        ],
+        [
+          %{
+            "@id" => "http://example.com/a",
+            "http://example.com/property" => [
+              %{
+                "@list" => [
+                  %{"@list" => [%{"@value" => "a"}]},
+                  %{"@list" => [%{"@value" => "b"}]}
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      "complex nested lists" => {
+        [
+          {EX.url(), EX.property(), RDF.bnode(:outerlist)},
+          {RDF.bnode(:outerlist), NS.RDF.first(), RDF.bnode(:lista)},
+          {RDF.bnode(:outerlist), NS.RDF.rest(), RDF.bnode(:b0)},
+          {RDF.bnode(:lista), NS.RDF.first(), ~L"a1"},
+          {RDF.bnode(:lista), NS.RDF.rest(), RDF.bnode(:a2)},
+          {RDF.bnode(:a2), NS.RDF.first(), ~L"a2"},
+          {RDF.bnode(:a2), NS.RDF.rest(), RDF.bnode(:a3)},
+          {RDF.bnode(:a3), NS.RDF.first(), ~L"a3"},
+          {RDF.bnode(:a3), NS.RDF.rest(), NS.RDF.nil()},
+          {RDF.bnode(:c0), NS.RDF.first(), RDF.bnode(:c1)},
+          {RDF.bnode(:c0), NS.RDF.rest(), NS.RDF.nil()},
+          {RDF.bnode(:c1), NS.RDF.first(), ~L"c1"},
+          {RDF.bnode(:c1), NS.RDF.rest(), RDF.bnode(:c2)},
+          {RDF.bnode(:c2), NS.RDF.first(), ~L"c2"},
+          {RDF.bnode(:c2), NS.RDF.rest(), RDF.bnode(:c3)},
+          {RDF.bnode(:c3), NS.RDF.first(), ~L"c3"},
+          {RDF.bnode(:c3), NS.RDF.rest(), NS.RDF.nil()},
+          {RDF.bnode(:b0), NS.RDF.first(), RDF.bnode(:b1)},
+          {RDF.bnode(:b0), NS.RDF.rest(), RDF.bnode(:c0)},
+          {RDF.bnode(:b1), NS.RDF.first(), ~L"b1"},
+          {RDF.bnode(:b1), NS.RDF.rest(), RDF.bnode(:b2)},
+          {RDF.bnode(:b2), NS.RDF.first(), ~L"b2"},
+          {RDF.bnode(:b2), NS.RDF.rest(), RDF.bnode(:b3)},
+          {RDF.bnode(:b3), NS.RDF.first(), ~L"b3"},
+          {RDF.bnode(:b3), NS.RDF.rest(), NS.RDF.nil()}
+        ],
+        [
+          %{
+            "@id" => "http://example.com/url",
+            "http://example.com/property" => [
+              %{
+                "@list" => [
+                  %{"@list" => [%{"@value" => "a1"}, %{"@value" => "a2"}, %{"@value" => "a3"}]},
+                  %{"@list" => [%{"@value" => "b1"}, %{"@value" => "b2"}, %{"@value" => "b3"}]},
+                  %{"@list" => [%{"@value" => "c1"}, %{"@value" => "c2"}, %{"@value" => "c3"}]}
+                ]
+              }
+            ]
+          }
+        ]
       }
     }
     |> Enum.each(fn {title, data} ->

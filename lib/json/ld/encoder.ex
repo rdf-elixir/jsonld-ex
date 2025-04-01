@@ -108,6 +108,10 @@ defmodule JSON.LD.Encoder do
         graph, {graph_map, referenced_once, compound_literal_subjects} ->
           # 5.1)
           name = to_string(graph.name || "@default")
+          # 5.2)
+          graph_map = Map.put_new(graph_map, name, %{})
+          # 5.3)
+          compound_literal_subjects = Map.put_new(compound_literal_subjects, name, %{})
 
           # 5.4)
           graph_map =
@@ -119,13 +123,13 @@ defmodule JSON.LD.Encoder do
               graph_map
             end
 
-          # 5.2) & 5.3) & 5.5) & 5.6) & 5.7)
+          # 5.5) & 5.6) & 5.7)
           {node_map, referenced_once, compound_map} =
             process_graph_triples(
               graph,
-              Map.get(graph_map, name, %{}),
+              graph_map[name],
               referenced_once,
-              Map.get(compound_literal_subjects, name, %{}),
+              compound_literal_subjects[name],
               options
             )
 
@@ -135,10 +139,6 @@ defmodule JSON.LD.Encoder do
             Map.put(compound_literal_subjects, name, compound_map)
           }
       end)
-
-    #    dbg(graph_map)
-    #    dbg(referenced_once)
-    #    dbg(compound_literal_subjects)
 
     # 6)
     {graph_map, _referenced_once} =
@@ -172,7 +172,7 @@ defmodule JSON.LD.Encoder do
             graph_map[subject]
             |> maybe_sort_by(options.ordered, fn {s, _} -> s end)
             |> Enum.reduce([], fn {_s, n}, graph_nodes ->
-              n = Map.delete(n, "usages")
+              n = Map.delete(n, :usages)
 
               if map_size(n) == 1 and Map.has_key?(n, "@id") do
                 graph_nodes
@@ -187,7 +187,7 @@ defmodule JSON.LD.Encoder do
         end
 
       # 8.2)
-      node = Map.delete(node, "usages")
+      node = Map.delete(node, :usages)
 
       if map_size(node) == 1 and Map.has_key?(node, "@id") do
         result
@@ -254,13 +254,11 @@ defmodule JSON.LD.Encoder do
               cond do
                 # 5.7.9)
                 object_id == @rdf_nil ->
-                  usage = %{"node" => node, "property" => predicate, "value" => value}
+                  usage = %{node: subject, property: predicate, value: value}
 
                   node_map =
-                    Map.update(node_map, object_id, %{"usages" => [usage]}, fn object_node ->
-                      Map.update(object_node, "usages", [usage], fn usages ->
-                        usages ++ [usage]
-                      end)
+                    Map.update(node_map, @rdf_nil, %{usages: [usage]}, fn object_node ->
+                      Map.update(object_node, :usages, [usage], &[usage | &1])
                     end)
 
                   {node_map, referenced_once}
@@ -274,9 +272,9 @@ defmodule JSON.LD.Encoder do
                   {node_map,
                    Map.put(referenced_once, object_id, %{
                      # We're using here the node id as the reference to the respective graph map entry.
-                     "node" => subject,
-                     "property" => predicate,
-                     "value" => value
+                     node: subject,
+                     property: predicate,
+                     value: value
                    })}
 
                 true ->
@@ -288,7 +286,6 @@ defmodule JSON.LD.Encoder do
 
         {Map.put(node_map, subject, node), referenced_once, compound_map}
     end)
-    |> update_node_usages
   end
 
   # 6.1)
@@ -300,7 +297,7 @@ defmodule JSON.LD.Encoder do
       {cl, _}, {graph_object, referenced_once} ->
         case referenced_once[cl] do
           # SPEC ISSUE: "6.1.4) Initialize value to value of value in cl entry." seems unnecessary, since value is never used
-          %{"node" => node_id, "property" => property, "value" => _value} ->
+          %{node: node_id, property: property, value: _value} ->
             node = graph_object[node_id]
             # 6.1.5)
             case Map.pop(graph_object, cl) do
@@ -374,46 +371,16 @@ defmodule JSON.LD.Encoder do
     end)
   end
 
-  [
-    %{
-      "node" => %{
-        "@id" => "_:l1",
-        "http://www.w3.org/1999/02/22-rdf-syntax-ns#first" => [
-          %{"@id" => "http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"}
-        ],
-        "http://www.w3.org/1999/02/22-rdf-syntax-ns#rest" => [
-          %{"@id" => "http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"}
-        ]
-      },
-      "property" => "http://www.w3.org/1999/02/22-rdf-syntax-ns#first",
-      "value" => %{
-        "@id" => "http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"
-      }
-    },
-    %{
-      "node" => %{
-        "@id" => "_:l1",
-        "http://www.w3.org/1999/02/22-rdf-syntax-ns#first" => [
-          %{"@id" => "http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"}
-        ],
-        "http://www.w3.org/1999/02/22-rdf-syntax-ns#rest" => [
-          %{"@id" => "http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"}
-        ]
-      },
-      "property" => "http://www.w3.org/1999/02/22-rdf-syntax-ns#rest",
-      "value" => %{
-        "@id" => "http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"
-      }
-    }
-  ]
-
-  # 6.3) - 6.4)
-  defp convert_list(%{@rdf_nil => nil_node} = graph_object, referenced_once) do
-    Enum.reduce(nil_node["usages"] || [], {graph_object, referenced_once}, fn
+  #  # 6.3) - 6.4)
+  defp convert_list(%{@rdf_nil => %{usages: usages}} = graph_object, referenced_once) do
+    Enum.reduce(usages, {graph_object, referenced_once}, fn
       # 6.4.1)
-      %{"node" => node, "property" => property, "value" => original_head},
-      {graph_object, referenced_once} ->
-        {list, list_nodes, [_subject, _property] = head_path, head} =
+      # Note: original_head is always an rdf:nil node
+      %{node: node_id, property: property, value: original_head}, {graph_object, referenced_once} ->
+        node = graph_object[node_id]
+
+        # 6.4.2) & 6.4.3)
+        {list, list_nodes, head_path, head} =
           extract_list(node, property, original_head, referenced_once, graph_object)
 
         updated_head =
@@ -481,7 +448,7 @@ defmodule JSON.LD.Encoder do
            @rdf_first => [first],
            "@type" => [@rdf_list]
          } = node,
-         %{"node" => next_node_id, "property" => next_property, "value" => next_head},
+         %{node: next_node_id, property: next_property, value: next_head},
          _property,
          _head,
          referenced_once,
@@ -497,9 +464,7 @@ defmodule JSON.LD.Encoder do
       referenced_once,
       graph_object,
       [first | list],
-      [
-        id | list_nodes
-      ]
+      [id | list_nodes]
     )
   end
 
@@ -508,7 +473,7 @@ defmodule JSON.LD.Encoder do
            "@id" => "_:" <> _ = id,
            @rdf_first => [first]
          } = node,
-         %{"node" => next_node_id, "property" => next_property, "value" => next_head},
+         %{node: next_node_id, property: next_property, value: next_head},
          _property,
          _head,
          referenced_once,
@@ -524,9 +489,7 @@ defmodule JSON.LD.Encoder do
       referenced_once,
       graph_object,
       [first | list],
-      [
-        id | list_nodes
-      ]
+      [id | list_nodes]
     )
   end
 
@@ -639,41 +602,43 @@ defmodule JSON.LD.Encoder do
 
   defp i18n_datatype_parts(_), do: nil
 
-  # This function is necessary because we have no references and must update the node member of the usage maps with later enhanced usages
-  defp update_node_usages({node_map, referenced_once, compound_map}) do
-    updated_node_map =
-      Enum.reduce(node_map, node_map, fn
-        {subject, %{"usages" => _usages} = _node}, node_map ->
-          update_in(node_map, [subject, "usages"], fn usages ->
-            Enum.map(usages, fn usage ->
-              Map.update!(usage, "node", fn %{"@id" => subject} ->
-                node_map[subject]
-              end)
-            end)
+  #  # This function is necessary because we have no references and use this instead to update the head by path
+  defp update_head(graph_object, referenced_once, [subject, property], old, new) do
+    {
+      deep_replace(graph_object, old, new),
+      case old do
+        %{"@id" => head_id} ->
+          Map.new(referenced_once, fn
+            {^head_id, %{node: ^subject, property: ^property} = usage} ->
+              {head_id, %{usage | value: new}}
+
+            other ->
+              other
           end)
 
-        _, node_map ->
-          node_map
-      end)
-
-    {updated_node_map, referenced_once, compound_map}
-  end
-
-  # This function is necessary because we have no references and use this instead to update the head by path
-  defp update_head(graph_object, referenced_once, [_subject, _property] = path, old, new) do
-    {
-      update_in(graph_object, path, fn objects ->
-        Enum.map(objects, fn
-          ^old -> new
-          current -> current
-        end)
-      end),
-      referenced_once
+        _ ->
+          Map.new(referenced_once, fn
+            {key, %{node: ^subject, property: ^property} = usage} -> {key, %{usage | value: new}}
+            other -> other
+          end)
+      end
     }
   end
 
-  @spec encode_json(any, [Jason.encode_opt()]) ::
-          {:ok, String.t()} | {:error, Jason.EncodeError.t() | Exception.t()}
+  defp deep_replace(old, old, new), do: new
+
+  defp deep_replace(map, old, new) when is_map(map) do
+    Map.new(map, fn
+      {:usages, value} -> {:usages, value}
+      {key, value} -> {key, deep_replace(value, old, new)}
+    end)
+  end
+
+  defp deep_replace(list, old, new) when is_list(list),
+    do: Enum.map(list, &deep_replace(&1, old, new))
+
+  defp deep_replace(old, _, _), do: old
+
   defp encode_json(value, opts) do
     Jason.encode(value, opts)
   end
