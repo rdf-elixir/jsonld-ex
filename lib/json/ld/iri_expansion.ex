@@ -48,7 +48,7 @@ defmodule JSON.LD.IRIExpansion do
           if local_context && local_context[value] && defined[value] != true do
             local_def = local_context[value]
 
-            Context.create_term_definition(
+            Context.TermDefinition.create(
               active_context,
               local_context,
               value,
@@ -82,7 +82,7 @@ defmodule JSON.LD.IRIExpansion do
                     if local_context && local_context[prefix] && defined[prefix] != true do
                       local_def = local_context[prefix]
 
-                      Context.create_term_definition(
+                      Context.TermDefinition.create(
                         active_context,
                         local_context,
                         prefix,
