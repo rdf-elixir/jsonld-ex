@@ -53,19 +53,14 @@ defmodule JSON.LD.Expansion do
     end
   end
 
-  # 2) If active property is @default, initialize the frameExpansion flag to false
-  def expand(active_context, "@default", element, options, processor_options) do
-    do_expand(
-      active_context,
-      "@default",
-      element,
-      Keyword.put(options, :frame_expansion, false),
-      processor_options
-    )
-  end
+  defp expand(active_context, active_property, element, options, processor_options) do
+    # 2) If active property is @default, initialize the frameExpansion flag to false
+    options =
+      if active_property == "@default",
+        do: Keyword.put(options, :frame_expansion, false),
+        else: options
 
-  # 3) If active property has a term definition in active context with a local context, initialize property-scoped context to that local context.
-  def expand(active_context, active_property, element, options, processor_options) do
+    # 3) If active property has a term definition in active context with a local context, initialize property-scoped context to that local context.
     property_scoped_context =
       if term_def = active_property && active_context.term_defs[active_property] do
         term_def.context
