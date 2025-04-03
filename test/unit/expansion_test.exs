@@ -2552,6 +2552,139 @@ defmodule JSON.LD.ExpansionTest do
     end)
   end
 
+  describe "remote document handling" do
+    setup do
+      bypass = Bypass.open()
+      {:ok, bypass: bypass}
+    end
+
+    test "expands a remote document via URL", %{bypass: bypass} do
+      Bypass.expect_once(bypass, "GET", "/example.jsonld", fn conn ->
+        conn
+        |> Plug.Conn.put_resp_header("content-type", "application/json")
+        |> Plug.Conn.resp(200, """
+        {
+          "@context": {
+            "name": "http://xmlns.com/foaf/0.1/name",
+            "homepage": {"@id": "http://xmlns.com/foaf/0.1/homepage", "@type": "@id"}
+          },
+          "@id": "http://example.org/person",
+          "name": "John Doe",
+          "homepage": "http://example.org"
+        }
+        """)
+      end)
+
+      url = "http://localhost:#{bypass.port}/example.jsonld"
+
+      assert JSON.LD.expand(url) == [
+               %{
+                 "@id" => "http://example.org/person",
+                 "http://xmlns.com/foaf/0.1/name" => [%{"@value" => "John Doe"}],
+                 "http://xmlns.com/foaf/0.1/homepage" => [%{"@id" => "http://example.org"}]
+               }
+             ]
+    end
+
+    test "handles remote context in remote document", %{bypass: bypass} do
+      Bypass.expect_once(bypass, "GET", "/context.jsonld", fn conn ->
+        conn
+        |> Plug.Conn.put_resp_header("content-type", "application/json")
+        |> Plug.Conn.resp(200, """
+        {
+          "@context": {
+            "name": "http://xmlns.com/foaf/0.1/name"
+          }
+        }
+        """)
+      end)
+
+      Bypass.expect_once(bypass, "GET", "/document.jsonld", fn conn ->
+        conn
+        |> Plug.Conn.put_resp_header("content-type", "application/json")
+        |> Plug.Conn.resp(200, """
+        {
+          "@context": "http://localhost:#{bypass.port}/context.jsonld",
+          "@id": "http://example.org/person",
+          "name": "Jane Doe"
+        }
+        """)
+      end)
+
+      url = "http://localhost:#{bypass.port}/document.jsonld"
+
+      assert JSON.LD.expand(url) == [
+               %{
+                 "@id" => "http://example.org/person",
+                 "http://xmlns.com/foaf/0.1/name" => [%{"@value" => "Jane Doe"}]
+               }
+             ]
+    end
+
+    test "handles HTTP errors appropriately", %{bypass: bypass} do
+      Bypass.expect_once(bypass, "GET", "/not-found.jsonld", fn conn ->
+        Plug.Conn.resp(conn, 404, "Not Found")
+      end)
+
+      url = "http://localhost:#{bypass.port}/not-found.jsonld"
+
+      assert_raise JSON.LD.LoadingDocumentFailedError, fn ->
+        JSON.LD.expand(url)
+      end
+    end
+
+    test "expands a remote document with base IRI", %{bypass: bypass} do
+      Bypass.expect_once(bypass, "GET", "/example.jsonld", fn conn ->
+        conn
+        |> Plug.Conn.put_resp_header("content-type", "application/json")
+        |> Plug.Conn.resp(200, """
+        {
+          "@context": {
+            "@base": "http://example.org/",
+            "name": "http://xmlns.com/foaf/0.1/name",
+            "knows": "http://xmlns.com/foaf/0.1/knows"
+          },
+          "@id": "person",
+          "name": "John Doe",
+          "knows": {"@id": "jane"}
+        }
+        """)
+      end)
+
+      url = "http://localhost:#{bypass.port}/example.jsonld"
+
+      assert JSON.LD.expand(url) == [
+               %{
+                 "@id" => "http://example.org/person",
+                 "http://xmlns.com/foaf/0.1/name" => [%{"@value" => "John Doe"}],
+                 "http://xmlns.com/foaf/0.1/knows" => [%{"@id" => "http://example.org/jane"}]
+               }
+             ]
+    end
+
+    test "expands a RemoteDocument directly" do
+      remote_doc = %JSON.LD.DocumentLoader.RemoteDocument{
+        document: %{
+          "@context" => %{
+            "name" => "http://xmlns.com/foaf/0.1/name"
+          },
+          "@id" => "http://example.org/person",
+          "name" => "John Doe"
+        },
+        document_url: "http://example.org/doc",
+        context_url: nil,
+        profile: nil
+      }
+
+      assert JSON.LD.expand(remote_doc) == [
+               %{
+                 "@id" => "http://example.org/person",
+                 "http://xmlns.com/foaf/0.1/name" => [%{"@value" => "John Doe"}]
+               }
+             ]
+    end
+  end
+
   describe "errors" do
     %{
       "non-null @value and null @type" => %{

@@ -11,8 +11,9 @@ defmodule JSON.LD do
 
   import RDF.Sigils
 
-  alias JSON.LD.{Compaction, Context, Expansion, Flattening, Options}
-  alias RDF.PropertyMap
+  alias JSON.LD.{Compaction, Context, Expansion, Flattening, DocumentLoader, Options}
+  alias JSON.LD.DocumentLoader.RemoteDocument
+  alias RDF.{IRI, PropertyMap}
 
   @id ~I<http://www.w3.org/ns/formats/JSON-LD>
   @name :jsonld
@@ -47,6 +48,9 @@ defmodule JSON.LD do
                :
               ]
 
+  @type expand_input :: map | [map] | String.t() | IRI.t() | RemoteDocument.t()
+  @type expand_result :: map | [map] | nil
+
   @spec options :: Options.t()
   def options, do: Options.new()
 
@@ -75,8 +79,68 @@ defmodule JSON.LD do
   -- <https://www.w3.org/TR/json-ld/#expanded-document-form>
 
   Details at <http://json-ld.org/spec/latest/json-ld-api/#expansion-algorithm>
+
+  This is the `expand()` API function of the JsonLdProcessor Interface as specified in <https://www.w3.org/TR/json-ld11-api/#the-application-programming-interface>
   """
-  defdelegate expand(input, options \\ %Options{}), to: Expansion
+  @spec expand(expand_input(), Options.convertible()) :: expand_result()
+  def expand(input, options \\ []) do
+    {processing_options, options} = Options.extract(options)
+    expand(input, options, processing_options)
+  end
+
+  defp expand(%IRI{} = iri, options, processing_options),
+    do: iri |> IRI.to_string() |> expand(options, processing_options)
+
+  defp expand(url, options, processing_options) when is_binary(url) do
+    case DocumentLoader.load(url, processing_options) do
+      {:ok, document} -> expand(document, options, processing_options)
+      {:error, error} -> raise error
+    end
+  end
+
+  defp expand(%RemoteDocument{} = document, options, processing_options) do
+    %{
+      Context.new()
+      | base_iri: document.document_url || processing_options.base,
+        original_base_url: document.document_url || processing_options.base
+    }
+    |> expand(
+      document.document,
+      Keyword.put(options, :document_url, document.document_url),
+      processing_options
+    )
+  end
+
+  defp expand(input, options, processing_options) do
+    processing_options
+    |> Context.new()
+    |> expand(input, options, processing_options)
+  end
+
+  defp expand(active_context, input, options, processing_options) do
+    active_context =
+      case processing_options.expand_context do
+        %{"@context" => context} -> Context.update(active_context, context)
+        %{} = context -> Context.update(active_context, context)
+        nil -> active_context
+      end
+
+    {active_context, options} =
+      case Keyword.pop(options, :context_url) do
+        {nil, options} ->
+          {active_context, options}
+
+        {context_url, options} ->
+          {Context.update(active_context, context_url, base: context_url), options}
+      end
+
+    case Expansion.expand(active_context, nil, input, options, processing_options) do
+      result = %{"@graph" => graph} when map_size(result) == 1 -> graph
+      nil -> []
+      result when not is_list(result) -> [result]
+      result -> result
+    end
+  end
 
   @doc """
   Compacts the given input according to the steps in the JSON-LD Compaction Algorithm.

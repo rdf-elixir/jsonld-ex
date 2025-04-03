@@ -17,43 +17,8 @@ defmodule JSON.LD.Expansion do
     |> Keyword.put_new(:from_map, false)
   end
 
-  @doc """
-  The `expand()` API function of the JsonLdProcessor Interface.
-
-  See <https://www.w3.org/TR/json-ld11-api/#the-application-programming-interface>
-  """
-  @spec expand(map | [map], Options.convertible()) :: [map]
-  def expand(input, options \\ []) do
-    {processing_options, options} = Options.extract(options)
-    expand(input, options, processing_options)
-  end
-
-  @doc """
-  The `expand()` API function of the JsonLdProcessor Interface.
-
-  See <https://www.w3.org/TR/json-ld11-api/#the-application-programming-interface>
-  """
-  @spec expand(Context.t(), String.t() | nil, any | nil, keyword, Options.t()) ::
-          map | [map] | nil
-  def expand(input, options, processing_options) do
-    active_context = Context.new(processing_options)
-
-    active_context =
-      case processing_options.expand_context do
-        %{"@context" => context} -> Context.update(active_context, context)
-        %{} = context -> Context.update(active_context, context)
-        nil -> active_context
-      end
-
-    case expand(active_context, nil, input, init_options(options), processing_options) do
-      result = %{"@graph" => graph} when map_size(result) == 1 -> graph
-      nil -> []
-      result when not is_list(result) -> [result]
-      result -> result
-    end
-  end
-
-  defp expand(active_context, active_property, element, options, processor_options) do
+  def expand(active_context, active_property, element, options, processor_options) do
+    options = init_options(options)
     # 2) If active property is @default, initialize the frameExpansion flag to false
     options =
       if active_property == "@default",
