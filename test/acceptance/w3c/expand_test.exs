@@ -34,7 +34,8 @@ defmodule JSON.LD.W3C.ExpandTest do
        "#tdi03"
      ],
      "JSON-LD Object comparison - Actually correct values are expanded, but the ordering is different."},
-    {["#tc031"], "TODO: the referenced remote context is not dereferencable; we need a HTTP mock"}
+    {["#tc031"],
+     "TODO: when executed against the tests remotely, the relative context should be valid"}
   ]
   @skipped_ordered skip_map(@skipped, :ordered)
   @skipped_unordered skip_map(@skipped, :unordered)

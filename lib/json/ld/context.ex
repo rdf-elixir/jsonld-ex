@@ -139,7 +139,23 @@ defmodule JSON.LD.Context do
   defp do_update(%__MODULE__{} = active, context, remote, options, processor_options)
        when is_binary(context) do
     # 5.2.1) Initialize context to the result of resolving context against base URL. If base URL is not a valid IRI, then context MUST be a valid IRI, otherwise a loading document failed error has been detected and processing is aborted.
-    context = absolute_iri(context, base(active))
+    base = base(active)
+
+    context =
+      cond do
+        IRI.absolute?(context) ->
+          if IRI.valid?(context) do
+            context
+          else
+            raise JSON.LD.LoadingDocumentFailedError, message: "Invalid context IRI: #{context}"
+          end
+
+        not IRI.valid?(base) ->
+          raise JSON.LD.LoadingDocumentFailedError, message: "Invalid base IRI: #{base || "nil"}"
+
+        true ->
+          absolute_iri(context, base)
+      end
 
     # 5.2.2) If validate scoped context is false, and remote contexts already includes context do not process context further and continue to any next context in local context.
     if not options[:validate_scoped_context] and context in remote do
@@ -154,14 +170,15 @@ defmodule JSON.LD.Context do
       remote = [context | remote]
 
       # 5.2.5)
-      {loaded_context, _document_url} = dereference_context(context, processor_options)
+      {loaded_context, document_url} = dereference_context(context, processor_options)
 
+      # If context was previously dereferenced, processors MUST make provisions for retaining the base URL of that context for this step to enable the resolution of any relative context URLs that may be encountered during processing.
+      %{active | base_iri: document_url, original_base_url: document_url}
       # 5.2.6)
-      update(
-        active,
+      |> update(
         loaded_context,
         Keyword.put(options, :remote_contexts, remote),
-        processor_options
+        processor_options |> Options.set_base(document_url)
       )
     end
   end
@@ -221,9 +238,18 @@ defmodule JSON.LD.Context do
     document_loader = Options.document_loader(options)
 
     {document, url} =
-      case document_loader.load(context_url, options) do
+      case document_loader.load(context_url, %{
+             options
+             | profile: "http://www.w3.org/ns/json-ld#context",
+               request_profile: "http://www.w3.org/ns/json-ld#context"
+           }) do
         {:ok, result} ->
           {result.document, result.document_url}
+
+        {:error, %{__exception__: true} = exception} ->
+          raise JSON.LD.LoadingRemoteContextFailedError,
+            message:
+              "Could not load remote context (#{context_url}): #{Exception.message(exception)}"
 
         {:error, reason} ->
           raise JSON.LD.LoadingRemoteContextFailedError,

@@ -5,7 +5,9 @@ defmodule JSON.LD.ContextTest do
 
   doctest JSON.LD.Context
 
-  describe "create from Hash" do
+  import ExUnit.CaptureLog
+
+  describe "create from map" do
     test "extracts @base" do
       assert JSON.LD.context(%{"@base" => "http://base/"}).base_iri == "http://base/"
     end
@@ -241,6 +243,31 @@ defmodule JSON.LD.ContextTest do
       assert c.term_defs["foo"].iri_mapping == "http://example.com/"
       assert c.term_defs["foo"].nest_value == "@nest"
     end
+
+    test "defines @import in a context" do
+      bypass = Bypass.open()
+
+      Bypass.expect(bypass, fn conn ->
+        assert conn.method == "GET"
+        assert conn.request_path == "/context"
+
+        conn
+        |> Plug.Conn.put_resp_header("content-type", "application/json")
+        |> Plug.Conn.resp(
+          200,
+          Jason.encode!(%{
+            "@context" => %{
+              "imported" => "http://example.org/imported"
+            }
+          })
+        )
+      end)
+
+      c = JSON.LD.context(%{"@import" => "http://localhost:#{bypass.port}/context"})
+
+      assert c.term_defs["imported"]
+      assert c.term_defs["imported"].iri_mapping == "http://example.org/imported"
+    end
   end
 
   describe "create from Array/List" do
@@ -262,6 +289,47 @@ defmodule JSON.LD.ContextTest do
              ])
              |> iri_mappings == %{
                "term" => "http://example.org/2"
+             }
+    end
+
+    test "merges definitions from remote contexts" do
+      bypass = Bypass.open()
+
+      Bypass.expect(bypass, fn
+        %{method: "GET", request_path: "/context1"} = conn ->
+          conn
+          |> Plug.Conn.put_resp_header("content-type", "application/json")
+          |> Plug.Conn.resp(
+            200,
+            Jason.encode!(%{
+              "@context" => %{
+                "xsd" => "http://www.w3.org/2001/XMLSchema#",
+                "name" => "http://xmlns.com/foaf/0.1/name"
+              }
+            })
+          )
+
+        %{method: "GET", request_path: "/context2"} = conn ->
+          conn
+          |> Plug.Conn.put_resp_header("content-type", "application/json")
+          |> Plug.Conn.resp(
+            200,
+            Jason.encode!(%{
+              "@context" => %{
+                "title" => %{"@id" => "http://purl.org/dc/terms/title"}
+              }
+            })
+          )
+      end)
+
+      assert JSON.LD.context([
+               "http://localhost:#{bypass.port}/context1",
+               "http://localhost:#{bypass.port}/context2"
+             ])
+             |> iri_mappings == %{
+               "xsd" => "http://www.w3.org/2001/XMLSchema#",
+               "name" => "http://xmlns.com/foaf/0.1/name",
+               "title" => "http://purl.org/dc/terms/title"
              }
     end
   end
@@ -703,11 +771,70 @@ defmodule JSON.LD.ContextTest do
 
       assert %{
                "Emoji" => "http://joinmastodon.org/ns#Emoji",
-               # https://www.w3.org/ns/activitystreams
                "Accept" => "https://www.w3.org/ns/activitystreams#Accept",
-               # https://w3id.org/security/v1
                "CryptographicKey" => "https://w3id.org/security#Key"
              } = iri_mappings(context)
+    end
+
+    test "parses a referenced context at a relative URI" do
+      bypass = Bypass.open()
+
+      Bypass.expect(bypass, fn conn ->
+        case conn.request_path do
+          "/c1" ->
+            conn
+            |> Plug.Conn.put_resp_header("content-type", "application/json")
+            |> Plug.Conn.resp(200, ~s({"@context": "context"}))
+
+          "/context" ->
+            conn
+            |> Plug.Conn.put_resp_header("content-type", "application/json")
+            |> Plug.Conn.resp(200, ~s({
+                  "@context": {
+                    "xsd": "http://www.w3.org/2001/XMLSchema#",
+                    "name": "http://xmlns.com/foaf/0.1/name",
+                    "homepage": {"@id": "http://xmlns.com/foaf/0.1/homepage", "@type": "@id"},
+                    "avatar": {"@id": "http://xmlns.com/foaf/0.1/avatar", "@type": "@id"}
+                  }
+                }))
+        end
+      end)
+
+      assert context = JSON.LD.context("http://localhost:#{bypass.port}/c1")
+
+      assert %{
+               "xsd" => "http://www.w3.org/2001/XMLSchema#",
+               "name" => "http://xmlns.com/foaf/0.1/name",
+               "homepage" => "http://xmlns.com/foaf/0.1/homepage",
+               "avatar" => "http://xmlns.com/foaf/0.1/avatar"
+             } = iri_mappings(context)
+    end
+
+    test "relative @vocab against a remote context" do
+      bypass = Bypass.open()
+
+      Bypass.expect(bypass, fn conn ->
+        assert "GET" == conn.method
+        assert "/example.jsonld" == conn.request_path
+
+        context = %{
+          "@context" => %{
+            "@vocab" => "#",
+            "test" => "test"
+          }
+        }
+
+        conn
+        |> Plug.Conn.put_resp_header("content-type", "application/json")
+        |> Plug.Conn.resp(200, Jason.encode!(context))
+      end)
+
+      context_url = "http://localhost:#{bypass.port}/example.jsonld"
+      assert context = JSON.LD.context(context_url)
+
+      assert iri_mappings(context) == %{
+               "test" => "#{context_url}#test"
+             }
     end
 
     test "loads a remote context with local mappings" do
@@ -949,6 +1076,22 @@ defmodule JSON.LD.ContextTest do
         end
       end
     end)
+  end
+
+  test "an empty string is not a valid term" do
+    assert_raise JSON.LD.InvalidTermDefinitionError, fn ->
+      JSON.LD.context(%{"@context" => %{"" => "http://example.org/"}})
+    end
+
+    assert_raise JSON.LD.InvalidTermDefinitionError, fn ->
+      JSON.LD.context(%{"@context" => %{"" => %{"@id" => "http://example.org/"}}})
+    end
+  end
+
+  test "warn on terms starting with a @" do
+    assert capture_log(fn ->
+             JSON.LD.context(%{"@context" => %{"@custom" => "http://example.org/"}})
+           end) =~ "Terms beginning with '@' are reserved for future use and ignored: @custom"
   end
 
   def iri_mappings(%JSON.LD.Context{term_defs: term_defs}) do

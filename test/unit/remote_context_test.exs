@@ -128,5 +128,80 @@ defmodule JSON.LD.RemoteContextTest do
         })
       end
     end
+
+    test "loads @import within a nested context", %{bypass: bypass} do
+      Bypass.expect(bypass, fn conn ->
+        assert "GET" == conn.method
+        assert "/context" == conn.request_path
+
+        json_content =
+          Jason.encode!(%{
+            "@context": %{
+              imported: "http://example.org/imported"
+            }
+          })
+
+        conn
+        |> Plug.Conn.put_resp_header("content-type", "application/json")
+        |> Plug.Conn.resp(200, json_content)
+      end)
+
+      input = %{
+        "@context" => %{
+          "@version" => 1.1,
+          "term" => %{
+            "@id" => "http://example.org/term",
+            "@context" => %{
+              "@import" => "http://localhost:#{bypass.port}/context"
+            }
+          }
+        },
+        "term" => %{
+          "imported" => "value"
+        }
+      }
+
+      expanded = JSON.LD.expand(input)
+
+      assert expanded == [
+               %{
+                 "http://example.org/term" => [
+                   %{"http://example.org/imported" => [%{"@value" => "value"}]}
+                 ]
+               }
+             ]
+    end
+
+    test "handles @import in an array context", %{bypass: bypass} do
+      Bypass.expect(bypass, fn conn ->
+        assert "GET" == conn.method
+        assert "/context" == conn.request_path
+
+        json_content =
+          Jason.encode!(%{
+            "@context": %{
+              imported: "http://example.org/imported"
+            }
+          })
+
+        conn
+        |> Plug.Conn.put_resp_header("content-type", "application/json")
+        |> Plug.Conn.resp(200, json_content)
+      end)
+
+      context =
+        JSON.LD.context([
+          %{
+            "@version": 1.1,
+            "@import": "http://localhost:#{bypass.port}/context"
+          },
+          %{
+            "local" => "http://example.org/local"
+          }
+        ])
+
+      assert context.term_defs["imported"].iri_mapping == "http://example.org/imported"
+      assert context.term_defs["local"].iri_mapping == "http://example.org/local"
+    end
   end
 end
