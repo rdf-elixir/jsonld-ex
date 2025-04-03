@@ -30,7 +30,7 @@ defmodule JSON.LD.Encoder do
 
   use RDF.Serialization.Encoder
 
-  alias JSON.LD.{Compaction, Options}
+  alias JSON.LD.Options
 
   alias RDF.{
     BlankNode,
@@ -83,7 +83,7 @@ defmodule JSON.LD.Encoder do
 
   defp maybe_compact(json_ld_object, opts) do
     if context = Keyword.get(opts, :context) do
-      {:ok, Compaction.compact(json_ld_object, context, opts)}
+      {:ok, JSON.LD.compact(json_ld_object, context, opts)}
     else
       {:ok, json_ld_object}
     end

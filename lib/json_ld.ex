@@ -154,8 +154,39 @@ defmodule JSON.LD do
   -- <https://www.w3.org/TR/json-ld/#compacted-document-form>
 
   Details at <https://www.w3.org/TR/json-ld-api/#compaction-algorithms>
+
+  This is the `compact()` API function of the JsonLdProcessor Interface as specified in <https://www.w3.org/TR/json-ld11-api/#the-application-programming-interface>
   """
-  defdelegate compact(input, context, options \\ %Options{}), to: Compaction
+  @spec compact(map | [map], map | binary | nil, Options.convertible()) :: map
+  def compact(input, context, options \\ %Options{}) do
+    options = Options.new(options)
+    active_context = context |> JSON.LD.context(options) |> Context.set_inverse()
+    expanded = JSON.LD.expand(input, options)
+
+    result =
+      case Compaction.compact(expanded, active_context, nil, options, options.compact_arrays) do
+        [] ->
+          %{}
+
+        result when is_list(result) ->
+          %{Compaction.compact_iri("@graph", active_context, options) => result}
+
+        result ->
+          result
+      end
+
+    context =
+      case context do
+        %{"@context" => context} -> context
+        context -> context
+      end
+
+    cond do
+      is_binary(context) -> Map.put(result, "@context", context)
+      is_nil(context) || Enum.empty?(context) -> result
+      true -> Map.put(result, "@context", context)
+    end
+  end
 
   @doc """
   Flattens the given input according to the steps in the JSON-LD Flattening Algorithm.

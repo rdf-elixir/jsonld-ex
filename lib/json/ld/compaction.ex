@@ -9,58 +9,27 @@ defmodule JSON.LD.Compaction do
 
   alias JSON.LD.{Context, IRIExpansion, Options}
 
-  @doc """
-  The `compact()` API function of the JsonLdProcessor Interface.
-
-  See <https://www.w3.org/TR/json-ld11-api/#the-application-programming-interface>
-  """
-  @spec compact(map | [map], map | binary | nil, Options.convertible()) :: map
-  def compact(input, context, options \\ %Options{}) do
-    options = Options.new(options)
-    active_context = context |> JSON.LD.context(options) |> Context.set_inverse()
-    expanded = JSON.LD.expand(input, options)
-
-    result =
-      case do_compact(expanded, active_context, nil, options, options.compact_arrays) do
-        [] -> %{}
-        result when is_list(result) -> %{compact_iri("@graph", active_context, options) => result}
-        result -> result
-      end
-
-    context =
-      case context do
-        %{"@context" => context} -> context
-        context -> context
-      end
-
-    cond do
-      is_binary(context) -> Map.put(result, "@context", context)
-      is_nil(context) || Enum.empty?(context) -> result
-      true -> Map.put(result, "@context", context)
-    end
-  end
-
-  defp do_compact(
-         element,
-         active_context,
-         active_property,
-         options,
-         compact_arrays \\ false,
-         ordered \\ false
-       )
+  def compact(
+        element,
+        active_context,
+        active_property,
+        options,
+        compact_arrays \\ false,
+        ordered \\ false
+      )
 
   # 2) If element is a scalar, it is already in its most compact form, so simply return element.
-  defp do_compact(element, _, _, _, _, _)
-       when is_binary(element) or is_number(element) or is_boolean(element),
-       do: element
+  def compact(element, _, _, _, _, _)
+      when is_binary(element) or is_number(element) or is_boolean(element),
+      do: element
 
   # 3) If element is an array
-  defp do_compact(element, active_context, active_property, options, compact_arrays, ordered)
-       when is_list(element) do
+  def compact(element, active_context, active_property, options, compact_arrays, ordered)
+      when is_list(element) do
     # 3.1) and 3.2)
     result =
       Enum.flat_map(element, fn item ->
-        case do_compact(item, active_context, active_property, options, compact_arrays, ordered) do
+        case compact(item, active_context, active_property, options, compact_arrays, ordered) do
           nil -> []
           compacted_item -> [compacted_item]
         end
@@ -84,8 +53,8 @@ defmodule JSON.LD.Compaction do
   end
 
   # 4) Otherwise element is a map.
-  defp do_compact(element, active_context, active_property, options, compact_arrays, ordered)
-       when is_map(element) do
+  def compact(element, active_context, active_property, options, compact_arrays, ordered)
+      when is_map(element) do
     # 1) Initialize type-scoped context to active context. This is used for compacting values that may be relevant to any previous type-scoped context.
     type_scoped_context = active_context
 
@@ -141,7 +110,7 @@ defmodule JSON.LD.Compaction do
 
       # 8) If element is a list object, and the container mapping for active property in active context includes @list, return the result of using this algorithm recursively, passing active context, active property, value of @list in element for element, and the compactArrays and ordered flags.
       list?(element) and "@list" in List.wrap(term_def && term_def.container_mapping) ->
-        do_compact(
+        compact(
           element["@list"],
           active_context,
           active_property,
@@ -261,7 +230,7 @@ defmodule JSON.LD.Compaction do
         expanded_property == "@reverse" ->
           # 12.3.1)
           compacted_value =
-            do_compact(
+            compact(
               expanded_value,
               active_context,
               "@reverse",
@@ -297,7 +266,7 @@ defmodule JSON.LD.Compaction do
         expanded_property == "@preserve" ->
           # 12.4.1)
           compacted_value =
-            do_compact(
+            compact(
               expanded_value,
               active_context,
               "@reverse",
@@ -410,7 +379,7 @@ defmodule JSON.LD.Compaction do
                   graph?(expanded_item) -> expanded_item["@graph"]
                   true -> expanded_item
                 end
-                |> do_compact(
+                |> compact(
                   active_context,
                   item_active_property,
                   options,
@@ -721,7 +690,7 @@ defmodule JSON.LD.Compaction do
                         compacted_item =
                           if map_size(compacted_item) == 1 and
                                Map.has_key?(expanded_item, "@id") do
-                            do_compact(
+                            compact(
                               %{"@id" => expanded_item["@id"]},
                               active_context,
                               item_active_property,
