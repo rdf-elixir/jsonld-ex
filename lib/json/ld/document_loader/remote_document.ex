@@ -41,72 +41,80 @@ defmodule JSON.LD.DocumentLoader.RemoteDocument do
          message: "Circular reference detected in document loading"
        }}
     else
-      with {:ok, response} <- http_get_fun.(url, options) do
-        # 3)
-        document_url = response.request.url || url
-        content_type = get_content_type(response.headers)
-        profile = get_profile_from_content_type(response.headers)
+      case http_get_fun.(url, options) do
+        {:ok, %HTTPoison.Response{status_code: status} = response} when status in 200..299 ->
+          # 3)
+          document_url = response.request.url || url
+          content_type = get_content_type(response.headers)
+          profile = get_profile_from_content_type(response.headers)
 
-        cond do
-          # The HTTP Link Header is ignored for documents served as application/ld+json ...
-          content_type == "application/ld+json" ->
-            with {:ok, document} <- parse_json(response.body) do
-              {:ok,
-               %__MODULE__{
-                 document: document,
-                 document_url: document_url,
-                 content_type: content_type,
-                 context_url: nil,
-                 profile: profile
-               }}
-            end
-
-          # 5)
-          content_type &&
-              (String.starts_with?(content_type, "application/json") ||
-                 String.contains?(content_type, "+json")) ->
-            with {:ok, document} <- parse_json(response.body) do
-              case find_context_links(response.headers) do
-                {:ok, nil} ->
-                  {:ok,
-                   %__MODULE__{
-                     document: document,
-                     document_url: document_url,
-                     content_type: content_type,
-                     context_url: nil,
-                     profile: profile
-                   }}
-
-                {:ok, context_url} ->
-                  {:ok,
-                   %__MODULE__{
-                     document: document,
-                     document_url: document_url,
-                     content_type: content_type,
-                     context_url: document_url |> IRI.merge(context_url) |> to_string(),
-                     profile: profile
-                   }}
-
-                {:error, _} = error ->
-                  error
+          cond do
+            # The HTTP Link Header is ignored for documents served as application/ld+json ...
+            content_type == "application/ld+json" ->
+              with {:ok, document} <- parse_json(response.body) do
+                {:ok,
+                 %__MODULE__{
+                   document: document,
+                   document_url: document_url,
+                   content_type: content_type,
+                   context_url: nil,
+                   profile: profile
+                 }}
               end
-            end
 
-          # 4)
-          true ->
-            if alternate_url = find_alternate_link(response.headers) do
-              document_url
-              |> IRI.merge(alternate_url)
-              |> do_load(http_get_fun, options, [url | visited_urls])
-            else
-              # 6)
-              {:error,
-               %LoadingDocumentFailedError{
-                 message:
-                   "Retrieved resource's Content-Type is not JSON-compatible: #{content_type}"
-               }}
-            end
-        end
+            # 5)
+            content_type &&
+                (String.starts_with?(content_type, "application/json") ||
+                   String.contains?(content_type, "+json")) ->
+              with {:ok, document} <- parse_json(response.body) do
+                case find_context_links(response.headers) do
+                  {:ok, nil} ->
+                    {:ok,
+                     %__MODULE__{
+                       document: document,
+                       document_url: document_url,
+                       content_type: content_type,
+                       context_url: nil,
+                       profile: profile
+                     }}
+
+                  {:ok, context_url} ->
+                    {:ok,
+                     %__MODULE__{
+                       document: document,
+                       document_url: document_url,
+                       content_type: content_type,
+                       context_url: document_url |> IRI.merge(context_url) |> to_string(),
+                       profile: profile
+                     }}
+
+                  {:error, _} = error ->
+                    error
+                end
+              end
+
+            # 4)
+            true ->
+              if alternate_url = find_alternate_link(response.headers) do
+                document_url
+                |> IRI.merge(alternate_url)
+                |> do_load(http_get_fun, options, [url | visited_urls])
+              else
+                # 6)
+                {:error,
+                 %LoadingDocumentFailedError{
+                   message:
+                     "Retrieved resource's Content-Type is not JSON-compatible: #{content_type}"
+                 }}
+              end
+          end
+
+        {:ok, %{status_code: status}} ->
+          {:error,
+           %LoadingDocumentFailedError{message: "HTTP request failed with status #{status}"}}
+
+        {:error, _} = error ->
+          error
       end
     end
   end

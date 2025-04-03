@@ -2628,9 +2628,11 @@ defmodule JSON.LD.ExpansionTest do
 
       url = "http://localhost:#{bypass.port}/not-found.jsonld"
 
-      assert_raise JSON.LD.LoadingDocumentFailedError, fn ->
-        JSON.LD.expand(url)
-      end
+      assert_raise JSON.LD.LoadingDocumentFailedError,
+                   "HTTP request failed with status 404",
+                   fn ->
+                     JSON.LD.expand(url)
+                   end
     end
 
     test "expands a remote document with base IRI", %{bypass: bypass} do
