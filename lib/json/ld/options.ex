@@ -91,7 +91,4 @@ defmodule JSON.LD.Options do
   def set_base(%__MODULE__{} = options, base) do
     %__MODULE__{options | base: base && base |> IRI.coerce_base() |> to_string()}
   end
-
-  def document_loader(%__MODULE__{document_loader: nil}), do: JSON.LD.DocumentLoader.Default
-  def document_loader(%__MODULE__{document_loader: loader}), do: loader
 end

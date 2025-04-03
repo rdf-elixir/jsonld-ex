@@ -8,7 +8,7 @@ defmodule JSON.LD.Context do
   import JSON.LD.{IRIExpansion, Utils}
 
   alias JSON.LD.Context.TermDefinition
-  alias JSON.LD.Options
+  alias JSON.LD.{DocumentLoader, Options}
 
   alias RDF.IRI
 
@@ -235,10 +235,8 @@ defmodule JSON.LD.Context do
   end
 
   defp dereference_context(context_url, options) do
-    document_loader = Options.document_loader(options)
-
     {document, url} =
-      case document_loader.load(context_url, %{
+      case DocumentLoader.load(context_url, %{
              options
              | profile: "http://www.w3.org/ns/json-ld#context",
                request_profile: "http://www.w3.org/ns/json-ld#context"
