@@ -113,12 +113,12 @@ defmodule JSON.LD do
   defp expand(%RemoteDocument{} = document, options, processing_options) do
     %{
       Context.new()
-      | base_iri: document.document_url || processing_options.base,
+      | base_iri: processing_options.base || document.document_url,
         original_base_url: document.document_url || processing_options.base
     }
     |> expand(
       document.document,
-      Keyword.put(options, :document_url, document.document_url),
+      Keyword.put(options, :context_url, document.context_url),
       processing_options
     )
   end
