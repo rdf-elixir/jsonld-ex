@@ -663,4 +663,201 @@ defmodule JSON.LD.FlatteningTest do
 
     assert JSON.LD.flatten(input) == output
   end
+
+  describe "remote document handling" do
+    setup do
+      bypass = Bypass.open()
+      {:ok, bypass: bypass}
+    end
+
+    test "flattens a document from a URL", %{bypass: bypass} do
+      Bypass.expect(bypass, fn conn ->
+        assert "GET" == conn.method
+        assert "/document.jsonld" == conn.request_path
+
+        json_content =
+          Jason.encode!(%{
+            "@context" => %{
+              "name" => "http://xmlns.com/foaf/0.1/name",
+              "knows" => "http://xmlns.com/foaf/0.1/knows"
+            },
+            "@id" => "http://me.example.com/",
+            "name" => "Alice",
+            "knows" => [
+              %{
+                "@id" => "http://bob.example.com/",
+                "name" => "Bob"
+              },
+              %{
+                "name" => "Charlie"
+              }
+            ]
+          })
+
+        conn
+        |> Plug.Conn.put_resp_header("content-type", "application/json")
+        |> Plug.Conn.resp(200, json_content)
+      end)
+
+      url = "http://localhost:#{bypass.port}/document.jsonld"
+
+      assert JSON.LD.flatten(url) == [
+               %{
+                 "@id" => "_:b0",
+                 "http://xmlns.com/foaf/0.1/name" => [%{"@value" => "Charlie"}]
+               },
+               %{
+                 "@id" => "http://bob.example.com/",
+                 "http://xmlns.com/foaf/0.1/name" => [%{"@value" => "Bob"}]
+               },
+               %{
+                 "@id" => "http://me.example.com/",
+                 "http://xmlns.com/foaf/0.1/name" => [%{"@value" => "Alice"}],
+                 "http://xmlns.com/foaf/0.1/knows" => [
+                   %{"@id" => "http://bob.example.com/"},
+                   %{"@id" => "_:b0"}
+                 ]
+               }
+             ]
+    end
+
+    test "flattens a document from a URL with context compaction", %{bypass: bypass} do
+      Bypass.expect(bypass, fn conn ->
+        assert "GET" == conn.method
+        assert "/document.jsonld" == conn.request_path
+
+        json_content =
+          Jason.encode!(%{
+            "@context" => %{
+              "name" => "http://xmlns.com/foaf/0.1/name",
+              "knows" => "http://xmlns.com/foaf/0.1/knows"
+            },
+            "@id" => "http://me.example.com/",
+            "name" => "Alice",
+            "knows" => [
+              %{
+                "@id" => "http://bob.example.com/",
+                "name" => "Bob"
+              }
+            ]
+          })
+
+        conn
+        |> Plug.Conn.put_resp_header("content-type", "application/json")
+        |> Plug.Conn.resp(200, json_content)
+      end)
+
+      url = "http://localhost:#{bypass.port}/document.jsonld"
+
+      context = %{
+        "@context" => %{
+          "foaf" => "http://xmlns.com/foaf/0.1/",
+          "name" => "foaf:name",
+          "knows" => "foaf:knows"
+        }
+      }
+
+      assert JSON.LD.flatten(url, context) == %{
+               "@context" => %{
+                 "foaf" => "http://xmlns.com/foaf/0.1/",
+                 "name" => "foaf:name",
+                 "knows" => "foaf:knows"
+               },
+               "@graph" => [
+                 %{
+                   "@id" => "http://bob.example.com/",
+                   "name" => "Bob"
+                 },
+                 %{
+                   "@id" => "http://me.example.com/",
+                   "name" => "Alice",
+                   "knows" => %{"@id" => "http://bob.example.com/"}
+                 }
+               ]
+             }
+    end
+
+    test "flattens a document with relative IRIs", %{bypass: bypass} do
+      Bypass.expect(bypass, fn conn ->
+        assert "GET" == conn.method
+        assert "/document.jsonld" == conn.request_path
+
+        json_content =
+          Jason.encode!(%{
+            "@context" => %{
+              "name" => "http://xmlns.com/foaf/0.1/name",
+              "knows" => "http://xmlns.com/foaf/0.1/knows"
+            },
+            # Änderung hier: expliziter relativer Pfad statt leerer String
+            "@id" => "document.jsonld",
+            "name" => "Alice",
+            "knows" => [%{"@id" => "bob", "name" => "Bob"}]
+          })
+
+        conn
+        |> Plug.Conn.put_resp_header("content-type", "application/json")
+        |> Plug.Conn.resp(200, json_content)
+      end)
+
+      url = "http://localhost:#{bypass.port}/document.jsonld"
+
+      context = %{
+        "@context" => %{
+          "foaf" => "http://xmlns.com/foaf/0.1/",
+          "name" => "foaf:name",
+          "knows" => "foaf:knows"
+        }
+      }
+
+      assert JSON.LD.flatten(url, context, compact_to_relative: false) == %{
+               "@context" => %{
+                 "foaf" => "http://xmlns.com/foaf/0.1/",
+                 "name" => "foaf:name",
+                 "knows" => "foaf:knows"
+               },
+               "@graph" => [
+                 %{
+                   "@id" => "http://localhost:#{bypass.port}/bob",
+                   "name" => "Bob"
+                 },
+                 %{
+                   "@id" => "http://localhost:#{bypass.port}/document.jsonld",
+                   "name" => "Alice",
+                   "knows" => %{"@id" => "http://localhost:#{bypass.port}/bob"}
+                 }
+               ]
+             }
+
+      assert JSON.LD.flatten(url, context) == %{
+               "@context" => %{
+                 "foaf" => "http://xmlns.com/foaf/0.1/",
+                 "name" => "foaf:name",
+                 "knows" => "foaf:knows"
+               },
+               "@graph" => [
+                 %{
+                   "@id" => "bob",
+                   "name" => "Bob"
+                 },
+                 %{
+                   "@id" => "document.jsonld",
+                   "name" => "Alice",
+                   "knows" => %{"@id" => "bob"}
+                 }
+               ]
+             }
+    end
+
+    test "handles failed remote document loading", %{bypass: bypass} do
+      Bypass.expect(bypass, fn conn ->
+        Plug.Conn.resp(conn, 404, "Not Found")
+      end)
+
+      url = "http://localhost:#{bypass.port}/document.jsonld"
+
+      assert_raise JSON.LD.LoadingDocumentFailedError,
+                   "HTTP request failed with status 404",
+                   fn -> JSON.LD.flatten(url) end
+    end
+  end
 end

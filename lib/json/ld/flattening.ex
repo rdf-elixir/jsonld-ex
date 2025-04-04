@@ -9,11 +9,8 @@ defmodule JSON.LD.Flattening do
 
   alias JSON.LD.{NodeIdentifierMap, Options}
 
-  @spec flatten(map | [map], map | nil, Options.convertible()) :: [map]
-  def flatten(input, context \\ nil, options \\ %Options{}) do
-    options = Options.new(options)
-    expanded = JSON.LD.expand(input, options)
-    node_map = node_map(expanded)
+  def flatten(input, options \\ %Options{}) do
+    node_map = node_map(input)
 
     {default_graph, named_graphs} = Map.pop(node_map, "@default")
 
@@ -45,22 +42,15 @@ defmodule JSON.LD.Flattening do
         )
       end)
 
-    flattened =
-      graph_maps
-      |> maybe_sort_by(options.ordered, fn {id, _node} -> id end)
-      |> Enum.flat_map(fn {_, node} ->
-        if Enum.count(node) == 1 and Map.has_key?(node, "@id") do
-          []
-        else
-          [node]
-        end
-      end)
-
-    if context && !Enum.empty?(flattened) do
-      JSON.LD.compact(flattened, context, options)
-    else
-      flattened
-    end
+    graph_maps
+    |> maybe_sort_by(options.ordered, fn {id, _node} -> id end)
+    |> Enum.flat_map(fn {_, node} ->
+      if Enum.count(node) == 1 and Map.has_key?(node, "@id") do
+        []
+      else
+        [node]
+      end
+    end)
   end
 
   @spec node_map([map], pid | nil) :: map

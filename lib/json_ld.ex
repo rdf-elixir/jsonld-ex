@@ -231,8 +231,48 @@ defmodule JSON.LD do
   -- <https://www.w3.org/TR/json-ld/#flattened-document-form>
 
   Details at <https://www.w3.org/TR/json-ld-api/#flattening-algorithms>
+
+  This is the `flatten()` API function of the `JsonLdProcessor` interface as specified in
+  <https://www.w3.org/TR/json-ld11-api/#the-application-programming-interface>
   """
-  defdelegate flatten(input, context \\ nil, options \\ %Options{}), to: Flattening
+  @spec flatten(input(), context_convertible(), Options.convertible()) :: [map]
+  def flatten(input, context \\ nil, options \\ %Options{}) do
+    {processing_options, options} = Options.extract(options)
+    flatten(input, context, options, processing_options)
+  end
+
+  defp flatten(%IRI{} = iri, context, options, processing_options),
+    do: iri |> IRI.to_string() |> flatten(context, options, processing_options)
+
+  # 3)
+  defp flatten(url, context, options, processing_options) when is_binary(url) do
+    case DocumentLoader.load(url, processing_options) do
+      {:ok, document} -> flatten(document, context, options, processing_options)
+      {:error, error} -> raise error
+    end
+  end
+
+  defp flatten(input, context, _options, processing_options) do
+    flattened =
+      input
+      |> expand(%{processing_options | ordered: false})
+      |> Flattening.flatten(processing_options)
+
+    if context && !Enum.empty?(flattened) do
+      compact(
+        flattened,
+        context,
+        if(
+          is_nil(processing_options.base) and processing_options.compact_to_relative and
+            match?(%RemoteDocument{}, input),
+          do: %{processing_options | base: input.document_url},
+          else: processing_options
+        )
+      )
+    else
+      flattened
+    end
+  end
 
   @doc """
   Generator function for `JSON.LD.Context`s.
