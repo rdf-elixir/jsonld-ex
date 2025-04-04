@@ -25,17 +25,25 @@ defmodule JSON.LD.W3C.ToRdfTest do
 
         if id == "#te122", do: @tag(skip: "https://github.com/w3c/json-ld-api/issues/480")
 
-        if id in [
-             "#t0123",
-             "#t0124",
-             "#t0125",
-             # Bug in Elixir's URI.merge/2 resulting in '(ArgumentError) you must merge onto an absolute URI '
-             "#t0130",
-             "#t0131",
-             "#t0132",
-             "#tli11"
-           ] do
-          @tag skip: "TODO: fix RDF.IRI.absolute/2"
+        if not Version.match?(System.version(), ">= 1.19.0") and
+             id in [
+               # Bug in Elixir's URI.merge/2 removing trailing slash at root path
+               # https://github.com/elixir-lang/elixir/pull/14346
+               "#t0123",
+               # Bug in Elixir's URI.merge/2 handling dots without a trailing slash in base URIs incorrect
+               # https://github.com/elixir-lang/elixir/pull/14341
+               "#t0124",
+               "#t0125",
+               # Bug in Elixir's URI.merge/2 resulting in '(ArgumentError) you must merge onto an absolute URI '
+               # https://github.com/elixir-lang/elixir/pull/14344
+               "#t0130",
+               "#t0131",
+               "#t0132",
+               # Bug in Elixir's URI.merge/2 handling of base without host and path
+               # https://github.com/elixir-lang/elixir/pull/14358
+               "#tli11"
+             ] do
+          @tag skip: "missing fixes of URI.merge/2"
         end
 
         if get_in(test_case["option"]["produceGeneralizedRdf"]) do
