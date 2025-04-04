@@ -11,7 +11,17 @@ defmodule JSON.LD do
 
   import RDF.Sigils
 
-  alias JSON.LD.{Compaction, Context, Expansion, Flattening, DocumentLoader, Options}
+  alias JSON.LD.{
+    Compaction,
+    Context,
+    Expansion,
+    Flattening,
+    DocumentLoader,
+    Encoder,
+    Decoder,
+    Options
+  }
+
   alias JSON.LD.DocumentLoader.RemoteDocument
   alias RDF.{IRI, PropertyMap}
 
@@ -273,6 +283,26 @@ defmodule JSON.LD do
       flattened
     end
   end
+
+  @doc """
+  Transforms the given `RDF.Dataset` into a JSON-LD document in expanded form.
+
+  Details at <https://www.w3.org/TR/json-ld-api/#serialize-rdf-as-json-ld-algorithm>
+
+  This is the `toRdf()` API function of the `JsonLdProcessor` interface as specified in
+  <https://www.w3.org/TR/json-ld11-api/#the-application-programming-interface>
+  """
+  defdelegate from_rdf(data, options \\ %Options{}), to: Encoder
+
+  @doc """
+  Transforms the given JSON-LD document into an `RDF.Dataset`.
+
+  Details at <https://www.w3.org/TR/json-ld-api/#deserialize-json-ld-to-rdf-algorithm>
+
+  This is the `fromRdf()` API function of the `JsonLdProcessor` interface as specified in
+  <https://www.w3.org/TR/json-ld11-api/#the-application-programming-interface>
+  """
+  defdelegate to_rdf(input, options \\ %Options{}), to: Decoder
 
   @doc """
   Generator function for `JSON.LD.Context`s.

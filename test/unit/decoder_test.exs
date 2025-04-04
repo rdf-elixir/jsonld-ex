@@ -905,6 +905,108 @@ defmodule JSON.LD.DecoderTest do
     end)
   end
 
+  describe "to_rdf/2 with remote documents" do
+    setup do
+      bypass = Bypass.open()
+      {:ok, bypass: bypass}
+    end
+
+    test "loads and processes a remote JSON-LD document", %{bypass: bypass} do
+      Bypass.expect(bypass, fn conn ->
+        assert "GET" == conn.method
+        assert "/test-doc" == conn.request_path
+
+        document = %{
+          "@context" => %{
+            "@vocab" => "http://schema.org/",
+            "name" => "name",
+            "homepage" => %{"@id" => "url", "@type" => "@id"}
+          },
+          "@type" => "Person",
+          "name" => "Jane Doe",
+          "homepage" => "http://example.org/jane"
+        }
+
+        conn
+        |> Plug.Conn.put_resp_header("content-type", "application/ld+json")
+        |> Plug.Conn.resp(200, Jason.encode!(document))
+      end)
+
+      expected_dataset =
+        RDF.Dataset.new([
+          {RDF.bnode("b0"), NS.RDF.type(), ~I<http://schema.org/Person>},
+          {RDF.bnode("b0"), ~I<http://schema.org/name>, RDF.literal("Jane Doe")},
+          {RDF.bnode("b0"), ~I<http://schema.org/url>, ~I<http://example.org/jane>}
+        ])
+
+      assert JSON.LD.to_rdf("http://localhost:#{bypass.port}/test-doc") ==
+               expected_dataset
+    end
+
+    test "loads remote document with external context", %{bypass: bypass} do
+      Bypass.expect(bypass, fn
+        %{request_path: "/context"} = conn ->
+          context = %{
+            "@context" => %{
+              "@vocab" => "http://schema.org/",
+              "name" => "name",
+              "homepage" => %{"@id" => "url", "@type" => "@id"}
+            }
+          }
+
+          conn
+          |> Plug.Conn.put_resp_header("content-type", "application/ld+json")
+          |> Plug.Conn.resp(200, Jason.encode!(context))
+
+        %{request_path: "/test-doc"} = conn ->
+          document = %{
+            "@context" => "context",
+            "@type" => "Person",
+            "name" => "Alice Smith",
+            "homepage" => "http://example.org/alice"
+          }
+
+          conn
+          |> Plug.Conn.put_resp_header("content-type", "application/ld+json")
+          |> Plug.Conn.resp(200, Jason.encode!(document))
+      end)
+
+      expected_dataset =
+        RDF.Dataset.new([
+          {RDF.bnode("b0"), NS.RDF.type(), ~I<http://schema.org/Person>},
+          {RDF.bnode("b0"), ~I<http://schema.org/name>, RDF.literal("Alice Smith")},
+          {RDF.bnode("b0"), ~I<http://schema.org/url>, ~I<http://example.org/alice>}
+        ])
+
+      assert JSON.LD.to_rdf("http://localhost:#{bypass.port}/test-doc") ==
+               expected_dataset
+    end
+
+    test "fails when remote document cannot be loaded", %{bypass: bypass} do
+      Bypass.expect(bypass, fn conn ->
+        Plug.Conn.resp(conn, 404, "Not Found")
+      end)
+
+      assert_raise JSON.LD.LoadingDocumentFailedError,
+                   "HTTP request failed with status 404",
+                   fn ->
+                     JSON.LD.to_rdf("http://localhost:#{bypass.port}/not-found")
+                   end
+    end
+
+    test "fails when remote document is not valid JSON-LD", %{bypass: bypass} do
+      Bypass.expect(bypass, fn conn ->
+        conn
+        |> Plug.Conn.put_resp_header("content-type", "application/ld+json")
+        |> Plug.Conn.resp(200, "invalid json")
+      end)
+
+      assert_raise JSON.LD.LoadingDocumentFailedError, fn ->
+        JSON.LD.to_rdf("http://localhost:#{bypass.port}/invalid")
+      end
+    end
+  end
+
   describe "advanced features" do
     %{
       "number syntax (decimal)" => {

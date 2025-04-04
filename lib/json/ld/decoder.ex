@@ -14,98 +14,104 @@ defmodule JSON.LD.Decoder do
   alias JSON.LD.{NodeIdentifierMap, Options}
   alias RDF.{BlankNode, Dataset, Graph, IRI, Literal, NS, Statement, XSD}
 
+  @rdf_direction RDF.__base_iri__() <> "direction"
+  @rdf_language RDF.__base_iri__() <> "language"
+
   @impl RDF.Serialization.Decoder
   @spec decode(String.t(), keyword) :: {:ok, Dataset.t() | Graph.t()} | {:error, any}
   def decode(content, opts \\ []) do
     with {:ok, json_ld_object} <- parse_json(content) do
-      dataset = to_rdf(json_ld_object, opts)
-
-      {:ok, dataset}
+      {:ok, to_rdf(json_ld_object, opts)}
     end
   end
 
-  @spec to_rdf(map, Options.t() | Enum.t()) :: Dataset.t() | Graph.t()
-  def to_rdf(element, options \\ %Options{}) do
+  @spec to_rdf(JSON.LD.input(), Options.t() | Enum.t()) :: Dataset.t() | Graph.t()
+  def to_rdf(input, options \\ %Options{}) do
     {:ok, node_id_map} = NodeIdentifierMap.start_link()
 
     options = Options.new(options)
 
     try do
-      element
-      |> JSON.LD.expand(options)
+      input
+      |> JSON.LD.expand(%{options | ordered: false})
       |> JSON.LD.node_map(node_id_map)
-      |> Enum.sort_by(fn {graph_name, _} -> graph_name end)
-      |> Enum.reduce(Dataset.new(), fn {graph_name, graph}, dataset ->
-        # 1.1)
-        if graph_name != "@default" and not well_formed_iri?(graph_name) and
-             not blank_node_id?(graph_name) do
-          dataset
-        else
-          # 1.3)
-          rdf_graph =
-            graph
-            |> Enum.sort_by(fn {subject, _} -> subject end)
-            |> Enum.reduce(Graph.new(), fn {subject, node}, rdf_graph ->
-              # 1.3.1)
-              if not well_formed_iri?(subject) and not blank_node_id?(subject) do
-                rdf_graph
-              else
-                # 1.3.2)
-                node
-                |> Enum.sort_by(fn {property, _} -> property end)
-                |> Enum.reduce(rdf_graph, fn {property, values}, rdf_graph ->
-                  cond do
-                    # 1.3.2.1)
-                    property == "@type" ->
-                      if subject = node_to_rdf(subject) do
-                        objects = values |> Enum.map(&node_to_rdf/1) |> Enum.reject(&is_nil/1)
-
-                        Graph.add(rdf_graph, {subject, NS.RDF.type(), objects})
-                      else
-                        rdf_graph
-                      end
-
-                    # 1.3.2.2)
-                    JSON.LD.keyword?(property) ->
-                      rdf_graph
-
-                    # 1.3.2.3)
-                    not options.produce_generalized_rdf and blank_node_id?(property) ->
-                      rdf_graph
-
-                    # 1.3.2.4)
-                    not well_formed_iri?(property) ->
-                      rdf_graph
-
-                    # 1.3.2.5)
-                    true ->
-                      Enum.reduce(values, rdf_graph, fn item, rdf_graph ->
-                        case object_to_rdf(item, node_id_map, options) do
-                          {_list_triples, nil} ->
-                            rdf_graph
-
-                          {list_triples, object} ->
-                            rdf_graph
-                            |> Graph.add({node_to_rdf(subject), node_to_rdf(property), object})
-                            |> Graph.add(list_triples)
-                        end
-                      end)
-                  end
-                end)
-              end
-            end)
-
-          if Enum.empty?(rdf_graph) do
-            dataset
-          else
-            graph_name = if graph_name == "@default", do: nil, else: graph_name
-            Dataset.add(dataset, rdf_graph, graph: graph_name)
-          end
-        end
-      end)
+      |> do_to_rdf(node_id_map, options)
     after
       NodeIdentifierMap.stop(node_id_map)
     end
+  end
+
+  defp do_to_rdf(node_map, node_id_map, options) do
+    node_map
+    |> Enum.sort_by(fn {graph_name, _} -> graph_name end)
+    |> Enum.reduce(Dataset.new(), fn {graph_name, graph}, dataset ->
+      # 1.1)
+      if graph_name != "@default" and not well_formed_iri?(graph_name) and
+           not blank_node_id?(graph_name) do
+        dataset
+      else
+        # 1.3)
+        rdf_graph =
+          graph
+          |> Enum.sort_by(fn {subject, _} -> subject end)
+          |> Enum.reduce(Graph.new(), fn {subject, node}, rdf_graph ->
+            # 1.3.1)
+            if not well_formed_iri?(subject) and not blank_node_id?(subject) do
+              rdf_graph
+            else
+              # 1.3.2)
+              node
+              |> Enum.sort_by(fn {property, _} -> property end)
+              |> Enum.reduce(rdf_graph, fn {property, values}, rdf_graph ->
+                cond do
+                  # 1.3.2.1)
+                  property == "@type" ->
+                    if subject = node_to_rdf(subject) do
+                      objects = values |> Enum.map(&node_to_rdf/1) |> Enum.reject(&is_nil/1)
+
+                      Graph.add(rdf_graph, {subject, NS.RDF.type(), objects})
+                    else
+                      rdf_graph
+                    end
+
+                  # 1.3.2.2)
+                  JSON.LD.keyword?(property) ->
+                    rdf_graph
+
+                  # 1.3.2.3)
+                  not options.produce_generalized_rdf and blank_node_id?(property) ->
+                    rdf_graph
+
+                  # 1.3.2.4)
+                  not well_formed_iri?(property) ->
+                    rdf_graph
+
+                  # 1.3.2.5)
+                  true ->
+                    Enum.reduce(values, rdf_graph, fn item, rdf_graph ->
+                      case object_to_rdf(item, node_id_map, options) do
+                        {_list_triples, nil} ->
+                          rdf_graph
+
+                        {list_triples, object} ->
+                          rdf_graph
+                          |> Graph.add({node_to_rdf(subject), node_to_rdf(property), object})
+                          |> Graph.add(list_triples)
+                      end
+                    end)
+                end
+              end)
+            end
+          end)
+
+        if Enum.empty?(rdf_graph) do
+          dataset
+        else
+          graph_name = if graph_name == "@default", do: nil, else: graph_name
+          Dataset.add(dataset, rdf_graph, graph: graph_name)
+        end
+      end
+    end)
   end
 
   defp well_formed_iri?(iri) do
@@ -238,12 +244,12 @@ defmodule JSON.LD.Decoder do
             list_triples =
               [
                 {literal, RDF.value(), value},
-                {literal, RDF.iri(RDF.__base_iri__() <> "direction"), direction}
+                {literal, @rdf_direction, direction}
               ]
 
             list_triples =
               if Map.has_key?(item, "@language") do
-                [{literal, RDF.iri(RDF.__base_iri__() <> "language"), language} | list_triples]
+                [{literal, @rdf_language, language} | list_triples]
               else
                 list_triples
               end
