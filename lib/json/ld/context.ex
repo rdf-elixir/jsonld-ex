@@ -359,7 +359,6 @@ defmodule JSON.LD.Context do
   defp set_vocab(active, nil, _), do: %__MODULE__{active | vocab: nil}
 
   # 5.8.3) Otherwise, if value is an IRI or blank node identifier, the vocabulary mapping of result is set to the result of IRI expanding value using true for document relative.
-  @dialyzer {:nowarn_function, set_vocab: 3}
   defp set_vocab(active, vocab, options) do
     cond do
       # Note: The use of blank node identifiers to value for @vocab is obsolete, and may be removed in a future version of JSON-LD.

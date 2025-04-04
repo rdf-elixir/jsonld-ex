@@ -59,7 +59,7 @@ defmodule JSON.LD.Utils do
 
   see <https://www.w3.org/TR/json-ld-api/#dfn-blank-node-identifier>
   """
-  @spec blank_node_id?(String.t()) :: boolean
+  @spec blank_node_id?(any) :: boolean
   def blank_node_id?("_:" <> _), do: true
   def blank_node_id?(_), do: false
 
