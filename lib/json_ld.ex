@@ -66,7 +66,7 @@ defmodule JSON.LD do
   @doc """
   Returns if the given value is a JSON-LD keyword.
   """
-  @spec keyword?(String.t()) :: boolean
+  @spec keyword?(String.t() | any) :: boolean
   def keyword?(value) when is_binary(value) and value in @keywords, do: true
   def keyword?(_value), do: false
 

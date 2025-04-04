@@ -24,7 +24,6 @@ defmodule JSON.LD.Decoder do
     end
   end
 
-  @dialyzer {:nowarn_function, to_rdf: 2}
   @spec to_rdf(map, Options.t() | Enum.t()) :: Dataset.t() | Graph.t()
   def to_rdf(element, options \\ %Options{}) do
     {:ok, node_id_map} = NodeIdentifierMap.start_link()
@@ -124,7 +123,7 @@ defmodule JSON.LD.Decoder do
     Jason.decode!(content)
   end
 
-  @spec node_to_rdf(String.t()) :: IRI.t() | BlankNode.t()
+  @spec node_to_rdf(String.t()) :: IRI.t() | BlankNode.t() | nil
   def node_to_rdf(node) do
     cond do
       blank_node_id?(node) -> node |> String.trim_leading("_:") |> RDF.bnode()

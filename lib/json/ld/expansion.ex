@@ -250,7 +250,6 @@ defmodule JSON.LD.Expansion do
        else: result
   end
 
-  @dialyzer {:nowarn_function, expand_object: 7}
   defp expand_object(
          element,
          active_property,

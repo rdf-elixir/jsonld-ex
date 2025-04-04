@@ -14,7 +14,7 @@ defmodule JSON.LD.IRIExpansion do
   @keywords JSON.LD.keywords()
 
   @spec expand_iri(String.t(), Context.t(), Options.t(), boolean, boolean, map | nil, map | nil) ::
-          {String.t(), Context.t(), map} | String.t()
+          {String.t() | nil, Context.t(), map} | String.t() | nil
   def expand_iri(
         value,
         active_context,
