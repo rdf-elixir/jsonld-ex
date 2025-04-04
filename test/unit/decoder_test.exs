@@ -372,7 +372,6 @@ defmodule JSON.LD.DecoderTest do
       }
     }
     |> Enum.each(fn {title, data} ->
-      if title == "empty suffix", do: @tag(:skip)
       @tag data: data
       test title, %{data: {input, output}} do
         assert JSON.LD.Decoder.decode!(input) == RDF.Dataset.new(output)
