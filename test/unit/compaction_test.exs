@@ -2868,6 +2868,140 @@ defmodule JSON.LD.CompactionTest do
     end)
   end
 
+  describe "remote document handling" do
+    test "compacts a document from a URL" do
+      bypass = Bypass.open()
+
+      Bypass.expect(bypass, fn conn ->
+        assert "GET" == conn.method
+        assert "/document.jsonld" == conn.request_path
+
+        json_content =
+          Jason.encode!(%{
+            "@id" => "http://example.org/test",
+            "http://xmlns.com/foaf/0.1/name" => [%{"@value" => "Test Name"}],
+            "http://xmlns.com/foaf/0.1/homepage" => [%{"@id" => "http://example.org/"}]
+          })
+
+        conn
+        |> Plug.Conn.put_resp_header("content-type", "application/json")
+        |> Plug.Conn.resp(200, json_content)
+      end)
+
+      context = %{
+        "@context" => %{
+          "foaf" => "http://xmlns.com/foaf/0.1/",
+          "name" => "foaf:name",
+          "homepage" => %{"@id" => "foaf:homepage", "@type" => "@id"}
+        }
+      }
+
+      assert JSON.LD.compact("http://localhost:#{bypass.port}/document.jsonld", context) == %{
+               "@context" => context["@context"],
+               "@id" => "http://example.org/test",
+               "name" => "Test Name",
+               "homepage" => "http://example.org/"
+             }
+    end
+
+    test "compacts a document from a URL with relative IRIs" do
+      bypass = Bypass.open()
+
+      Bypass.expect(bypass, fn conn ->
+        assert "GET" == conn.method
+        assert "/document.jsonld" == conn.request_path
+
+        json_content =
+          Jason.encode!(%{
+            "@id" => "test",
+            "http://xmlns.com/foaf/0.1/homepage" => [%{"@id" => "foo"}]
+          })
+
+        conn
+        |> Plug.Conn.put_resp_header("content-type", "application/json")
+        |> Plug.Conn.resp(200, json_content)
+      end)
+
+      context = %{
+        "@context" => %{
+          "foaf" => "http://xmlns.com/foaf/0.1/",
+          "homepage" => %{"@id" => "foaf:homepage", "@type" => "@id"}
+        }
+      }
+
+      base_url = "http://localhost:#{bypass.port}"
+      document_url = "#{base_url}/document.jsonld"
+
+      assert JSON.LD.compact(document_url, context) == %{
+               "@context" => context["@context"],
+               "@id" => "test",
+               "homepage" => "foo"
+             }
+
+      assert JSON.LD.compact(document_url, context, compact_to_relative: false) == %{
+               "@context" => context["@context"],
+               "@id" => "#{base_url}/test",
+               "homepage" => "#{base_url}/foo"
+             }
+    end
+
+    test "fails on non-existent remote document" do
+      bypass = Bypass.open()
+
+      Bypass.expect(bypass, fn conn ->
+        Plug.Conn.resp(conn, 404, "Not Found")
+      end)
+
+      assert_raise JSON.LD.LoadingDocumentFailedError, fn ->
+        JSON.LD.compact("http://localhost:#{bypass.port}/non-existent.jsonld", %{})
+      end
+    end
+
+    test "compacts a document with remote context" do
+      bypass = Bypass.open()
+
+      Bypass.expect(bypass, fn
+        %{request_path: "/context.jsonld"} = conn ->
+          json_content =
+            Jason.encode!(%{
+              "@context" => %{
+                "name" => "http://xmlns.com/foaf/0.1/name",
+                "homepage" => %{
+                  "@id" => "http://xmlns.com/foaf/0.1/homepage",
+                  "@type" => "@id"
+                }
+              }
+            })
+
+          conn
+          |> Plug.Conn.put_resp_header("content-type", "application/json")
+          |> Plug.Conn.resp(200, json_content)
+
+        %{request_path: "/document.jsonld"} = conn ->
+          json_content =
+            Jason.encode!(%{
+              "@id" => "http://example.org/test",
+              "http://xmlns.com/foaf/0.1/name" => [%{"@value" => "Test Name"}],
+              "http://xmlns.com/foaf/0.1/homepage" => [%{"@id" => "http://example.org/"}]
+            })
+
+          conn
+          |> Plug.Conn.put_resp_header("content-type", "application/json")
+          |> Plug.Conn.resp(200, json_content)
+      end)
+
+      context_url = "http://localhost:#{bypass.port}/context.jsonld"
+      document_url = "http://localhost:#{bypass.port}/document.jsonld"
+
+      assert JSON.LD.compact(document_url, context_url) == %{
+               "@context" => context_url,
+               "@id" => "http://example.org/test",
+               "name" => "Test Name",
+               "homepage" => "http://example.org/"
+             }
+    end
+  end
+
   describe "problem cases" do
     %{
       "issue json-ld-framing#64" => %{

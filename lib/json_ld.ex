@@ -48,8 +48,9 @@ defmodule JSON.LD do
                :
               ]
 
-  @type expand_input :: map | [map] | String.t() | IRI.t() | RemoteDocument.t()
-  @type expand_result :: map | [map] | nil
+  @type input :: map | [map] | String.t() | IRI.t() | RemoteDocument.t()
+  @type context_convertible ::
+          map | String.t() | nil | RDF.PropertyMap.t() | list(context_convertible)
 
   @spec options :: Options.t()
   def options, do: Options.new()
@@ -80,9 +81,10 @@ defmodule JSON.LD do
 
   Details at <http://json-ld.org/spec/latest/json-ld-api/#expansion-algorithm>
 
-  This is the `expand()` API function of the JsonLdProcessor Interface as specified in <https://www.w3.org/TR/json-ld11-api/#the-application-programming-interface>
+  This is the `expand()` API function of the `JsonLdProcessor` interface as specified in
+  <https://www.w3.org/TR/json-ld11-api/#the-application-programming-interface>
   """
-  @spec expand(expand_input(), Options.convertible()) :: expand_result()
+  @spec expand(input(), Options.convertible()) :: map | [map] | nil
   def expand(input, options \\ []) do
     {processing_options, options} = Options.extract(options)
     expand(input, options, processing_options)
@@ -155,30 +157,60 @@ defmodule JSON.LD do
 
   Details at <https://www.w3.org/TR/json-ld-api/#compaction-algorithms>
 
-  This is the `compact()` API function of the JsonLdProcessor Interface as specified in <https://www.w3.org/TR/json-ld11-api/#the-application-programming-interface>
+  This is the `compact()` API function of the `JsonLdProcessor` interface as specified in
+  <https://www.w3.org/TR/json-ld11-api/#the-application-programming-interface>
   """
-  @spec compact(map | [map], map | binary | nil, Options.convertible()) :: map
-  def compact(input, context, options \\ %Options{}) do
-    options = Options.new(options)
-    active_context = context |> JSON.LD.context(options) |> Context.set_inverse()
-    expanded = JSON.LD.expand(input, options)
+  @spec compact(input(), context_convertible(), Options.convertible()) :: map
+  def compact(input, context, options \\ []) do
+    {processing_options, options} = Options.extract(options)
+    compact(input, context, options, processing_options)
+  end
 
-    result =
-      case Compaction.compact(expanded, active_context, nil, options, options.compact_arrays) do
-        [] ->
-          %{}
+  defp compact(%IRI{} = iri, context, options, processing_options),
+    do: iri |> IRI.to_string() |> compact(context, options, processing_options)
 
-        result when is_list(result) ->
-          %{Compaction.compact_iri("@graph", active_context, options) => result}
+  # 3)
+  defp compact(url, context, options, processing_options) when is_binary(url) do
+    case DocumentLoader.load(url, processing_options) do
+      {:ok, document} -> compact(document, context, options, processing_options)
+      {:error, error} -> raise error
+    end
+  end
 
-        result ->
-          result
-      end
+  defp compact(input, context, _opts, popts) do
+    # 4)
+    expanded = JSON.LD.expand(input, %{popts | ordered: false})
 
+    # 5)
+    context_base = if match?(%RemoteDocument{}, input), do: input.document_url, else: popts.base
+
+    # 6)
     context =
       case context do
         %{"@context" => context} -> context
         context -> context
+      end
+
+    # 7)
+    active_context =
+      %{
+        context(context, %{popts | base: context_base})
+        | # 8)
+          api_base_iri: popts.base || if(popts.compact_to_relative, do: context_base)
+      }
+      |> Context.set_inverse()
+
+    # 9)
+    result =
+      case Compaction.compact(expanded, active_context, nil, popts, popts.compact_arrays) do
+        [] ->
+          %{}
+
+        result when is_list(result) ->
+          %{Compaction.compact_iri("@graph", active_context, popts) => result}
+
+        result ->
+          result
       end
 
     cond do
@@ -210,7 +242,7 @@ defmodule JSON.LD do
 
   This function can be used also to create `JSON.LD.Context` from a `RDF.PropertyMap`.
   """
-  @spec context(map | RDF.PropertyMap.t(), Options.t()) :: Context.t()
+  @spec context(context_convertible(), Options.t()) :: Context.t()
   def context(context, options \\ %Options{}) do
     context
     |> normalize_context()
