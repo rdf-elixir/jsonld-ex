@@ -14,7 +14,7 @@ defmodule JSON.LD.W3C.CompactTest do
   @base expanded_base_iri(@manifest)
 
   @skipped skip_map([
-             {["#t0114"], "TODO:"}
+             {["#t0114"], "Is this test actually correct? No implementation runs this test."}
            ])
 
   @manifest
