@@ -675,32 +675,36 @@ defmodule JSON.LD.Compaction do
                       # 12.8.9.8)
                       "@type" in container ->
                         # 12.8.9.8.1)
-                        [map_key | remaining] = to_list(compacted_item[container_key])
+                        if is_map(compacted_item) do
+                          [map_key | remaining] = to_list(compacted_item[container_key])
 
-                        # 12.8.9.8.2) and 12.8.9.8.3)
-                        # SPEC ISSUE: This step is very confusing: why add the same elements again? We follow JSON-LD.rb here ...
-                        compacted_item =
-                          case remaining do
-                            [] -> Map.delete(compacted_item, container_key)
-                            [remaining] -> Map.put(compacted_item, container_key, remaining)
-                            remaining -> Map.put(compacted_item, container_key, remaining)
-                          end
+                          # 12.8.9.8.2) and 12.8.9.8.3)
+                          # SPEC ISSUE: This step is very confusing: why add the same elements again? We follow JSON-LD.rb here ...
+                          compacted_item =
+                            case remaining do
+                              [] -> Map.delete(compacted_item, container_key)
+                              [remaining] -> Map.put(compacted_item, container_key, remaining)
+                              remaining -> Map.put(compacted_item, container_key, remaining)
+                            end
 
-                        # 12.8.9.8.4)
-                        compacted_item =
-                          if map_size(compacted_item) == 1 and
-                               Map.has_key?(expanded_item, "@id") do
-                            compact(
-                              %{"@id" => expanded_item["@id"]},
-                              active_context,
-                              item_active_property,
-                              options
-                            )
-                          else
-                            compacted_item
-                          end
+                          # 12.8.9.8.4)
+                          compacted_item =
+                            if map_size(compacted_item) == 1 and
+                                 Map.has_key?(expanded_item, "@id") do
+                              compact(
+                                %{"@id" => expanded_item["@id"]},
+                                active_context,
+                                item_active_property,
+                                options
+                              )
+                            else
+                              compacted_item
+                            end
 
-                        {compacted_item, map_key}
+                          {compacted_item, map_key}
+                        else
+                          {compacted_item, nil}
+                        end
 
                       true ->
                         {compacted_item, nil}
