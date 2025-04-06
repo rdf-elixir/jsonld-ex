@@ -5,13 +5,6 @@ defmodule JSON.LD.LoadingDocumentFailedError do
   defexception code: "loading document failed", message: nil
 end
 
-defmodule JSON.LD.ListOfListsError do
-  @moduledoc """
-  A list of lists was detected. List of lists are not supported in this version of JSON-LD due to the algorithmic complexity.
-  """
-  defexception code: "list of lists", message: nil
-end
-
 defmodule JSON.LD.InvalidIndexValueError do
   @moduledoc """
   An @index member was encountered whose value was not a string.
@@ -61,11 +54,11 @@ defmodule JSON.LD.InvalidRemoteContextError do
   defexception code: "invalid remote context", message: nil
 end
 
-defmodule JSON.LD.RecursiveContextInclusionError do
+defmodule JSON.LD.ContextOverflowError do
   @moduledoc """
-  A cycle in remote context inclusions has been detected.
+  Maximum number of @context URLs exceeded.
   """
-  defexception code: "recursive context inclusion", message: nil
+  defexception code: "context overflow", message: nil
 end
 
 defmodule JSON.LD.InvalidBaseIRIError do
@@ -184,7 +177,11 @@ defmodule JSON.LD.InvalidLanguageTaggedStringError do
   @moduledoc """
   A language-tagged string with an invalid language value was detected.
   """
-  defexception code: "invalid language-tagged string", message: nil
+  defexception code: "invalid language-tagged string", value: nil
+
+  def message(%__MODULE__{value: value}) do
+    "#{inspect(value)} is not a valid language-tag"
+  end
 end
 
 defmodule JSON.LD.InvalidLanguageTaggedValueError do
@@ -241,4 +238,122 @@ defmodule JSON.LD.InvalidReversePropertyValueError do
   An invalid value for a reverse property has been detected. The value of an inverse property must be a node object.
   """
   defexception code: "invalid reverse property value", message: nil
+end
+
+defmodule JSON.LD.InvalidContextNullificationError do
+  @moduledoc """
+  An attempt was made to nullify a context containing protected term definitions.
+  """
+  defexception code: "invalid context nullification", message: nil
+end
+
+defmodule JSON.LD.ProtectedTermRedefinitionError do
+  @moduledoc """
+  An attempt was made to redefine a protected term.
+  """
+  defexception code: "protected term redefinition", message: nil
+end
+
+defmodule JSON.LD.InvalidContextEntryError do
+  @moduledoc """
+  An entry in a context is invalid due to processing mode incompatibility.
+  """
+  defexception code: "invalid context entry", message: nil
+end
+
+defmodule JSON.LD.InvalidScopedContextError do
+  @moduledoc """
+  The local context defined within a term definition is invalid.
+  """
+  defexception code: "invalid scoped context", message: nil
+end
+
+defmodule JSON.LD.InvalidImportValueError do
+  @moduledoc """
+  An invalid value for @import has been found.
+  """
+  defexception code: "invalid @import value", value: nil
+
+  def message(%__MODULE__{code: code, value: value}) do
+    "#{code}: #{inspect(value)}"
+  end
+end
+
+defmodule JSON.LD.InvalidNestValueError do
+  @moduledoc """
+  An invalid value for @nest has been found.
+  """
+  defexception code: "invalid @nest value", message: nil
+end
+
+defmodule JSON.LD.InvalidIncludedValueError do
+  @moduledoc """
+  An included block contains an invalid value.
+  """
+  defexception code: "invalid @included value", message: nil
+end
+
+defmodule JSON.LD.InvalidBaseDirectionError do
+  @moduledoc """
+  The value of @direction is not "ltr", "rtl", or null and thus invalid.
+  """
+  defexception code: "invalid base direction", message: nil
+end
+
+defmodule JSON.LD.InvalidPrefixValueError do
+  @moduledoc """
+  An invalid value for @prefix has been found.
+  """
+  defexception code: "invalid @prefix value", value: nil
+
+  def message(%__MODULE__{code: code, value: value}) do
+    "#{code}: must be a boolean, was #{inspect(value)}"
+  end
+end
+
+defmodule JSON.LD.InvalidVersionValueError do
+  @moduledoc """
+  The @version entry was used in a context with an out of range value.
+  """
+  defexception code: "invalid @version value", value: nil
+
+  def message(%__MODULE__{code: code, value: value}) do
+    "#{code}: #{inspect(value)}"
+  end
+end
+
+defmodule JSON.LD.InvalidPropagateValueError do
+  @moduledoc """
+  An invalid value for @propagate has been found.
+  """
+  defexception code: "invalid @propagate value", value: nil
+
+  def message(%__MODULE__{code: code, value: value}) do
+    "#{code}: #{inspect(value)}"
+  end
+end
+
+defmodule JSON.LD.IRIConfusedWithPrefixError do
+  @moduledoc """
+  When compacting an IRI would result in an IRI which could be confused with a compact IRI (because its IRI scheme matches a term definition and it has no IRI authority).
+  """
+  defexception code: "IRI confused with prefix", message: nil
+end
+
+defmodule JSON.LD.InvalidJSONLiteralError do
+  @moduledoc """
+  An invalid JSON literal was detected.
+  """
+  defexception code: "invalid JSON literal", value: nil
+
+  def message(%__MODULE__{code: code, value: value}) do
+    "#{code}: #{inspect(value)}"
+  end
+end
+
+defmodule JSON.LD.ProcessingModeConflictError do
+  @moduledoc """
+  An attempt was made to change the processing mode which is incompatible with the previous specified version.
+  """
+  defexception code: "processing mode conflict", message: nil
 end

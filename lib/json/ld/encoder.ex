@@ -30,7 +30,7 @@ defmodule JSON.LD.Encoder do
 
   use RDF.Serialization.Encoder
 
-  alias JSON.LD.{Compaction, Options}
+  alias JSON.LD.Options
 
   alias RDF.{
     BlankNode,
@@ -41,17 +41,22 @@ defmodule JSON.LD.Encoder do
     LangString,
     Literal,
     NS,
-    Statement,
     XSD
   }
+
+  import JSON.LD.Utils
+  import RDF.Guards
 
   @type input :: Dataset.t() | Description.t() | Graph.t()
 
   @rdf_type to_string(RDF.NS.RDF.type())
+  @rdf_value to_string(RDF.NS.RDF.value())
   @rdf_nil to_string(RDF.NS.RDF.nil())
   @rdf_first to_string(RDF.NS.RDF.first())
   @rdf_rest to_string(RDF.NS.RDF.rest())
   @rdf_list to_string(RDF.uri(RDF.NS.RDF.List))
+  @rdf_direction RDF.__base_iri__() <> "direction"
+  @rdf_language RDF.__base_iri__() <> "language"
 
   @impl RDF.Serialization.Encoder
   @spec encode(RDF.Data.t(), keyword) :: {:ok, String.t()} | {:error, any}
@@ -76,20 +81,9 @@ defmodule JSON.LD.Encoder do
     end
   end
 
-  # TODO: unless we find a way to allow more optimized encode! versions, remove this since it's never used (see the respective warning)
-  @impl RDF.Serialization.Encoder
-  @spec encode!(RDF.Data.t(), Options.convertible()) :: String.t()
-  @dialyzer {:nowarn_function, encode!: 1}
-  def encode!(data, opts \\ []) do
-    case encode(data, opts) do
-      {:ok, result} -> result
-      {:error, error} -> raise error
-    end
-  end
-
   defp maybe_compact(json_ld_object, opts) do
     if context = Keyword.get(opts, :context) do
-      {:ok, Compaction.compact(json_ld_object, context, opts)}
+      {:ok, JSON.LD.compact(json_ld_object, context, opts)}
     else
       {:ok, json_ld_object}
     end
@@ -109,53 +103,76 @@ defmodule JSON.LD.Encoder do
   def from_rdf!(%Dataset{} = dataset, options) do
     options = Options.new(options)
 
-    graph_map =
-      Enum.reduce(Dataset.graphs(dataset), %{}, fn graph, graph_map ->
-        # 3.1)
-        name = to_string(graph.name || "@default")
+    {graph_map, referenced_once, compound_literal_subjects} =
+      Enum.reduce(Dataset.graphs(dataset), {%{}, %{}, %{}}, fn
+        graph, {graph_map, referenced_once, compound_literal_subjects} ->
+          # 5.1)
+          name = to_string(graph.name || "@default")
+          # 5.2)
+          graph_map = Map.put_new(graph_map, name, %{})
+          # 5.3)
+          compound_literal_subjects = Map.put_new(compound_literal_subjects, name, %{})
 
-        # 3.3)
-        graph_map =
-          if graph.name && !get_in(graph_map, ["@default", name]) do
-            Map.update(graph_map, "@default", %{name => %{"@id" => name}}, fn default_graph ->
-              Map.put(default_graph, name, %{"@id" => name})
-            end)
-          else
-            graph_map
-          end
+          # 5.4)
+          graph_map =
+            if graph.name && !get_in(graph_map, ["@default", name]) do
+              Map.update(graph_map, "@default", %{name => %{"@id" => name}}, fn default_graph ->
+                Map.put(default_graph, name, %{"@id" => name})
+              end)
+            else
+              graph_map
+            end
 
-        # 3.2 + 3.4)
-        node_map =
-          node_map_from_graph(
-            graph,
-            Map.get(graph_map, name, %{}),
-            options.use_native_types,
-            options.use_rdf_type
-          )
+          # 5.5) & 5.6) & 5.7)
+          {node_map, referenced_once, compound_map} =
+            process_graph_triples(
+              graph,
+              graph_map[name],
+              referenced_once,
+              compound_literal_subjects[name],
+              options
+            )
 
-        Map.put(graph_map, name, node_map)
+          {
+            Map.put(graph_map, name, node_map),
+            referenced_once,
+            Map.put(compound_literal_subjects, name, compound_map)
+          }
       end)
 
-    # 4)
-    graph_map =
-      Enum.reduce(graph_map, %{}, fn {name, graph_object}, graph_map ->
-        Map.put(graph_map, name, convert_list(graph_object))
+    # 6)
+    {graph_map, _referenced_once} =
+      Enum.reduce(graph_map, {%{}, referenced_once}, fn
+        {name, graph_object}, {graph_map, referenced_once} ->
+          # 6.1)
+          {graph_object, referenced_once} =
+            process_compound_literals(
+              graph_object,
+              compound_literal_subjects[name],
+              referenced_once
+            )
+
+          # 6.2) - 6.4)
+          {graph_object, referenced_once} = convert_list(graph_object, referenced_once)
+
+          {Map.put(graph_map, name, graph_object), referenced_once}
       end)
 
-    # 5+6)
-    Map.get(graph_map, "@default", %{})
-    |> Enum.sort_by(fn {subject, _} -> subject end)
+    # 7+8)
+    graph_map
+    |> Map.get("@default", %{})
+    |> maybe_sort_by(options.ordered, fn {subject, _} -> subject end)
     |> Enum.reduce([], fn {subject, node}, result ->
-      # 6.1)
+      # 8.1)
       node =
         if Map.has_key?(graph_map, subject) do
           Map.put(
             node,
             "@graph",
             graph_map[subject]
-            |> Enum.sort_by(fn {s, _} -> s end)
+            |> maybe_sort_by(options.ordered, fn {s, _} -> s end)
             |> Enum.reduce([], fn {_s, n}, graph_nodes ->
-              n = Map.delete(n, "usages")
+              n = Map.delete(n, :usages)
 
               if map_size(n) == 1 and Map.has_key?(n, "@id") do
                 graph_nodes
@@ -169,8 +186,8 @@ defmodule JSON.LD.Encoder do
           node
         end
 
-      # 6.2)
-      node = Map.delete(node, "usages")
+      # 8.2)
+      node = Map.delete(node, :usages)
 
       if map_size(node) == 1 and Map.has_key?(node, "@id") do
         result
@@ -184,244 +201,380 @@ defmodule JSON.LD.Encoder do
   def from_rdf!(rdf_data, options),
     do: rdf_data |> Dataset.new() |> from_rdf!(options)
 
-  # 3.5)
-  @spec node_map_from_graph(Graph.t(), map, boolean, boolean) :: map
-  defp node_map_from_graph(graph, current, use_native_types, use_rdf_type) do
-    Enum.reduce(graph, current, fn {subject, predicate, object}, node_map ->
-      {subject, predicate, node_object} = {to_string(subject), to_string(predicate), nil}
-      node = Map.get(node_map, subject, %{"@id" => subject})
+  # Process triples in the graph (steps 5.5 through 5.7)
+  defp process_graph_triples(graph, node_map, referenced_once, compound_map, options) do
+    Enum.reduce(graph, {node_map, referenced_once, compound_map}, fn
+      {subject, predicate, object}, {node_map, referenced_once, compound_map} ->
+        subject = to_string(subject)
+        predicate = to_string(predicate)
 
-      {node_object, node_map} =
-        if is_node_object = match?(%IRI{}, object) || match?(%BlankNode{}, object) do
-          node_object = to_string(object)
-          node_map = Map.put_new(node_map, node_object, %{"@id" => node_object})
-          {node_object, node_map}
-        else
-          {node_object, node_map}
-        end
+        # 5.7.1)
+        node_map = Map.put_new(node_map, subject, %{"@id" => subject})
+        # 5.7.2)
+        node = Map.get(node_map, subject)
 
-      {node, node_map} =
-        if is_node_object and !use_rdf_type and predicate == @rdf_type do
-          node =
-            Map.update(node, "@type", [node_object], fn types ->
-              if node_object in types, do: types, else: types ++ [node_object]
-            end)
-
-          {node, node_map}
-        else
-          value = rdf_to_object(object, use_native_types)
-
-          node =
-            Map.update(node, predicate, [value], fn objects ->
-              if value in objects, do: objects, else: objects ++ [value]
-            end)
-
-          node_map =
-            if is_node_object do
-              usage = %{"node" => node, "property" => predicate, "value" => value}
-
-              Map.update(node_map, node_object, %{"usages" => [usage]}, fn object_node ->
-                Map.update(object_node, "usages", [usage], fn usages -> usages ++ [usage] end)
-              end)
-            else
-              node_map
-            end
-
-          {node, node_map}
-        end
-
-      Map.put(node_map, subject, node)
-    end)
-    |> update_node_usages
-  end
-
-  # This function is necessary because we have no references and must update the node member of the usage maps with later enhanced usages
-  @spec update_node_usages(map) :: map
-  defp update_node_usages(node_map) do
-    Enum.reduce(node_map, node_map, fn
-      {subject, %{"usages" => _usages} = _node}, node_map ->
-        update_in(node_map, [subject, "usages"], fn usages ->
-          Enum.map(usages, fn usage ->
-            Map.update!(usage, "node", fn %{"@id" => subject} ->
-              node_map[subject]
-            end)
-          end)
-        end)
-
-      _, node_map ->
-        node_map
-    end)
-  end
-
-  # This function is necessary because we have no references and use this instead to update the head by path
-  @spec update_head(map, [String.t()], map, map) :: map
-  defp update_head(graph_object, path, old, new) do
-    update_in(graph_object, path, fn objects ->
-      Enum.map(objects, fn
-        ^old -> new
-        current -> current
-      end)
-    end)
-  end
-
-  # 4)
-  @spec convert_list(map) :: map
-  defp convert_list(%{@rdf_nil => nil_node} = graph_object) do
-    Enum.reduce(
-      nil_node["usages"],
-      graph_object,
-      # 4.3.1)
-      fn usage, graph_object ->
-        # 4.3.2) + 4.3.3)
-        {list, list_nodes, [subject, property] = head_path, head} = extract_list(usage)
-
-        # 4.3.4)
-        {skip, list, list_nodes, head_path, head} =
-          if property == @rdf_first do
-            # 4.3.4.1)
-            if subject == @rdf_nil do
-              {true, list, list_nodes, head_path, head}
-            else
-              # 4.3.4.3-5)
-              head_path = [head["@id"], @rdf_rest]
-              head = List.first(graph_object[head["@id"]][@rdf_rest])
-              # 4.3.4.6)
-              [_ | list] = list
-              [_ | list_nodes] = list_nodes
-              {false, list, list_nodes, head_path, head}
-            end
+        # 5.7.3) Handle the compound-literal direction case
+        compound_map =
+          if options.rdf_direction == "compound-literal" && predicate == @rdf_direction do
+            Map.put(compound_map, subject, true)
           else
-            {false, list, list_nodes, head_path, head}
+            compound_map
           end
 
-        if skip do
-          graph_object
-        else
-          graph_object =
-            update_head(
-              graph_object,
-              head_path,
-              head,
-              head
-              # 4.3.5)
-              |> Map.delete("@id")
-              # 4.3.6) isn't necessary, since we built the list in reverse order
-              # 4.3.7)
-              |> Map.put("@list", list)
-            )
+        # 5.7.4)
+        {object_id, node_map} =
+          if is_node_object = is_rdf_resource(object) do
+            object_id = to_string(object)
+            node_map = Map.put_new(node_map, object_id, %{"@id" => object_id})
+            {object_id, node_map}
+          else
+            {nil, node_map}
+          end
 
-          # 4.3.8)
+        # 5.7.5)
+        {node, node_map, referenced_once} =
+          if is_node_object and !options.use_rdf_type and predicate == @rdf_type do
+            node =
+              Map.update(node, "@type", [object_id], fn types ->
+                if object_id in types, do: types, else: types ++ [object_id]
+              end)
+
+            {node, node_map, referenced_once}
+          else
+            # 5.7.6)
+            value = rdf_to_object(object, options)
+
+            # 5.7.7) & 5.7.8)
+            node =
+              Map.update(node, predicate, [value], fn objects ->
+                if value in objects, do: objects, else: objects ++ [value]
+              end)
+
+            {node_map, referenced_once} =
+              cond do
+                # 5.7.9)
+                object_id == @rdf_nil ->
+                  usage = %{node: subject, property: predicate, value: value}
+
+                  node_map =
+                    Map.update(node_map, @rdf_nil, %{usages: [usage]}, fn object_node ->
+                      Map.update(object_node, :usages, [usage], &[usage | &1])
+                    end)
+
+                  {node_map, referenced_once}
+
+                # 5.7.10)
+                Map.has_key?(referenced_once, object_id) ->
+                  {node_map, Map.put(referenced_once, object_id, false)}
+
+                # 5.7.11)
+                is_rdf_bnode(object) ->
+                  {node_map,
+                   Map.put(referenced_once, object_id, %{
+                     # We're using here the node id as the reference to the respective graph map entry.
+                     node: subject,
+                     property: predicate,
+                     value: value
+                   })}
+
+                true ->
+                  {node_map, referenced_once}
+              end
+
+            {node, node_map, referenced_once}
+          end
+
+        {Map.put(node_map, subject, node), referenced_once, compound_map}
+    end)
+  end
+
+  # 6.1)
+  defp process_compound_literals(graph_object, nil, referenced_once),
+    do: {graph_object, referenced_once}
+
+  defp process_compound_literals(graph_object, compound_map, referenced_once) do
+    Enum.reduce(compound_map, {graph_object, referenced_once}, fn
+      {cl, _}, {graph_object, referenced_once} ->
+        case referenced_once[cl] do
+          # SPEC ISSUE: "6.1.4) Initialize value to value of value in cl entry." seems unnecessary, since value is never used
+          %{node: node_id, property: property, value: _value} ->
+            node = graph_object[node_id]
+            # 6.1.5)
+            case Map.pop(graph_object, cl) do
+              {%{} = cl_node, graph_object} ->
+                # 6.1.6)
+                node
+                |> Map.get(property, [])
+                |> Enum.reduce({graph_object, referenced_once}, fn
+                  %{"@id" => ^cl} = cl_reference, {graph_object, referenced_once} ->
+                    cl_reference =
+                      cl_reference
+                      # 6.1.6.1)
+                      |> Map.delete("@id")
+                      # 6.1.6.2)
+                      |> Map.put(
+                        "@value",
+                        (List.first(cl_node[@rdf_value] || []) || %{})["@value"]
+                      )
+
+                    # 6.1.6.3)
+                    cl_reference =
+                      case cl_node[@rdf_language] do
+                        [%{"@value" => language} | _] ->
+                          if not valid_language?(language) do
+                            raise JSON.LD.InvalidLanguageTaggedStringError, value: language
+                          end
+
+                          Map.put(cl_reference, "@language", language)
+
+                        _ ->
+                          cl_reference
+                      end
+
+                    # 6.1.6.4)
+                    cl_reference =
+                      case cl_node[@rdf_direction] do
+                        [%{"@value" => direction} | _] ->
+                          if direction not in ~w[ltr rtl] do
+                            raise JSON.LD.InvalidBaseDirectionError,
+                              message:
+                                "invalid @direction value #{inspect(direction)}; must be 'ltr' or 'rtl'"
+                          end
+
+                          Map.put(cl_reference, "@direction", direction)
+
+                        _ ->
+                          cl_reference
+                      end
+
+                    {
+                      update_in(graph_object, [node_id, property], fn props ->
+                        Enum.map(props, fn
+                          %{"@id" => ^cl} -> cl_reference
+                          other -> other
+                        end)
+                      end),
+                      Map.delete(referenced_once, cl)
+                    }
+
+                  _, {graph_object, referenced_once} ->
+                    {graph_object, referenced_once}
+                end)
+
+              _ ->
+                {graph_object, referenced_once}
+            end
+
+          _ ->
+            {graph_object, referenced_once}
+        end
+    end)
+  end
+
+  #  # 6.3) - 6.4)
+  defp convert_list(%{@rdf_nil => %{usages: usages}} = graph_object, referenced_once) do
+    Enum.reduce(usages, {graph_object, referenced_once}, fn
+      # 6.4.1)
+      # Note: original_head is always an rdf:nil node
+      %{node: node_id, property: property, value: original_head}, {graph_object, referenced_once} ->
+        node = graph_object[node_id]
+
+        # 6.4.2) & 6.4.3)
+        {list, list_nodes, head_path, head} =
+          extract_list(node, property, original_head, referenced_once, graph_object)
+
+        updated_head =
+          head
+          # 6.4.4)
+          |> Map.delete("@id")
+          # 6.4.5) is not needed since extract_list returns the list in reverse order already
+          # 6.4.6)
+          |> Map.put("@list", list)
+
+        {graph_object, referenced_once} =
+          update_head(graph_object, referenced_once, head_path, head, updated_head)
+
+        # 6.4.7)
+        graph_object =
           Enum.reduce(list_nodes, graph_object, fn node_id, graph_object ->
             Map.delete(graph_object, node_id)
           end)
-        end
-      end
+
+        {graph_object, referenced_once}
+    end)
+  end
+
+  defp convert_list(graph_object, referenced_once), do: {graph_object, referenced_once}
+
+  # 6.4.2) & 6.4.3)
+  defp extract_list(
+         node,
+         property,
+         head,
+         referenced_once,
+         graph_object,
+         list \\ [],
+         list_nodes \\ []
+       )
+
+  defp extract_list(
+         %{"@id" => "_:" <> _ = id, @rdf_rest => [_rest]} = node,
+         @rdf_rest = property,
+         head,
+         referenced_once,
+         graph_object,
+         list,
+         list_nodes
+       ) do
+    do_extract_list(
+      node,
+      referenced_once[id],
+      property,
+      head,
+      referenced_once,
+      graph_object,
+      list,
+      list_nodes
     )
   end
 
-  defp convert_list(graph_object), do: graph_object
+  defp extract_list(node, property, head, _referenced_once, _graph_object, list, list_nodes) do
+    {list, list_nodes, [node["@id"], property], head}
+  end
 
-  # 4.3.3)
-  @spec extract_list(map, [map], [String.t()]) :: {[map], [String.t()], [String.t()], map}
-  defp extract_list(usage, list \\ [], list_nodes \\ [])
-
-  defp extract_list(
+  defp do_extract_list(
          %{
-           "node" =>
-             %{
-               # Spec FIXME: no mention of @id
-               # contrary to spec we assume/require this to be even on the initial call to be a blank node
-               "@id" => id = "_:" <> _,
-               "usages" => [usage],
-               @rdf_first => [first],
-               @rdf_rest => [_rest]
-             } = node,
-           "property" => @rdf_rest
-         },
+           "@id" => "_:" <> _ = id,
+           @rdf_first => [first],
+           "@type" => [@rdf_list]
+         } = node,
+         %{node: next_node_id, property: next_property, value: next_head},
+         _property,
+         _head,
+         referenced_once,
+         graph_object,
          list,
          list_nodes
        )
        when map_size(node) == 4 do
-    extract_list(usage, [first | list], [id | list_nodes])
+    extract_list(
+      graph_object[next_node_id],
+      next_property,
+      next_head,
+      referenced_once,
+      graph_object,
+      [first | list],
+      [id | list_nodes]
+    )
   end
 
-  defp extract_list(
+  defp do_extract_list(
          %{
-           "node" =>
-             %{
-               # Spec FIXME: no mention of @id
-               # contrary to spec we assume/require this to be even on the initial call to be a blank node
-               "@id" => id = "_:" <> _,
-               "@type" => [@rdf_list],
-               "usages" => [usage],
-               @rdf_first => [first],
-               @rdf_rest => [_rest]
-             } = node,
-           "property" => @rdf_rest
-         },
+           "@id" => "_:" <> _ = id,
+           @rdf_first => [first]
+         } = node,
+         %{node: next_node_id, property: next_property, value: next_head},
+         _property,
+         _head,
+         referenced_once,
+         graph_object,
          list,
          list_nodes
        )
-       when map_size(node) == 5 do
-    extract_list(usage, [first | list], [id | list_nodes])
+       when map_size(node) == 3 do
+    extract_list(
+      graph_object[next_node_id],
+      next_property,
+      next_head,
+      referenced_once,
+      graph_object,
+      [first | list],
+      [id | list_nodes]
+    )
   end
 
-  defp extract_list(
-         %{"node" => %{"@id" => subject}, "property" => property, "value" => head},
+  defp do_extract_list(
+         node,
+         _id_ref,
+         property,
+         head,
+         _referenced_once,
+         _graph_object,
          list,
          list_nodes
-       ),
-       do: {list, list_nodes, [subject, property], head}
+       ) do
+    {list, list_nodes, [node["@id"], property], head}
+  end
 
-  @spec rdf_to_object(Statement.object(), boolean) :: map
-  defp rdf_to_object(%IRI{} = iri, _use_native_types) do
+  defp rdf_to_object(%IRI{} = iri, _) do
     %{"@id" => to_string(iri)}
   end
 
-  defp rdf_to_object(%BlankNode{} = bnode, _use_native_types) do
+  defp rdf_to_object(%BlankNode{} = bnode, _) do
     %{"@id" => to_string(bnode)}
   end
 
-  defp rdf_to_object(%Literal{literal: %datatype{}} = literal, use_native_types) do
+  defp rdf_to_object(%Literal{literal: %datatype{}} = literal, options) do
     result = %{}
     value = Literal.value(literal)
     converted_value = literal
     type = nil
 
     {converted_value, type, result} =
-      if use_native_types do
-        cond do
-          datatype == XSD.String ->
-            {value, type, result}
-
-          datatype == XSD.Boolean ->
-            if RDF.XSD.Boolean.valid?(literal) do
+      cond do
+        options.use_native_types ->
+          cond do
+            datatype == XSD.String ->
               {value, type, result}
+
+            datatype == XSD.Boolean ->
+              if RDF.XSD.Boolean.valid?(literal) do
+                {value, type, result}
+              else
+                {converted_value, NS.XSD.boolean(), result}
+              end
+
+            datatype in [XSD.Integer, XSD.Double] ->
+              if Literal.valid?(literal) do
+                {value, type, result}
+              else
+                {converted_value, type, result}
+              end
+
+            true ->
+              {converted_value, Literal.datatype_id(literal), result}
+          end
+
+        options.processing_mode != "json-ld-1.0" and datatype == RDF.JSON ->
+          if RDF.JSON.valid?(literal) do
+            {value, "@json", result}
+          else
+            raise JSON.LD.InvalidJSONLiteralError, value: literal
+          end
+
+        (i18n_datatype_parts = i18n_datatype_parts(literal)) &&
+            options.rdf_direction == "i18n-datatype" ->
+          {language, direction} = i18n_datatype_parts
+
+          {
+            value,
+            type,
+            if language do
+              Map.put(result, "@language", language)
             else
-              {converted_value, NS.XSD.boolean(), result}
+              result
             end
+            |> Map.put("@direction", direction)
+          }
 
-          datatype in [XSD.Integer, XSD.Double] ->
-            if Literal.valid?(literal) do
-              {value, type, result}
-            else
-              {converted_value, type, result}
-            end
+        datatype == LangString ->
+          {converted_value, type, Map.put(result, "@language", Literal.language(literal))}
 
-          true ->
-            {converted_value, Literal.datatype_id(literal), result}
-        end
-      else
-        cond do
-          datatype == LangString ->
-            {converted_value, type, Map.put(result, "@language", Literal.language(literal))}
+        datatype == XSD.String ->
+          {converted_value, type, result}
 
-          datatype == XSD.String ->
-            {converted_value, type, result}
-
-          true ->
-            {Literal.lexical(literal), Literal.datatype_id(literal), result}
-        end
+        true ->
+          {Literal.lexical(literal), Literal.datatype_id(literal), result}
       end
 
     result = (type && Map.put(result, "@type", to_string(type))) || result
@@ -433,8 +586,59 @@ defmodule JSON.LD.Encoder do
     )
   end
 
-  @spec encode_json(any, [Jason.encode_opt()]) ::
-          {:ok, String.t()} | {:error, Jason.EncodeError.t() | Exception.t()}
+  defp i18n_datatype_parts(%Literal{} = literal),
+    do: literal |> Literal.datatype_id() |> i18n_datatype_parts()
+
+  defp i18n_datatype_parts(%IRI{} = datatype),
+    do: datatype |> to_string() |> i18n_datatype_parts()
+
+  defp i18n_datatype_parts("https://www.w3.org/ns/i18n#" <> suffix) do
+    case String.split(suffix, "_", parts: 2) do
+      ["", direction] -> {nil, direction}
+      [language, direction] -> {language, direction}
+      _ -> nil
+    end
+  end
+
+  defp i18n_datatype_parts(_), do: nil
+
+  #  # This function is necessary because we have no references and use this instead to update the head by path
+  defp update_head(graph_object, referenced_once, [subject, property], old, new) do
+    {
+      deep_replace(graph_object, old, new),
+      case old do
+        %{"@id" => head_id} ->
+          Map.new(referenced_once, fn
+            {^head_id, %{node: ^subject, property: ^property} = usage} ->
+              {head_id, %{usage | value: new}}
+
+            other ->
+              other
+          end)
+
+        _ ->
+          Map.new(referenced_once, fn
+            {key, %{node: ^subject, property: ^property} = usage} -> {key, %{usage | value: new}}
+            other -> other
+          end)
+      end
+    }
+  end
+
+  defp deep_replace(old, old, new), do: new
+
+  defp deep_replace(map, old, new) when is_map(map) do
+    Map.new(map, fn
+      {:usages, value} -> {:usages, value}
+      {key, value} -> {key, deep_replace(value, old, new)}
+    end)
+  end
+
+  defp deep_replace(list, old, new) when is_list(list),
+    do: Enum.map(list, &deep_replace(&1, old, new))
+
+  defp deep_replace(old, _, _), do: old
+
   defp encode_json(value, opts) do
     Jason.encode(value, opts)
   end

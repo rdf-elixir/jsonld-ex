@@ -11,8 +11,19 @@ defmodule JSON.LD do
 
   import RDF.Sigils
 
-  alias JSON.LD.{Compaction, Context, Expansion, Flattening, Options}
-  alias RDF.PropertyMap
+  alias JSON.LD.{
+    Compaction,
+    Context,
+    Expansion,
+    Flattening,
+    DocumentLoader,
+    Encoder,
+    Decoder,
+    Options
+  }
+
+  alias JSON.LD.DocumentLoader.RemoteDocument
+  alias RDF.{IRI, PropertyMap}
 
   @id ~I<http://www.w3.org/ns/formats/JSON-LD>
   @name :jsonld
@@ -20,22 +31,36 @@ defmodule JSON.LD do
   @media_type "application/ld+json"
 
   @keywords ~w[
-    @base
-    @container
-    @context
-    @default
-    @graph
-    @id
-    @index
-    @language
-    @list
-    @reverse
-    @set
-    @type
-    @value
-    @vocab
-    :
-  ]
+               @type
+               @base
+               @container
+               @context
+               @default
+               @direction
+               @graph
+               @id
+               @import
+               @included
+               @index
+               @json
+               @language
+               @list
+               @nest
+               @none
+               @prefix
+               @propagate
+               @protected
+               @reverse
+               @set
+               @value
+               @version
+               @vocab
+               :
+              ]
+
+  @type input :: map | [map] | String.t() | IRI.t() | RemoteDocument.t()
+  @type context_convertible ::
+          map | String.t() | nil | RDF.PropertyMap.t() | list(context_convertible)
 
   @spec options :: Options.t()
   def options, do: Options.new()
@@ -51,7 +76,7 @@ defmodule JSON.LD do
   @doc """
   Returns if the given value is a JSON-LD keyword.
   """
-  @spec keyword?(String.t()) :: boolean
+  @spec keyword?(String.t() | any) :: boolean
   def keyword?(value) when is_binary(value) and value in @keywords, do: true
   def keyword?(_value), do: false
 
@@ -65,8 +90,69 @@ defmodule JSON.LD do
   -- <https://www.w3.org/TR/json-ld/#expanded-document-form>
 
   Details at <http://json-ld.org/spec/latest/json-ld-api/#expansion-algorithm>
+
+  This is the `expand()` API function of the `JsonLdProcessor` interface as specified in
+  <https://www.w3.org/TR/json-ld11-api/#the-application-programming-interface>
   """
-  defdelegate expand(input, options \\ %Options{}), to: Expansion
+  @spec expand(input(), Options.convertible()) :: map | [map] | nil
+  def expand(input, options \\ []) do
+    {processing_options, options} = Options.extract(options)
+    expand(input, options, processing_options)
+  end
+
+  defp expand(%IRI{} = iri, options, processing_options),
+    do: iri |> IRI.to_string() |> expand(options, processing_options)
+
+  defp expand(url, options, processing_options) when is_binary(url) do
+    case DocumentLoader.load(url, processing_options) do
+      {:ok, document} -> expand(document, options, processing_options)
+      {:error, error} -> raise error
+    end
+  end
+
+  defp expand(%RemoteDocument{} = document, options, processing_options) do
+    %{
+      Context.new()
+      | base_iri: processing_options.base || document.document_url,
+        original_base_url: document.document_url || processing_options.base
+    }
+    |> expand(
+      document.document,
+      Keyword.put(options, :context_url, document.context_url),
+      processing_options
+    )
+  end
+
+  defp expand(input, options, processing_options) do
+    processing_options
+    |> Context.new()
+    |> expand(input, options, processing_options)
+  end
+
+  defp expand(active_context, input, options, processing_options) do
+    active_context =
+      case processing_options.expand_context do
+        %{"@context" => context} -> Context.update(active_context, context)
+        %{} = context -> Context.update(active_context, context)
+        nil -> active_context
+      end
+
+    {active_context, options} =
+      case Keyword.pop(options, :context_url) do
+        {nil, options} ->
+          {active_context, options}
+
+        {context_url, options} ->
+          {Context.update(active_context, context_url, base: context_url), options}
+      end
+
+    case Expansion.expand(active_context, nil, input, options, processing_options) do
+      result = %{"@graph" => graph} when map_size(result) == 1 -> graph
+      nil -> []
+      result when not is_list(result) -> [result]
+      result -> result
+    end
+  end
 
   @doc """
   Compacts the given input according to the steps in the JSON-LD Compaction Algorithm.
@@ -80,8 +166,69 @@ defmodule JSON.LD do
   -- <https://www.w3.org/TR/json-ld/#compacted-document-form>
 
   Details at <https://www.w3.org/TR/json-ld-api/#compaction-algorithms>
+
+  This is the `compact()` API function of the `JsonLdProcessor` interface as specified in
+  <https://www.w3.org/TR/json-ld11-api/#the-application-programming-interface>
   """
-  defdelegate compact(input, context, options \\ %Options{}), to: Compaction
+  @spec compact(input(), context_convertible(), Options.convertible()) :: map
+  def compact(input, context, options \\ []) do
+    {processing_options, options} = Options.extract(options)
+    compact(input, context, options, processing_options)
+  end
+
+  defp compact(%IRI{} = iri, context, options, processing_options),
+    do: iri |> IRI.to_string() |> compact(context, options, processing_options)
+
+  # 3)
+  defp compact(url, context, options, processing_options) when is_binary(url) do
+    case DocumentLoader.load(url, processing_options) do
+      {:ok, document} -> compact(document, context, options, processing_options)
+      {:error, error} -> raise error
+    end
+  end
+
+  defp compact(input, context, _opts, popts) do
+    # 4)
+    expanded = JSON.LD.expand(input, %{popts | ordered: false})
+
+    # 5)
+    context_base = if match?(%RemoteDocument{}, input), do: input.document_url, else: popts.base
+
+    # 6)
+    context =
+      case context do
+        %{"@context" => context} -> context
+        context -> context
+      end
+
+    # 7)
+    active_context =
+      %{
+        context(context, %{popts | base: context_base})
+        | # 8)
+          api_base_iri: popts.base || if(popts.compact_to_relative, do: context_base)
+      }
+      |> Context.set_inverse()
+
+    # 9)
+    result =
+      case Compaction.compact(expanded, active_context, nil, popts, popts.compact_arrays) do
+        [] ->
+          %{}
+
+        result when is_list(result) ->
+          %{Compaction.compact_iri("@graph", active_context, popts) => result}
+
+        result ->
+          result
+      end
+
+    cond do
+      is_binary(context) -> Map.put(result, "@context", context)
+      is_nil(context) || Enum.empty?(context) -> result
+      true -> Map.put(result, "@context", context)
+    end
+  end
 
   @doc """
   Flattens the given input according to the steps in the JSON-LD Flattening Algorithm.
@@ -94,8 +241,68 @@ defmodule JSON.LD do
   -- <https://www.w3.org/TR/json-ld/#flattened-document-form>
 
   Details at <https://www.w3.org/TR/json-ld-api/#flattening-algorithms>
+
+  This is the `flatten()` API function of the `JsonLdProcessor` interface as specified in
+  <https://www.w3.org/TR/json-ld11-api/#the-application-programming-interface>
   """
-  defdelegate flatten(input, context \\ nil, options \\ %Options{}), to: Flattening
+  @spec flatten(input(), context_convertible(), Options.convertible()) :: [map]
+  def flatten(input, context \\ nil, options \\ %Options{}) do
+    {processing_options, options} = Options.extract(options)
+    flatten(input, context, options, processing_options)
+  end
+
+  defp flatten(%IRI{} = iri, context, options, processing_options),
+    do: iri |> IRI.to_string() |> flatten(context, options, processing_options)
+
+  # 3)
+  defp flatten(url, context, options, processing_options) when is_binary(url) do
+    case DocumentLoader.load(url, processing_options) do
+      {:ok, document} -> flatten(document, context, options, processing_options)
+      {:error, error} -> raise error
+    end
+  end
+
+  defp flatten(input, context, _options, processing_options) do
+    flattened =
+      input
+      |> expand(%{processing_options | ordered: false})
+      |> Flattening.flatten(processing_options)
+
+    if context && !Enum.empty?(flattened) do
+      compact(
+        flattened,
+        context,
+        if(
+          is_nil(processing_options.base) and processing_options.compact_to_relative and
+            match?(%RemoteDocument{}, input),
+          do: %{processing_options | base: input.document_url},
+          else: processing_options
+        )
+      )
+    else
+      flattened
+    end
+  end
+
+  @doc """
+  Transforms the given `RDF.Dataset` into a JSON-LD document in expanded form.
+
+  Details at <https://www.w3.org/TR/json-ld-api/#serialize-rdf-as-json-ld-algorithm>
+
+  This is the `toRdf()` API function of the `JsonLdProcessor` interface as specified in
+  <https://www.w3.org/TR/json-ld11-api/#the-application-programming-interface>
+  """
+  defdelegate from_rdf(data, options \\ %Options{}), to: Encoder
+
+  @doc """
+  Transforms the given JSON-LD document into an `RDF.Dataset`.
+
+  Details at <https://www.w3.org/TR/json-ld-api/#deserialize-json-ld-to-rdf-algorithm>
+
+  This is the `fromRdf()` API function of the `JsonLdProcessor` interface as specified in
+  <https://www.w3.org/TR/json-ld11-api/#the-application-programming-interface>
+  """
+  defdelegate to_rdf(input, options \\ %Options{}), to: Decoder
 
   @doc """
   Generator function for `JSON.LD.Context`s.
@@ -105,7 +312,7 @@ defmodule JSON.LD do
 
   This function can be used also to create `JSON.LD.Context` from a `RDF.PropertyMap`.
   """
-  @spec context(map | RDF.PropertyMap.t(), Options.t()) :: Context.t()
+  @spec context(context_convertible(), Options.t()) :: Context.t()
   def context(context, options \\ %Options{}) do
     context
     |> normalize_context()

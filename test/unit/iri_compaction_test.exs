@@ -1,57 +1,47 @@
 defmodule JSON.LD.IRICompactionTest do
-  use ExUnit.Case, async: false
+  use JSON.LD.Case, async: false
 
-  import JSON.LD.Compaction, only: [compact_iri: 3, compact_iri: 4, compact_iri: 5]
-
-  alias RDF.NS.{XSD}
+  import JSON.LD.Compaction, only: [compact_iri: 3, compact_iri: 5]
 
   setup do
     context =
-      JSON.LD.context(%{
+      context_with_inverse(%{
         "@base" => "http://base/",
         "xsd" => "http://www.w3.org/2001/XMLSchema#",
         "ex" => "http://example.org/",
-        # TODO: "Invalid JSON-LD syntax; a term cannot be an empty string."
-        "" => "http://empty/",
-        "_" => "http://underscore/",
         "rex" => %{"@reverse" => "ex"},
         "lex" => %{"@id" => "ex", "@language" => "en"},
         "tex" => %{"@id" => "ex", "@type" => "xsd:string"},
         "exp" => %{"@id" => "ex:pert"},
         "experts" => %{"@id" => "ex:perts"}
       })
+      |> JSON.LD.Context.set_inverse()
 
-    %{example_context: context, inverse_context: JSON.LD.Context.inverse(context)}
+    %{example_context: context, options: JSON.LD.Options.new([])}
   end
 
-  %{
-    "nil" => [nil, nil],
-    "absolute IRI" => ["http://example.com/", "http://example.com/"],
-    "prefix:suffix" => ["ex:suffix", "http://example.org/suffix"],
-    "keyword" => ["@type", "@type"],
-    "empty" => [":suffix", "http://empty/suffix"],
-    "unmapped" => ["foo", "foo"],
-    "bnode" => ["_:a", "_:a"],
-    "relative" => ["foo/bar", "http://base/foo/bar"],
-    "odd CURIE" => ["exp:s", "http://example.org/perts"]
-  }
-  |> Enum.each(fn {title, data} ->
-    @tag data: data
-    test title, %{
-      data: [result, input],
-      example_context: context,
-      inverse_context: inverse_context
-    } do
-      assert compact_iri(input, context, inverse_context) == result
-    end
-  end)
+  describe "with vocab: false" do
+    %{
+      "nil" => [nil, nil],
+      "absolute IRI" => ["http://example.com/", "http://example.com/"],
+      "prefix:suffix" => ["ex:suffix", "http://example.org/suffix"],
+      "unmapped" => ["foo", "foo"],
+      "bnode" => ["_:a", "_:a"],
+      "relative" => ["foo/bar", "http://base/foo/bar"]
+    }
+    |> Enum.each(fn {title, data} ->
+      @tag data: data
+      test title, %{data: [result, input], example_context: context, options: options} do
+        assert compact_iri(input, context, options, nil, false) == result
+      end
+    end)
+  end
 
-  describe "with :vocab option" do
+  describe "with vocab: true" do
     %{
       "absolute IRI" => ["http://example.com/", "http://example.com/"],
       "prefix:suffix" => ["ex:suffix", "http://example.org/suffix"],
       "keyword" => ["@type", "@type"],
-      "empty" => [":suffix", "http://empty/suffix"],
       "unmapped" => ["foo", "foo"],
       "bnode" => ["_:a", "_:a"],
       "relative" => ["http://base/foo/bar", "http://base/foo/bar"],
@@ -59,27 +49,25 @@ defmodule JSON.LD.IRICompactionTest do
     }
     |> Enum.each(fn {title, data} ->
       @tag data: data
-      test title, %{
-        data: [result, input],
-        example_context: context,
-        inverse_context: inverse_context
-      } do
-        assert compact_iri(input, context, inverse_context, nil, true) == result
+      test title, %{data: [result, input], example_context: context, options: options} do
+        assert compact_iri(input, context, options, nil, true) == result
       end
     end)
   end
 
   describe "with @vocab" do
-    setup %{example_context: context} do
-      context = %JSON.LD.Context{context | vocab: "http://example.org/"}
-      %{example_context: context, inverse_context: JSON.LD.Context.inverse(context)}
+    setup %{example_context: ld_context} = context do
+      ld_context =
+        %JSON.LD.Context{ld_context | vocab: "http://example.org/"}
+        |> JSON.LD.Context.set_inverse()
+
+      %{context | example_context: ld_context}
     end
 
     %{
       "absolute IRI" => ["http://example.com/", "http://example.com/"],
       "prefix:suffix" => ["suffix", "http://example.org/suffix"],
       "keyword" => ["@type", "@type"],
-      "empty" => [":suffix", "http://empty/suffix"],
       "unmapped" => ["foo", "foo"],
       "bnode" => ["_:a", "_:a"],
       "relative" => ["http://base/foo/bar", "http://base/foo/bar"],
@@ -90,118 +78,145 @@ defmodule JSON.LD.IRICompactionTest do
       test title, %{
         data: [result, input],
         example_context: context,
-        inverse_context: inverse_context
+        options: options
       } do
-        assert compact_iri(input, context, inverse_context, nil, true) == result
+        assert compact_iri(input, context, options, nil, true) == result
       end
     end)
-
-    # TODO: we don't support 'position: :predicate'"
-    #    test "does not use @vocab if it would collide with a term" do
-    #      subject.set_mapping("name", "http://xmlns.com/foaf/0.1/name")
-    #      subject.set_mapping("ex", nil)
-    #      expect(subject.compact_iri("http://example.org/name", position: :predicate)).
-    #        to produce("lex:name", logger)
-    #    end
   end
 
   describe "with value" do
     setup do
       context =
-        JSON.LD.context(%{
+        context_with_inverse(%{
           "xsd" => XSD.__base_iri__(),
           "plain" => "http://example.com/plain",
           "lang" => %{"@id" => "http://example.com/lang", "@language" => "en"},
+          "dir" => %{"@id" => "http://example.com/dir", "@direction" => "ltr"},
+          "langdir" => %{
+            "@id" => "http://example.com/langdir",
+            "@language" => "en",
+            "@direction" => "ltr"
+          },
           "bool" => %{"@id" => "http://example.com/bool", "@type" => "xsd:boolean"},
           "integer" => %{"@id" => "http://example.com/integer", "@type" => "xsd:integer"},
           "double" => %{"@id" => "http://example.com/double", "@type" => "xsd:double"},
           "date" => %{"@id" => "http://example.com/date", "@type" => "xsd:date"},
           "id" => %{"@id" => "http://example.com/id", "@type" => "@id"},
-          "listplain" => %{"@id" => "http://example.com/plain", "@container" => "@list"},
-          "listlang" => %{
+          "graph" => %{"@id" => "http://example.com/graph", "@container" => "@graph"},
+          "json" => %{"@id" => "http://example.com/json", "@type" => "@json"},
+
+          # Liste der Ruby-Stil Terminologien exakt wie im Original
+          "list_plain" => %{"@id" => "http://example.com/plain", "@container" => "@list"},
+          "list_lang" => %{
             "@id" => "http://example.com/lang",
             "@language" => "en",
             "@container" => "@list"
           },
-          "listbool" => %{
+          "list_bool" => %{
             "@id" => "http://example.com/bool",
             "@type" => "xsd:boolean",
             "@container" => "@list"
           },
-          "listinteger" => %{
+          "list_integer" => %{
             "@id" => "http://example.com/integer",
             "@type" => "xsd:integer",
             "@container" => "@list"
           },
-          "listdouble" => %{
+          "list_double" => %{
             "@id" => "http://example.com/double",
             "@type" => "xsd:double",
             "@container" => "@list"
           },
-          "listdate" => %{
+          "list_date" => %{
             "@id" => "http://example.com/date",
             "@type" => "xsd:date",
             "@container" => "@list"
           },
-          "listid" => %{
+          "list_id" => %{
             "@id" => "http://example.com/id",
             "@type" => "@id",
             "@container" => "@list"
           },
-          "setplain" => %{"@id" => "http://example.com/plain", "@container" => "@set"},
-          "setlang" => %{
+          "list_graph" => %{
+            "@id" => "http://example.com/graph",
+            "@type" => "@id",
+            "@container" => "@list"
+          },
+          "set_plain" => %{"@id" => "http://example.com/plain", "@container" => "@set"},
+          "set_lang" => %{
             "@id" => "http://example.com/lang",
             "@language" => "en",
             "@container" => "@set"
           },
-          "setbool" => %{
+          "set_bool" => %{
             "@id" => "http://example.com/bool",
             "@type" => "xsd:boolean",
             "@container" => "@set"
           },
-          "setinteger" => %{
+          "set_integer" => %{
             "@id" => "http://example.com/integer",
             "@type" => "xsd:integer",
             "@container" => "@set"
           },
-          "setdouble" => %{
+          "set_double" => %{
             "@id" => "http://example.com/double",
             "@type" => "xsd:double",
             "@container" => "@set"
           },
-          "setdate" => %{
+          "set_date" => %{
             "@id" => "http://example.com/date",
             "@type" => "xsd:date",
             "@container" => "@set"
           },
-          "setid" => %{"@id" => "http://example.com/id", "@type" => "@id", "@container" => "@set"},
-          "langmap" => %{"@id" => "http://example.com/langmap", "@container" => "@language"}
+          "set_id" => %{
+            "@id" => "http://example.com/id",
+            "@type" => "@id",
+            "@container" => "@set"
+          },
+          "set_graph" => %{
+            "@id" => "http://example.com/graph",
+            "@container" => ["@graph", "@set"]
+          },
+          "map_lang" => %{"@id" => "http://example.com/lang", "@container" => "@language"},
+          "set_map_lang" => %{
+            "@id" => "http://example.com/lang",
+            "@container" => ["@language", "@set"]
+          }
         })
 
-      %{example_context: context, inverse_context: JSON.LD.Context.inverse(context)}
+      %{example_context: context, options: JSON.LD.Options.new([])}
     end
 
+    # Prefered sets and maps over non sets or maps
     %{
-      "langmap" => %{"@value" => "en", "@language" => "en"},
-      # "plain" => %{"@value" => "foo"},
-      "setplain" => %{"@value" => "foo", "@language" => "pl"}
+      "set_plain" => %{"@value" => "foo"},
+      "map_lang" => %{"@value" => "en", "@language" => "en"},
+      "set_bool" => %{"@value" => "true", "@type" => "http://www.w3.org/2001/XMLSchema#boolean"},
+      "set_integer" => %{"@value" => "1", "@type" => "http://www.w3.org/2001/XMLSchema#integer"},
+      "set_id" => %{"@id" => "http://example.org/id"},
+      "graph" => %{"@graph" => [%{"@id" => "http://example.org/id"}]},
+      "json" => %{"@value" => %{"some" => "json"}, "@type" => "@json"},
+      "dir" => %{"@value" => "dir", "@direction" => "ltr"},
+      "langdir" => %{"@value" => "lang dir", "@language" => "en", "@direction" => "ltr"}
     }
     |> Enum.each(fn {prop, value} ->
       @tag data: {prop, value}
       test "uses #{prop} for #{inspect(value)}",
-           %{data: {prop, value}, example_context: context, inverse_context: inverse_context} do
+           %{data: {prop, value}, example_context: context, options: options} do
         assert compact_iri(
-                 "http://example.com/#{String.replace(prop, "set", "")}",
+                 "http://example.com/#{String.replace(prop, ~r/^\w+_/, "")}",
                  context,
-                 inverse_context,
+                 options,
                  value,
                  true
                ) == prop
       end
     end)
 
+    # @language and @type with @list
     %{
-      "listplain" => [
+      "list_plain" => [
         [%{"@value" => "foo"}],
         [%{"@value" => "foo"}, %{"@value" => "bar"}, %{"@value" => "baz"}],
         [%{"@value" => "foo"}, %{"@value" => "bar"}, %{"@value" => 1}],
@@ -213,21 +228,21 @@ defmodule JSON.LD.IRICompactionTest do
         [%{"@value" => 1}],
         [%{"@value" => 1.1}]
       ],
-      "listlang" => [[%{"@value" => "en", "@language" => "en"}]],
-      "listbool" => [[%{"@value" => "true", "@type" => to_string(XSD.boolean())}]],
-      "listinteger" => [[%{"@value" => "1", "@type" => to_string(XSD.integer())}]],
-      "listdouble" => [[%{"@value" => "1", "@type" => to_string(XSD.double())}]],
-      "listdate" => [[%{"@value" => "2012-04-17", "@type" => to_string(XSD.date())}]]
+      "list_lang" => [[%{"@value" => "en", "@language" => "en"}]],
+      "list_bool" => [[%{"@value" => "true", "@type" => to_string(XSD.boolean())}]],
+      "list_integer" => [[%{"@value" => "1", "@type" => to_string(XSD.integer())}]],
+      "list_double" => [[%{"@value" => "1", "@type" => to_string(XSD.double())}]],
+      "list_date" => [[%{"@value" => "2012-04-17", "@type" => to_string(XSD.date())}]]
     }
     |> Enum.each(fn {prop, values} ->
       Enum.each(values, fn value ->
         @tag data: {prop, value}
         test "for @list uses #{prop} for #{inspect(%{"@list" => value})}",
-             %{data: {prop, value}, example_context: context, inverse_context: inverse_context} do
+             %{data: {prop, value}, example_context: context, options: options} do
           assert compact_iri(
-                   "http://example.com/#{String.replace(prop, "list", "")}",
+                   "http://example.com/#{String.replace(prop, ~r/^list_/, "")}",
                    context,
-                   inverse_context,
+                   options,
                    %{"@list" => value},
                    true
                  ) == prop
@@ -236,49 +251,10 @@ defmodule JSON.LD.IRICompactionTest do
     end)
   end
 
-  #  describe "with :simple_compact_iris" do
-  #    before(:each) { subject.instance_variable_get(:@options)[:simple_compact_iris] = true}
-  #
-  #    %{
-  #      "nil" => [nil, nil],
-  #      "absolute IRI"  => ["http://example.com/", "http://example.com/"],
-  #      "prefix:suffix" => ["ex:suffix",           "http://example.org/suffix"],
-  #      "keyword"       => ["@type",               "@type"],
-  #      "empty"         => [":suffix",             "http://empty/suffix"],
-  #      "unmapped"      => ["foo",                 "foo"],
-  #      "bnode"         => ["_:a",                 RDF::Node("a")],
-  #      "relative"      => ["foo/bar",             "http://base/foo/bar"],
-  #      "odd CURIE"     => ["ex:perts",            "http://example.org/perts"]
-  #    }.each do |title, (result, input)|
-  #      test title do
-  #        expect(subject.compact_iri(input)).to produce(result, logger)
-  #      end
-  #    end
-  #
-  #    describe "and @vocab" do
-  #      before(:each) { subject.vocab = "http://example.org/"}
-  #
-  #      %{
-  #        "absolute IRI"  => ["http://example.com/", "http://example.com/"],
-  #        "prefix:suffix" => ["suffix",              "http://example.org/suffix"],
-  #        "keyword"       => ["@type",               "@type"],
-  #        "empty"         => [":suffix",             "http://empty/suffix"],
-  #        "unmapped"      => ["foo",                 "foo"],
-  #        "bnode"         => ["_:a",                 RDF::Node("a")],
-  #        "relative"      => ["http://base/foo/bar", "http://base/foo/bar"],
-  #        "odd CURIE"     => ["experts",             "http://example.org/perts"]
-  #      }.each do |title, (result, input)|
-  #        test title do
-  #          expect(subject.compact_iri(input, vocab: true)).to produce(result, logger)
-  #        end
-  #      end
-  #    end
-  #  end
-
   describe "compact-0018" do
     setup do
       context =
-        JSON.LD.context(
+        context_with_inverse(
           Jason.decode!("""
           {
             "id1": "http://example.com/id1",
@@ -316,7 +292,7 @@ defmodule JSON.LD.IRICompactionTest do
           """)
         )
 
-      %{example_context: context, inverse_context: JSON.LD.Context.inverse(context)}
+      %{example_context: context, options: JSON.LD.Options.new([])}
     end
 
     %{
@@ -399,8 +375,8 @@ defmodule JSON.LD.IRICompactionTest do
         value = Jason.decode!(value)
         @tag data: {term, value}
         test "uses #{term} for #{inspect(value, limit: 3)}",
-             %{data: {term, value}, example_context: context, inverse_context: inverse_context} do
-          assert compact_iri("http://example.com/term", context, inverse_context, value, true) ==
+             %{data: {term, value}, example_context: context, options: options} do
+          assert compact_iri("http://example.com/term", context, options, value, true) ==
                    term
         end
       end)
@@ -410,45 +386,20 @@ defmodule JSON.LD.IRICompactionTest do
   describe "compact-0020" do
     setup do
       context =
-        JSON.LD.context(%{
+        context_with_inverse(%{
           "ex" => "http://example.org/ns#",
           "ex:property" => %{"@container" => "@list"}
         })
 
-      %{example_context: context, inverse_context: JSON.LD.Context.inverse(context)}
+      %{example_context: context, options: JSON.LD.Options.new([])}
     end
 
-    @tag skip: "TODO: we don't support 'position: :subject'"
     test "Compact @id that is a property IRI when @container is @list", %{
       example_context: context,
-      inverse_context: inverse_context
+      options: options
     } do
-      assert compact_iri("http://example.org/ns#property", context, inverse_context) ==
+      assert compact_iri("http://example.org/ns#property", context, options) ==
                "ex:property"
-
-      #      expect(ctx.compact_iri("http://example.org/ns#property", position: :subject)).
-      #        to produce("ex:property", logger)
-    end
-  end
-
-  describe "compact-0041" do
-    setup do
-      context =
-        JSON.LD.context(%{
-          "name" => %{"@id" => "http://example.com/property", "@container" => "@list"}
-        })
-
-      %{example_context: context, inverse_context: JSON.LD.Context.inverse(context)}
-    end
-
-    test "Does not use @list with @index", %{
-      example_context: context,
-      inverse_context: inverse_context
-    } do
-      assert compact_iri("http://example.com/property", context, inverse_context, %{
-               "@list" => ["one item"],
-               "@index" => "an annotation"
-             }) == "http://example.com/property"
     end
   end
 end

@@ -9,11 +9,12 @@ defmodule JSON.LD.Mixfile do
     [
       app: :json_ld,
       version: @version,
-      elixir: "~> 1.13",
+      elixir: "~> 1.15",
       build_embedded: Mix.env() == :prod,
       start_permanent: Mix.env() == :prod,
       deps: deps(),
       elixirc_paths: elixirc_paths(Mix.env()),
+      aliases: aliases(),
 
       # Hex
       package: package(),
@@ -34,6 +35,7 @@ defmodule JSON.LD.Mixfile do
       # ExCoveralls
       test_coverage: [tool: ExCoveralls],
       preferred_cli_env: [
+        check: :test,
         coveralls: :test,
         "coveralls.detail": :test,
         "coveralls.post": :test,
@@ -63,7 +65,8 @@ defmodule JSON.LD.Mixfile do
 
   defp deps do
     [
-      rdf_ex_dep(:rdf, "~> 1.0 or ~> 2.0"),
+      # TODO: Change back to hex version once v2.1 is released
+      {:rdf, github: "rdf-elixir/rdf-ex"},
       {:jason, "~> 1.2"},
       {:httpoison, "~> 1.6 or ~> 2.0"},
       {:castore, "~> 1.0", only: [:dev, :test], runtime: false},
@@ -75,16 +78,22 @@ defmodule JSON.LD.Mixfile do
     ]
   end
 
-  defp rdf_ex_dep(dep, version) do
-    case System.get_env("RDF_EX_PACKAGES_SRC") do
-      "LOCAL" -> {dep, path: "../#{dep}"}
-      _ -> {dep, version}
-    end
-  end
-
   defp dialyzer do
     [
       plt_file: {:no_warn, "priv/plts/dialyzer.plt"}
+    ]
+  end
+
+  defp aliases do
+    [
+      check: [
+        "clean",
+        "deps.unlock --check-unused",
+        "compile --warnings-as-errors",
+        "format --check-formatted",
+        "test --warnings-as-errors",
+        "credo"
+      ]
     ]
   end
 
