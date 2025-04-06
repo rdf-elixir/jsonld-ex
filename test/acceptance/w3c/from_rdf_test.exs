@@ -80,8 +80,7 @@ defmodule JSON.LD.W3C.FromRdfTest do
 
   def serialize(filename, options) do
     filename
-    |> file
-    |> RDF.NQuads.read_file!()
+    |> parse_nquads()
     |> JSON.LD.Encoder.from_rdf!(options)
   end
 end

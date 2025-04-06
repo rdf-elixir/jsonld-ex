@@ -119,6 +119,13 @@ defmodule JSON.LD.DocumentLoader.RemoteDocument do
     end
   end
 
+  def load!(url, options \\ [], http_get_fun \\ &http_get/2) do
+    case load(url, options, http_get_fun) do
+      {:ok, remote_document} -> remote_document
+      {:error, error} -> raise error
+    end
+  end
+
   # 2)
   def http_get(url, options) do
     headers = build_headers(options.request_profile)

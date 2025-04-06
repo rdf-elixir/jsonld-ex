@@ -59,13 +59,13 @@ defmodule JSON.LD.W3C.ToRdfTest do
         @tag test_case: RDF.iri(@base <> id)
         @tag data: test_case
         test "toRdf#{id}: #{name}", %{data: %{"input" => input, "expect" => expected} = test_case} do
-          dataset = RDF.NQuads.read_file!(file(expected))
+          dataset = parse_nquads(expected)
 
           if test_case["@id"] in ~w[#te005 #tpr34 #tpr35 #tpr36 #tpr37 #tpr38 #tpr39 #te119 #te120] do
             log =
               capture_log(fn ->
                 assert_rdf_isomorphic(
-                  JSON.LD.read_file!(file(input), test_case_options(test_case, @base)),
+                  to_rdf(input, test_case),
                   dataset
                 )
               end)
@@ -74,7 +74,7 @@ defmodule JSON.LD.W3C.ToRdfTest do
                      ~r/\[warning\] \w+ beginning with '@' are reserved for future use and ignored/
           else
             assert_rdf_isomorphic(
-              JSON.LD.read_file!(file(input), test_case_options(test_case, @base)),
+              to_rdf(input, test_case),
               dataset
             )
           end
@@ -93,7 +93,7 @@ defmodule JSON.LD.W3C.ToRdfTest do
           data: %{"input" => input, "expectErrorCode" => error} = test_case
         } do
           assert_raise exception(error), fn ->
-            JSON.LD.read_file!(file(input), test_case_options(test_case, @base))
+            to_rdf(input, test_case)
           end
         end
       end
@@ -107,9 +107,24 @@ defmodule JSON.LD.W3C.ToRdfTest do
         @tag test_case: RDF.iri(@base <> id)
         @tag data: test_case
         test "toRdf#{id}: #{name}", %{data: %{"input" => input} = test_case} do
-          assert %RDF.Dataset{} =
-                   JSON.LD.read_file!(file(input), test_case_options(test_case, @base))
+          assert %RDF.Dataset{} = to_rdf(input, test_case)
         end
       end
   end)
+
+  case run_mode() do
+    :remote ->
+      def to_rdf(input, test_case) do
+        input
+        |> file()
+        |> JSON.LD.to_rdf(test_case_options(test_case))
+      end
+
+    :local ->
+      def to_rdf(input, test_case) do
+        input
+        |> file()
+        |> JSON.LD.read_file!(test_case_options(test_case, @base))
+      end
+  end
 end
