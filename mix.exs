@@ -65,7 +65,8 @@ defmodule JSON.LD.Mixfile do
 
   defp deps do
     [
-      rdf_ex_dep(:rdf, "~> 2.1"),
+      # TODO: Change back to hex version once v2.1 is released
+      {:rdf, github: "rdf-elixir/rdf-ex"},
       {:jason, "~> 1.2"},
       {:httpoison, "~> 1.6 or ~> 2.0"},
       {:castore, "~> 1.0", only: [:dev, :test], runtime: false},
@@ -75,13 +76,6 @@ defmodule JSON.LD.Mixfile do
       {:bypass, "~> 2.1", only: :test},
       {:excoveralls, "~> 0.15", only: :test}
     ]
-  end
-
-  defp rdf_ex_dep(dep, version) do
-    case System.get_env("RDF_EX_PACKAGES_SRC") do
-      "LOCAL" -> {dep, path: "../#{dep}"}
-      _ -> {dep, version}
-    end
   end
 
   defp dialyzer do
