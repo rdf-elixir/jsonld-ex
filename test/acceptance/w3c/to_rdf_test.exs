@@ -46,7 +46,7 @@ defmodule JSON.LD.W3C.ToRdfTest do
           @tag skip: "missing fixes of URI.merge/2"
         end
 
-        if get_in(test_case["option"]["produceGeneralizedRdf"]) do
+        if get_in(test_case, ["option", "produceGeneralizedRdf"]) do
           # affected test cases: t0118 and te075
           # see also: https://github.com/w3c/json-ld-api/issues/205 and https://github.com/w3c/json-ld-api/issues/546
           @tag skip: "TODO: missing generalized RDF support"
