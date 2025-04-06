@@ -7,7 +7,7 @@ This project adheres to [Semantic Versioning](http://semver.org/) and
 
 ## Unreleased
 
-Elixir versions < 1.14 and OTP version < 24 are no longer supported
+Elixir versions < 1.14 and OTP version < 25 are no longer supported
 
 [Compare v0.3.9...HEAD](https://github.com/rdf-elixir/jsonld-ex/compare/v0.3.9...HEAD)
 
