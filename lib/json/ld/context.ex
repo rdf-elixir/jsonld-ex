@@ -173,7 +173,11 @@ defmodule JSON.LD.Context do
       {loaded_context, document_url} = dereference_context(context, processor_options)
 
       # If context was previously dereferenced, processors MUST make provisions for retaining the base URL of that context for this step to enable the resolution of any relative context URLs that may be encountered during processing.
-      %{active | base_iri: document_url, original_base_url: document_url}
+      %{
+        active
+        | base_iri: if(active.base_iri == :not_present, do: document_url, else: active.base_iri),
+          original_base_url: document_url
+      }
       # 5.2.6)
       |> update(
         loaded_context,

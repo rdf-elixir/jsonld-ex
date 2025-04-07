@@ -77,6 +77,7 @@ defmodule JSON.LD.Mixfile do
       {:credo, "~> 1.6", only: [:dev, :test], runtime: false},
       {:ex_doc, "~> 0.34", only: :dev, runtime: false},
       {:bypass, "~> 2.1", only: :test},
+      {:mox, "~> 1.2", only: :test},
       {:excoveralls, "~> 0.15", only: :test}
     ]
   end
