@@ -68,7 +68,10 @@ defmodule JSON.LD.Mixfile do
       # TODO: Change back to hex version once v2.1 is released
       {:rdf, github: "rdf-elixir/rdf-ex"},
       {:jason, "~> 1.2"},
-      {:httpoison, "~> 1.6 or ~> 2.0"},
+      {:tesla, "~> 1.2"},
+      {:hackney, "~> 1.21", only: [:dev, :test]},
+      {:gun, "~> 2.1", only: [:dev, :test]},
+      {:mint, "~> 1.6", only: [:dev, :test]},
       {:castore, "~> 1.0", only: [:dev, :test], runtime: false},
       {:dialyxir, "~> 1.2", only: :dev, runtime: false},
       {:credo, "~> 1.6", only: [:dev, :test], runtime: false},

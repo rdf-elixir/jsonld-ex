@@ -53,11 +53,11 @@ defmodule JSON.LD.TestSuite do
       def parse_nquads(file) do
         url = file(file)
 
-        case HTTPoison.get(url) do
-          {:ok, %HTTPoison.Response{status_code: status} = response} when status in 200..299 ->
+        case Tesla.get(url) do
+          {:ok, %Tesla.Env{status: status} = response} when status in 200..299 ->
             RDF.NQuads.read_string!(response.body)
 
-          {:ok, %{status_code: status}} ->
+          {:ok, %{status: status}} ->
             raise "HTTP request of #{url} failed with status #{status}"
 
           {:error, error} ->

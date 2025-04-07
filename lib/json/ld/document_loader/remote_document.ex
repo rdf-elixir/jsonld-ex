@@ -5,10 +5,35 @@ defmodule JSON.LD.DocumentLoader.RemoteDocument do
   This module provides both:
 
   1. A struct representing remote documents as specified in https://www.w3.org/TR/json-ld11-api/#remotedocument
-  2. The core implementation of remote document loading according
+  2. The core implementation of remote document loading according to
+     <https://www.w3.org/TR/json-ld11-api/#remote-document-and-context-retrieval>
 
   Custom `JSON.LD.DocumentLoader` implementations can reuse this by calling `load/3` or
   implementing their own loading logic.
+
+  ## Custom HTTP clients
+
+  The default Tesla-based HTTP client is `JSON.LD.DocumentLoader.DefaultClient`.
+
+  If you need a custom HTTP client with custom middleware, you can create your own module
+  that implements a `client/3` function:
+
+      defmodule MyCustomClient do
+        use Tesla
+
+        def client(headers, url, options) do
+          [
+            {Tesla.Middleware.Headers, headers},
+            # your custom middleware
+          ]
+          |> Tesla.client()
+        end
+      end
+
+  and configure it as:
+
+      config :json_ld, :http_client, MyCustomClient
+
   """
 
   defstruct [:context_url, :document_url, :document, :content_type, :profile]
@@ -22,29 +47,34 @@ defmodule JSON.LD.DocumentLoader.RemoteDocument do
         }
 
   alias JSON.LD.{Options, LoadingDocumentFailedError, MultipleContextLinkHeadersError}
+  alias JSON.LD.DocumentLoader.DefaultClient
   alias RDF.IRI
+
+  def default_http_client do
+    Application.get_env(:json_ld, :http_client, DefaultClient)
+  end
 
   @doc """
   Loads a remote document from the given URL.
 
   According to <https://www.w3.org/TR/json-ld11-api/#remote-document-and-context-retrieval>
   """
-  @spec load(String.t(), Options.convertible(), fun) :: {:ok, t()} | {:error, any}
-  def load(url, options \\ [], http_get_fun \\ &http_get/2) do
-    do_load(url, http_get_fun, Options.new(options))
+  @spec load(String.t(), Options.convertible(), module) :: {:ok, t()} | {:error, any}
+  def load(url, options \\ [], http_client \\ default_http_client()) do
+    do_load(url, http_client, Options.new(options))
   end
 
-  defp do_load(url, http_get_fun, options, visited_urls \\ []) do
+  defp do_load(url, http_client, options, visited_urls \\ []) do
     if url in visited_urls do
       {:error,
        %LoadingDocumentFailedError{
          message: "Circular reference detected in document loading"
        }}
     else
-      case http_get_fun.(url, options) do
-        {:ok, %HTTPoison.Response{status_code: status} = response} when status in 200..299 ->
+      case http_get(http_client, url, options) do
+        {:ok, %Tesla.Env{status: status} = response} when status in 200..299 ->
           # 3)
-          document_url = response.request.url || url
+          document_url = response.url || url
           content_type = get_content_type(response.headers)
           profile = get_profile_from_content_type(response.headers)
 
@@ -98,7 +128,8 @@ defmodule JSON.LD.DocumentLoader.RemoteDocument do
               if alternate_url = find_alternate_link(response.headers) do
                 document_url
                 |> IRI.merge(alternate_url)
-                |> do_load(http_get_fun, options, [url | visited_urls])
+                |> to_string()
+                |> do_load(http_client, options, [url | visited_urls])
               else
                 # 6)
                 {:error,
@@ -109,7 +140,7 @@ defmodule JSON.LD.DocumentLoader.RemoteDocument do
               end
           end
 
-        {:ok, %{status_code: status}} ->
+        {:ok, %{status: status}} ->
           {:error,
            %LoadingDocumentFailedError{message: "HTTP request failed with status #{status}"}}
 
@@ -119,29 +150,31 @@ defmodule JSON.LD.DocumentLoader.RemoteDocument do
     end
   end
 
-  def load!(url, options \\ [], http_get_fun \\ &http_get/2) do
-    case load(url, options, http_get_fun) do
+  def load!(url, options \\ [], http_client \\ default_http_client()) do
+    case load(url, options, http_client) do
       {:ok, remote_document} -> remote_document
       {:error, error} -> raise error
     end
   end
 
   # 2)
-  def http_get(url, options) do
-    headers = build_headers(options.request_profile)
-    HTTPoison.get(url, headers, follow_redirect: true)
+  def http_get(http_client, url, options) do
+    options.request_profile
+    |> build_headers()
+    |> http_client.client(url, options)
+    |> Tesla.get(url)
   rescue
     e -> {:error, %LoadingDocumentFailedError{message: "HTTP request failed: #{inspect(e)}"}}
   end
 
   defp build_headers(request_profile) do
     [
-      accept:
-        if request_profile do
-          "application/ld+json;profile=\"#{request_profile |> List.wrap() |> Enum.join(" ")}\", application/json"
-        else
-          "application/ld+json, application/json"
-        end
+      {"accept",
+       if request_profile do
+         "application/ld+json;profile=\"#{request_profile |> List.wrap() |> Enum.join(" ")}\", application/json"
+       else
+         "application/ld+json, application/json"
+       end}
     ]
   end
 

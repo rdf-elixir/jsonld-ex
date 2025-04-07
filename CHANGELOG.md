@@ -9,6 +9,15 @@ This project adheres to [Semantic Versioning](http://semver.org/) and
 
 Elixir versions < 1.15 and OTP version < 25 are no longer supported
 
+### Added
+
+- Support for custom Tesla-based HTTP clients
+
+### Changed
+
+- Switched from HTTPoison to Tesla HTTP client, which means you should now configure 
+  a respective adapter in your application config.
+
 [Compare v0.3.9...HEAD](https://github.com/rdf-elixir/jsonld-ex/compare/v0.3.9...HEAD)
 
 
