@@ -235,7 +235,7 @@ defmodule JSON.LD.Context.TermDefinition do
           |> handle_container_definition(value, popts)
           |> handle_index_definition(active, local, term, value, defined, popts)
           |> handle_context_definition(active, term, value, popts, opts)
-          |> handle_language_definition(value)
+          |> handle_language_definition(value, popts)
           |> handle_direction_definition(value)
           |> handle_nest_definition(value, popts)
           |> handle_prefix_definition(value, term, popts)
@@ -709,11 +709,14 @@ defmodule JSON.LD.Context.TermDefinition do
     do: definition
 
   # 22)
-  defp handle_language_definition(definition, %{"@language" => language} = value) do
+  defp handle_language_definition(definition, %{"@language" => language} = value, popts) do
     unless Map.has_key?(value, "@type") do
       case language do
         language when is_binary(language) ->
-          %__MODULE__{definition | language_mapping: String.downcase(language)}
+          %__MODULE__{
+            definition
+            | language_mapping: validate_and_normalize_language(language, popts)
+          }
 
         language when is_nil(language) ->
           %__MODULE__{definition | language_mapping: nil}
@@ -728,7 +731,7 @@ defmodule JSON.LD.Context.TermDefinition do
     end
   end
 
-  defp handle_language_definition(definition, _), do: definition
+  defp handle_language_definition(definition, _, _), do: definition
 
   # 23)
   defp handle_direction_definition(definition, %{"@direction" => direction}) do

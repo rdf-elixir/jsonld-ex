@@ -217,7 +217,7 @@ defmodule JSON.LD.Context do
     |> check_version(version, processor_options.processing_mode)
     |> set_base(base, remote)
     |> set_vocab(vocab, processor_options)
-    |> set_language(language)
+    |> set_language(language, processor_options)
     |> set_direction(direction, processor_options.processing_mode)
     |> validate_propagate(propagate, processor_options.processing_mode)
     |> create_term_definitions(
@@ -395,18 +395,18 @@ defmodule JSON.LD.Context do
     end
   end
 
-  defp set_language(active, :not_present), do: active
+  defp set_language(active, :not_present, _), do: active
 
   # 5.9.2) If value is null, remove any default language from result.
-  defp set_language(active, nil), do: %__MODULE__{active | default_language: nil}
+  defp set_language(active, nil, _), do: %__MODULE__{active | default_language: nil}
 
   # 5.9.3) Otherwise, if value is a string, the default language of result is set to value.
-  # Note: Processors MAY normalize language tags to lower case.
-  defp set_language(active, language) when is_binary(language),
-    do: %__MODULE__{active | default_language: String.downcase(language)}
+  defp set_language(active, language, popts) when is_binary(language) do
+    %__MODULE__{active | default_language: validate_and_normalize_language(language, popts)}
+  end
 
   # 5.9.3) If it is not a string, an invalid default language error has been detected and processing is aborted.
-  defp set_language(_, language) do
+  defp set_language(_, language, _) do
     raise JSON.LD.InvalidDefaultLanguageError,
       message: "#{inspect(language)} is not a valid language"
   end

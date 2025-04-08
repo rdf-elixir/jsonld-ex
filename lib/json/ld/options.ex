@@ -44,6 +44,7 @@ defmodule JSON.LD.Options do
           # Note: The use of blank node identifiers to label properties is obsolete, and may be removed in a future version of JSON-LD, as is the support for generalized RDF Datasets and thus the produceGeneralizedRdf option may be also be removed.
           produce_generalized_rdf: boolean,
           processing_mode: String.t(),
+          lowercase_language: boolean,
           warn: warn_method()
         }
 
@@ -64,6 +65,7 @@ defmodule JSON.LD.Options do
             rdf_direction: nil,
             produce_generalized_rdf: true,
             processing_mode: "json-ld-1.1",
+            lowercase_language: true,
             warn: :default
 
   def warn_default, do: Application.get_env(:json_ld, :warn, :log)

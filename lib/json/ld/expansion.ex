@@ -384,13 +384,13 @@ defmodule JSON.LD.Expansion do
                   "@language" ->
                     cond do
                       frame_expansion and is_list(value) ->
-                        Enum.map(value, &String.downcase/1)
+                        Enum.map(value, &validate_and_normalize_language(&1, processor_options))
 
                       frame_expansion and value == %{} ->
                         [value]
 
                       is_binary(value) ->
-                        expanded_value = String.downcase(value)
+                        expanded_value = validate_and_normalize_language(value, processor_options)
 
                         if frame_expansion do
                           [expanded_value]
@@ -559,7 +559,11 @@ defmodule JSON.LD.Expansion do
                             if language == "@none" or expanded_language == "@none" do
                               v
                             else
-                              Map.put(v, "@language", String.downcase(language))
+                              Map.put(
+                                v,
+                                "@language",
+                                validate_and_normalize_language(language, processor_options)
+                              )
                             end
 
                           if direction do

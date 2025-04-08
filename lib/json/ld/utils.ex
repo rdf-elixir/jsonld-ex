@@ -12,6 +12,22 @@ defmodule JSON.LD.Utils do
     String.match?(string, ~r/^[a-zA-Z]+(-[a-zA-Z0-9]+)*$/)
   end
 
+  def validate_language(language, processor_options) do
+    if not valid_language?(language),
+      do: warn("@language must be valid BCP47: #{language}", processor_options)
+
+    language
+  end
+
+  def normalize_language(language, %{lowercase_language: true}), do: String.downcase(language)
+  def normalize_language(language, _), do: language
+
+  def validate_and_normalize_language(language, processor_options) do
+    language
+    |> validate_language(processor_options)
+    |> normalize_language(processor_options)
+  end
+
   @doc """
   Resolves a relative IRI against a base IRI.
 

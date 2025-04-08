@@ -15,6 +15,14 @@ defmodule JSON.LD.W3C.ToRdfTest do
   @manifest manifest("toRdf")
   @base expanded_base_iri(@manifest)
 
+  @warnings %{
+              ~w[#te005 #tpr34 #tpr35 #tpr36 #tpr37 #tpr38 #tpr39 #te119 #te120] =>
+                ~r/\[warning\] \w+ beginning with '@' are reserved for future use and ignored/,
+              ~w[#twf05] => ~r/\[warning\] @language must be valid BCP47/
+            }
+            |> Enum.flat_map(fn {ids, warning} -> Enum.map(ids, &{&1, warning}) end)
+            |> Map.new()
+
   @manifest
   |> test_cases()
   |> test_cases_by_type()
@@ -59,7 +67,7 @@ defmodule JSON.LD.W3C.ToRdfTest do
         test "toRdf#{id}: #{name}", %{data: %{"input" => input, "expect" => expected} = test_case} do
           dataset = parse_nquads(expected)
 
-          if test_case["@id"] in ~w[#te005 #tpr34 #tpr35 #tpr36 #tpr37 #tpr38 #tpr39 #te119 #te120] do
+          if warning = @warnings[test_case["@id"]] do
             log =
               capture_log(fn ->
                 assert_rdf_isomorphic(
@@ -68,8 +76,7 @@ defmodule JSON.LD.W3C.ToRdfTest do
                 )
               end)
 
-            assert log =~
-                     ~r/\[warning\] \w+ beginning with '@' are reserved for future use and ignored/
+            assert log =~ warning
           else
             assert_rdf_isomorphic(
               to_rdf(input, test_case),
