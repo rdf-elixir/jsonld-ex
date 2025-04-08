@@ -21,7 +21,7 @@ defmodule JSON.LD.ContextTest do
     end
 
     test "extracts @vocab" do
-      assert JSON.LD.context(%{"@vocab" => "http://schema.org/"}).vocab ==
+      assert JSON.LD.context(%{"@vocab" => "http://schema.org/"}).vocabulary_mapping ==
                "http://schema.org/"
     end
 
@@ -727,7 +727,7 @@ defmodule JSON.LD.ContextTest do
       assert JSON.LD.context([
                %{"@vocab" => "http://schema.org/"},
                %{"@vocab" => nil}
-             ]).vocab == nil
+             ]).vocabulary_mapping == nil
     end
 
     test "removes term if set to null with @vocab" do

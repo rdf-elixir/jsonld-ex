@@ -129,8 +129,8 @@ defmodule JSON.LD.IRIExpansion do
             {result, active_context, defined}
 
           # 7) If vocab is true, and active context has a vocabulary mapping, return the result of concatenating the vocabulary mapping with value.
-          vocab && active_context.vocab ->
-            vocabulary_mapping = active_context.vocab
+          vocab && active_context.vocabulary_mapping ->
+            vocabulary_mapping = active_context.vocabulary_mapping
             {vocabulary_mapping <> value, active_context, defined}
 
           # 8) Otherwise, if document relative is true, set value to the result of resolving value against the base IRI. Only the basic algorithm in section 5.2 of [RFC3986] is used; neither Syntax-Based Normalization nor Scheme-Based Normalization are performed. Characters additionally allowed in IRI references are treated in the same way that unreserved characters are treated in URI references, per section 6.5 of [RFC3987].

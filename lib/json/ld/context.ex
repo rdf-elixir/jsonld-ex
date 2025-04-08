@@ -22,7 +22,7 @@ defmodule JSON.LD.Context do
           api_base_iri: String.t() | nil,
           inverse_context: map | nil,
           previous_context: t | nil,
-          vocab: nil,
+          vocabulary_mapping: String.t() | nil,
           default_language: String.t() | nil,
           base_direction: String.t() | nil
         }
@@ -32,7 +32,7 @@ defmodule JSON.LD.Context do
             original_base_url: nil,
             # This is the base IRI set via options
             api_base_iri: nil,
-            vocab: nil,
+            vocabulary_mapping: nil,
             default_language: nil,
             base_direction: nil,
             inverse_context: nil,
@@ -372,14 +372,14 @@ defmodule JSON.LD.Context do
   defp set_vocab(active, :not_present, _), do: active
 
   # 5.8.2) If value is null, remove any vocabulary mapping from result.
-  defp set_vocab(active, nil, _), do: %__MODULE__{active | vocab: nil}
+  defp set_vocab(active, nil, _), do: %__MODULE__{active | vocabulary_mapping: nil}
 
   # 5.8.3) Otherwise, if value is an IRI or blank node identifier, the vocabulary mapping of result is set to the result of IRI expanding value using true for document relative.
   defp set_vocab(active, vocab, options) do
     cond do
       # Note: The use of blank node identifiers to value for @vocab is obsolete, and may be removed in a future version of JSON-LD.
       blank_node_id?(vocab) ->
-        %__MODULE__{active | vocab: vocab}
+        %__MODULE__{active | vocabulary_mapping: vocab}
 
       not IRI.absolute?(vocab) and options.processing_mode == "json-ld-1.0" ->
         raise JSON.LD.InvalidVocabMappingError,
@@ -387,7 +387,7 @@ defmodule JSON.LD.Context do
 
       is_binary(vocab) ->
         # SPEC ISSUE: vocab must be set to true
-        %__MODULE__{active | vocab: expand_iri(vocab, active, options, true, true)}
+        %__MODULE__{active | vocabulary_mapping: expand_iri(vocab, active, options, true, true)}
 
       true ->
         raise JSON.LD.InvalidVocabMappingError,
@@ -584,7 +584,7 @@ defmodule JSON.LD.Context do
   @spec empty?(t) :: boolean
   def empty?(%__MODULE__{
         term_defs: term_defs,
-        vocab: nil,
+        vocabulary_mapping: nil,
         base_iri: :not_present,
         default_language: nil
       })

@@ -58,7 +58,7 @@ defmodule JSON.LD.IRICompactionTest do
   describe "with @vocab" do
     setup %{example_context: ld_context} = context do
       ld_context =
-        %JSON.LD.Context{ld_context | vocab: "http://example.org/"}
+        %JSON.LD.Context{ld_context | vocabulary_mapping: "http://example.org/"}
         |> JSON.LD.Context.set_inverse()
 
       %{context | example_context: ld_context}

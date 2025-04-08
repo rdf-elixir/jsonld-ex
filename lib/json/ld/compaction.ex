@@ -1091,11 +1091,12 @@ defmodule JSON.LD.Compaction do
 
       # 5) At this point, there is no simple term that var can be compacted to. If vocab is true and active context has a vocabulary mapping:
       # 5.1) If var begins with the vocabulary mapping's value but is longer, then initialize suffix to the substring of var that does not match. If suffix does not have a term definition in active context, then return suffix.
-      vocab && active_context.vocab && String.starts_with?(var, active_context.vocab) ->
-        suffix = String.replace_prefix(var, active_context.vocab, "")
+      vocab && active_context.vocabulary_mapping &&
+          String.starts_with?(var, active_context.vocabulary_mapping) ->
+        suffix = String.replace_prefix(var, active_context.vocabulary_mapping, "")
 
         if suffix != "" && is_nil(active_context.term_defs[suffix]) do
-          String.replace_prefix(var, active_context.vocab, "")
+          String.replace_prefix(var, active_context.vocabulary_mapping, "")
         else
           create_compact_iri(var, active_context, value, vocab)
         end

@@ -530,8 +530,9 @@ defmodule JSON.LD.Context.TermDefinition do
 
       # 18)
       true ->
-        if active.vocab do
-          {false, %__MODULE__{definition | iri_mapping: active.vocab <> term}, active, defined}
+        if active.vocabulary_mapping do
+          {false, %__MODULE__{definition | iri_mapping: active.vocabulary_mapping <> term},
+           active, defined}
         else
           raise JSON.LD.InvalidIRIMappingError,
             message:
