@@ -74,7 +74,7 @@ defmodule JSON.LD.DocumentLoader.RemoteDocument do
       case http_get(http_client, url, options) do
         {:ok, %Tesla.Env{status: status} = response} when status in 200..299 ->
           # 3)
-          document_url = response.url || url
+          document_url = response.url
           content_type = get_content_type(response.headers)
           profile = get_profile_from_content_type(response.headers)
 
