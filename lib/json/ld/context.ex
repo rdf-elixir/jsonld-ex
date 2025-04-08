@@ -274,6 +274,7 @@ defmodule JSON.LD.Context do
         is_map(document) ->
           document
 
+        # Note: This actually not necessary, as our document loaders always transform to "the internal representation", but custom document loaders may not.
         is_binary(document) ->
           case Jason.decode(document) do
             {:ok, result} ->
