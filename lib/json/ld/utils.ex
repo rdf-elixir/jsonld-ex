@@ -24,12 +24,8 @@ defmodule JSON.LD.Utils do
   """
   @spec absolute_iri(String.t(), String.t() | nil) :: IRI.coercible() | nil
   def absolute_iri(value, base_iri)
-
-  def absolute_iri(value, nil),
-    do: value
-
-  def absolute_iri(value, base_iri),
-    do: value |> IRI.absolute(base_iri) |> to_string
+  def absolute_iri(value, nil), do: value
+  def absolute_iri(value, base_iri), do: value |> IRI.absolute(base_iri) |> to_string()
 
   @spec relative_iri?(String.t()) :: boolean
   def relative_iri?(value),
