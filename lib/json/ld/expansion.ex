@@ -612,8 +612,8 @@ defmodule JSON.LD.Expansion do
                         end
 
                       # 13.8.3.4)
-                      expanded_index =
-                        expand_iri(index, map_context, options, false, true)
+                      # SPEC ISSUE: which context should be used here?
+                      expanded_index = expand_iri(index, map_context, options, false, true)
 
                       # 13.8.3.6)
                       map_context

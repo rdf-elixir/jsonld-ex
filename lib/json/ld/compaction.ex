@@ -155,6 +155,7 @@ defmodule JSON.LD.Compaction do
           term_def = type_scoped_context.term_defs[term]
 
           if local_context = term_def && term_def.local_context do
+            # SPEC ISSUE: What does this mean "base URL from the term definition for term in type-scoped context"? How exactly should we pass term_def.base_url?
             Context.update(context, local_context, propagate: false, processor_options: options)
           else
             context
@@ -180,6 +181,7 @@ defmodule JSON.LD.Compaction do
             if is_binary(expanded_value) do
               compact_iri(expanded_value, active_context, options, nil, false)
             else
+              # SPEC ISSUE:: the spec doesn't say how to handle this; the Ruby implementation at least handles arrays ...
               raise "undefined state: string expected"
             end
 
@@ -850,6 +852,7 @@ defmodule JSON.LD.Compaction do
 
               {type_language, type_language_value} =
                 if Enum.empty?(list) do
+                  # SPEC ISSUE: Do we still need/want this deviation from the spec?
                   {type_language, type_language_value}
                 else
                   # 4.7.4) For each item in list:
