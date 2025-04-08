@@ -214,7 +214,7 @@ defmodule JSON.LD.ContextTest do
 
       assert c.term_defs["foo"]
       assert c.term_defs["foo"].iri_mapping == "http://example.com/"
-      assert c.term_defs["foo"].context == %{"bar" => "http://example.com/baz"}
+      assert c.term_defs["foo"].local_context == %{"bar" => "http://example.com/baz"}
     end
 
     test "sets term as protected" do
@@ -563,7 +563,7 @@ defmodule JSON.LD.ContextTest do
 
       assert context.term_defs["foo"]
       assert context.term_defs["foo"].iri_mapping == "http://example.com/"
-      assert context.term_defs["foo"].context == %{"bar" => "http://example.com/baz"}
+      assert context.term_defs["foo"].local_context == %{"bar" => "http://example.com/baz"}
     end
   end
 

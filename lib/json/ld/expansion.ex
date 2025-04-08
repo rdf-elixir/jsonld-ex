@@ -28,7 +28,7 @@ defmodule JSON.LD.Expansion do
     # 3) If active property has a term definition in active context with a local context, initialize property-scoped context to that local context.
     property_scoped_context =
       if term_def = active_property && active_context.term_defs[active_property] do
-        term_def.context
+        term_def.local_context
       end
 
     do_expand(
@@ -141,7 +141,7 @@ defmodule JSON.LD.Expansion do
               term, context when is_binary(term) ->
                 type_scoped_term_def = type_scoped_context.term_defs[term]
 
-                if local_context = type_scoped_term_def && type_scoped_term_def.context do
+                if local_context = type_scoped_term_def && type_scoped_term_def.local_context do
                   term_def = context.term_defs[term]
 
                   Context.update(context, local_context,
@@ -598,8 +598,8 @@ defmodule JSON.LD.Expansion do
 
                       map_context =
                         if "@type" in container_mapping && index_term_def &&
-                             index_term_def.context do
-                          Context.update(container_context, index_term_def.context,
+                             index_term_def.local_context do
+                          Context.update(container_context, index_term_def.local_context,
                             base: term_def.base_url,
                             processor_options: processor_options
                           )
@@ -767,7 +767,7 @@ defmodule JSON.LD.Expansion do
       term_def = active_context.term_defs[nesting_key]
 
       nest_context =
-        if nest_context = term_def && term_def.context do
+        if nest_context = term_def && term_def.local_context do
           Context.update(
             active_context,
             nest_context,

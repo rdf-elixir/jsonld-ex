@@ -18,7 +18,7 @@ defmodule JSON.LD.Context.TermDefinition do
           protected: boolean,
           reverse_property: boolean,
           base_url: nil | String.t(),
-          context: nil | Context.t(),
+          local_context: nil | map | String.t(),
           container_mapping: nil | [String.t()],
           index_mapping: nil | String.t(),
           language_mapping: false | nil | String.t(),
@@ -31,7 +31,7 @@ defmodule JSON.LD.Context.TermDefinition do
             prefix_flag: false,
             protected: false,
             reverse_property: false,
-            context: nil,
+            local_context: nil,
             base_url: nil,
             container_mapping: nil,
             index_mapping: nil,
@@ -702,7 +702,7 @@ defmodule JSON.LD.Context.TermDefinition do
 
     # 21.4)
     # SPEC ISSUE: "Record null context in array form" from JSON-LD.rb was needed
-    %__MODULE__{definition | context: if(is_nil(context), do: [nil], else: context)}
+    %__MODULE__{definition | local_context: if(is_nil(context), do: [nil], else: context)}
   end
 
   defp handle_context_definition(definition, _, _, _, _, _),

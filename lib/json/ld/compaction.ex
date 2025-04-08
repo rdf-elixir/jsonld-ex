@@ -74,7 +74,7 @@ defmodule JSON.LD.Compaction do
     term_def = type_scoped_context.term_defs[active_property]
 
     active_context =
-      if local_context = term_def && term_def.context do
+      if local_context = term_def && term_def.local_context do
         # SPEC ISSUE: we follow the JSON-LD.rb in ignoring setting "base URL from the term definition for active property in active context" here
         Context.update(
           active_context,
@@ -154,7 +154,7 @@ defmodule JSON.LD.Compaction do
         |> Enum.reduce(active_context, fn term, context ->
           term_def = type_scoped_context.term_defs[term]
 
-          if local_context = term_def && term_def.context do
+          if local_context = term_def && term_def.local_context do
             Context.update(context, local_context, propagate: false, processor_options: options)
           else
             context
