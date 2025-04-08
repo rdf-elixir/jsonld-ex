@@ -96,44 +96,44 @@ defmodule JSON.LD do
   """
   @spec expand(input(), Options.convertible()) :: map | [map] | nil
   def expand(input, options \\ []) do
-    {processing_options, options} = Options.extract(options)
-    expand(input, options, processing_options)
+    {processor_options, options} = Options.extract(options)
+    expand(input, options, processor_options)
   end
 
-  defp expand(%IRI{} = iri, options, processing_options),
-    do: iri |> IRI.to_string() |> expand(options, processing_options)
+  defp expand(%IRI{} = iri, options, processor_options),
+    do: iri |> IRI.to_string() |> expand(options, processor_options)
 
-  defp expand(url, options, processing_options) when is_binary(url) do
-    case DocumentLoader.load(url, processing_options) do
-      {:ok, document} -> expand(document, options, processing_options)
+  defp expand(url, options, processor_options) when is_binary(url) do
+    case DocumentLoader.load(url, processor_options) do
+      {:ok, document} -> expand(document, options, processor_options)
       {:error, error} -> raise error
     end
   end
 
-  defp expand(%RemoteDocument{} = document, options, processing_options) do
+  defp expand(%RemoteDocument{} = document, options, processor_options) do
     %{
       Context.new()
-      | base_iri: processing_options.base || document.document_url,
-        original_base_url: document.document_url || processing_options.base
+      | base_iri: processor_options.base || document.document_url,
+        original_base_url: document.document_url || processor_options.base
     }
     |> expand(
       document.document,
       Keyword.put(options, :context_url, document.context_url),
-      processing_options
+      processor_options
     )
   end
 
-  defp expand(input, options, processing_options) do
-    processing_options
+  defp expand(input, options, processor_options) do
+    processor_options
     |> Context.new()
-    |> expand(input, options, processing_options)
+    |> expand(input, options, processor_options)
   end
 
-  defp expand(active_context, input, options, processing_options) do
+  defp expand(active_context, input, options, processor_options) do
     active_context =
-      case processing_options.expand_context do
-        %{"@context" => context} -> Context.update(active_context, context, processing_options)
-        %{} = context -> Context.update(active_context, context, processing_options)
+      case processor_options.expand_context do
+        %{"@context" => context} -> Context.update(active_context, context, processor_options)
+        %{} = context -> Context.update(active_context, context, processor_options)
         nil -> active_context
       end
 
@@ -145,11 +145,11 @@ defmodule JSON.LD do
         {context_url, options} ->
           {Context.update(active_context, context_url,
              base: context_url,
-             processor_options: processing_options
+             processor_options: processor_options
            ), options}
       end
 
-    case Expansion.expand(active_context, nil, input, options, processing_options) do
+    case Expansion.expand(active_context, nil, input, options, processor_options) do
       result = %{"@graph" => graph} when map_size(result) == 1 -> graph
       nil -> []
       result when not is_list(result) -> [result]
@@ -175,17 +175,17 @@ defmodule JSON.LD do
   """
   @spec compact(input(), context_convertible(), Options.convertible()) :: map
   def compact(input, context, options \\ []) do
-    {processing_options, options} = Options.extract(options)
-    compact(input, context, options, processing_options)
+    {processor_options, options} = Options.extract(options)
+    compact(input, context, options, processor_options)
   end
 
-  defp compact(%IRI{} = iri, context, options, processing_options),
-    do: iri |> IRI.to_string() |> compact(context, options, processing_options)
+  defp compact(%IRI{} = iri, context, options, processor_options),
+    do: iri |> IRI.to_string() |> compact(context, options, processor_options)
 
   # 3)
-  defp compact(url, context, options, processing_options) when is_binary(url) do
-    case DocumentLoader.load(url, processing_options) do
-      {:ok, document} -> compact(document, context, options, processing_options)
+  defp compact(url, context, options, processor_options) when is_binary(url) do
+    case DocumentLoader.load(url, processor_options) do
+      {:ok, document} -> compact(document, context, options, processor_options)
       {:error, error} -> raise error
     end
   end
@@ -250,36 +250,36 @@ defmodule JSON.LD do
   """
   @spec flatten(input(), context_convertible(), Options.convertible()) :: [map]
   def flatten(input, context \\ nil, options \\ %Options{}) do
-    {processing_options, options} = Options.extract(options)
-    flatten(input, context, options, processing_options)
+    {processor_options, options} = Options.extract(options)
+    flatten(input, context, options, processor_options)
   end
 
-  defp flatten(%IRI{} = iri, context, options, processing_options),
-    do: iri |> IRI.to_string() |> flatten(context, options, processing_options)
+  defp flatten(%IRI{} = iri, context, options, processor_options),
+    do: iri |> IRI.to_string() |> flatten(context, options, processor_options)
 
   # 3)
-  defp flatten(url, context, options, processing_options) when is_binary(url) do
-    case DocumentLoader.load(url, processing_options) do
-      {:ok, document} -> flatten(document, context, options, processing_options)
+  defp flatten(url, context, options, processor_options) when is_binary(url) do
+    case DocumentLoader.load(url, processor_options) do
+      {:ok, document} -> flatten(document, context, options, processor_options)
       {:error, error} -> raise error
     end
   end
 
-  defp flatten(input, context, _options, processing_options) do
+  defp flatten(input, context, _options, processor_options) do
     flattened =
       input
-      |> expand(%{processing_options | ordered: false})
-      |> Flattening.flatten(processing_options)
+      |> expand(%{processor_options | ordered: false})
+      |> Flattening.flatten(processor_options)
 
     if context && !Enum.empty?(flattened) do
       compact(
         flattened,
         context,
         if(
-          is_nil(processing_options.base) and processing_options.compact_to_relative and
+          is_nil(processor_options.base) and processor_options.compact_to_relative and
             match?(%RemoteDocument{}, input),
-          do: %{processing_options | base: input.document_url},
-          else: processing_options
+          do: %{processor_options | base: input.document_url},
+          else: processor_options
         )
       )
     else
