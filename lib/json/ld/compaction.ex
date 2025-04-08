@@ -79,8 +79,8 @@ defmodule JSON.LD.Compaction do
         Context.update(
           active_context,
           local_context,
-          [override_protected: true],
-          options
+          override_protected: true,
+          processor_options: options
         )
       else
         active_context
@@ -155,7 +155,7 @@ defmodule JSON.LD.Compaction do
           term_def = type_scoped_context.term_defs[term]
 
           if local_context = term_def && term_def.context do
-            Context.update(context, local_context, [propagate: false], options)
+            Context.update(context, local_context, propagate: false, processor_options: options)
           else
             context
           end

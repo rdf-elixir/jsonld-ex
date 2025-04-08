@@ -52,7 +52,8 @@ defmodule JSON.LD.Expansion do
       active_context =
         if property_scoped_context = options[:property_scoped_context] do
           Context.update(active_context, property_scoped_context,
-            base: (term_def = active_context.term_defs[active_property]) && term_def.base_url
+            base: (term_def = active_context.term_defs[active_property]) && term_def.base_url,
+            processor_options: processor_options
           )
         else
           active_context
@@ -104,9 +105,12 @@ defmodule JSON.LD.Expansion do
     # 8)
     active_context =
       if property_scoped_context = options[:property_scoped_context] do
-        Context.update(active_context, property_scoped_context,
+        Context.update(
+          active_context,
+          property_scoped_context,
           base: (term_def = active_context.term_defs[active_property]) && term_def.base_url,
-          override_protected: true
+          override_protected: true,
+          processor_options: processor_options
         )
       else
         active_context
@@ -142,7 +146,8 @@ defmodule JSON.LD.Expansion do
 
                   Context.update(context, local_context,
                     base: (term_def && term_def.base_url) || processor_options.base,
-                    propagate: false
+                    propagate: false,
+                    processor_options: processor_options
                   )
                 else
                   context
@@ -595,7 +600,8 @@ defmodule JSON.LD.Expansion do
                         if "@type" in container_mapping && index_term_def &&
                              index_term_def.context do
                           Context.update(container_context, index_term_def.context,
-                            base: term_def.base_url
+                            base: term_def.base_url,
+                            processor_options: processor_options
                           )
                         else
                           container_context
@@ -765,8 +771,8 @@ defmodule JSON.LD.Expansion do
           Context.update(
             active_context,
             nest_context,
-            [override_protected: true],
-            processor_options
+            override_protected: true,
+            processor_options: processor_options
           )
         else
           active_context

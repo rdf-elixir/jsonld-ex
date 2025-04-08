@@ -52,8 +52,6 @@ defmodule JSON.LD.W3C.ToRdfTest do
           @tag skip: "TODO: missing generalized RDF support"
         end
 
-        if id == "#tc031", do: @tag(skip: "TODO: JSON.LD.LoadingRemoteContextFailedError")
-
         @tag :test_suite
         @tag :to_rdf_test_suite
         @tag test_case: RDF.iri(@base <> id)

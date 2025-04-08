@@ -76,8 +76,19 @@ defmodule JSON.LD.Context do
   end
 
   @spec update(t, [local] | local, Options.convertible()) :: t
-  def update(active, local, options \\ []) do
-    {processor_options, options} = Options.extract(options)
+  def update(active, local, options \\ [])
+
+  def update(active, local, %Options{} = processor_options) do
+    update(active, local, init_options([]), processor_options)
+  end
+
+  def update(active, local, options) do
+    {processor_options, options} =
+      case Keyword.pop(options, :processor_options) do
+        {nil, options} -> Options.extract(options)
+        {processor_options, options} -> {struct(processor_options, options), options}
+      end
+
     update(active, local, init_options(options), processor_options)
   end
 
@@ -139,7 +150,8 @@ defmodule JSON.LD.Context do
   defp do_update(%__MODULE__{} = active, context, remote, options, processor_options)
        when is_binary(context) do
     # 5.2.1) Initialize context to the result of resolving context against base URL. If base URL is not a valid IRI, then context MUST be a valid IRI, otherwise a loading document failed error has been detected and processing is aborted.
-    base = base(active)
+    # SPEC ISSUE: we try the unmentioned original_base_url here to get expand#tc031 pass
+    base = active.original_base_url || processor_options.base || base(active)
 
     context =
       cond do

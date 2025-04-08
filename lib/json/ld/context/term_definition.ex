@@ -685,12 +685,10 @@ defmodule JSON.LD.Context.TermDefinition do
         Context.update(
           active,
           context,
-          [
-            override_protected: true,
-            validate_scoped_context: false,
-            remote_contexts: opts[:remote_contexts]
-          ],
-          popts
+          override_protected: true,
+          validate_scoped_context: false,
+          remote_contexts: opts[:remote_contexts],
+          processor_options: popts
         )
       rescue
         e ->

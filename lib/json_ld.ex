@@ -132,8 +132,8 @@ defmodule JSON.LD do
   defp expand(active_context, input, options, processing_options) do
     active_context =
       case processing_options.expand_context do
-        %{"@context" => context} -> Context.update(active_context, context)
-        %{} = context -> Context.update(active_context, context)
+        %{"@context" => context} -> Context.update(active_context, context, processing_options)
+        %{} = context -> Context.update(active_context, context, processing_options)
         nil -> active_context
       end
 
@@ -143,7 +143,10 @@ defmodule JSON.LD do
           {active_context, options}
 
         {context_url, options} ->
-          {Context.update(active_context, context_url, base: context_url), options}
+          {Context.update(active_context, context_url,
+             base: context_url,
+             processor_options: processing_options
+           ), options}
       end
 
     case Expansion.expand(active_context, nil, input, options, processing_options) do
