@@ -131,10 +131,26 @@ defmodule JSON.LD do
 
   defp expand(active_context, input, options, processor_options) do
     active_context =
-      case processor_options.expand_context do
-        %{"@context" => context} -> Context.update(active_context, context, processor_options)
-        %{} = context -> Context.update(active_context, context, processor_options)
-        nil -> active_context
+      if processor_options.expand_context do
+        context =
+          case processor_options.expand_context do
+            %{"@context" => context} ->
+              context
+
+            %{} = context ->
+              context
+
+            context when is_binary(context) ->
+              context
+
+            invalid ->
+              raise JSON.LD.InvalidContextEntryError,
+                message: "Invalid expand context value: #{inspect(invalid)}"
+          end
+
+        Context.update(active_context, context, processor_options)
+      else
+        active_context
       end
 
     {active_context, options} =

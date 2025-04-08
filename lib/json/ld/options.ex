@@ -21,7 +21,7 @@ defmodule JSON.LD.Options do
           # otherwise, if not specified, the processor's built-in loader is used.
           document_loader: nil,
           # A context that is used to initialize the active context when expanding a document.
-          expand_context: map | nil,
+          expand_context: map | String.t() | nil,
           # If set to true, when extracting JSON-LD script elements from HTML, unless a specific fragment identifier is targeted, extracts all encountered JSON-LD script elements using an array form, if necessary.
           extract_all_scripts: boolean,
           # When the resulting contentType is text/html or application/xhtml+xml, this option determines the profile to use for selecting JSON-LD script elements.
