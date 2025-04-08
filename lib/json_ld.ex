@@ -148,7 +148,11 @@ defmodule JSON.LD do
                 message: "Invalid expand context value: #{inspect(invalid)}"
           end
 
-        Context.update(active_context, context, processor_options)
+        Context.update(
+          active_context,
+          context,
+          Options.set_base(processor_options, active_context.original_base_url)
+        )
       else
         active_context
       end
