@@ -113,14 +113,13 @@ defmodule JSON.LD.Context do
   end
 
   # 2) If local context has a @propagate entry, its value MUST be boolean true or false, set propagate to that value
-  def update(
-        %__MODULE__{} = active,
-        %{"@propagate" => propagate} = local,
-        options,
-        processor_options
-      ) do
+  def update(%__MODULE__{}, %{"@propagate" => propagate}, _, _) when not is_boolean(propagate) do
+    raise JSON.LD.InvalidPropagateValueError, value: propagate
+  end
+
+  def update(%__MODULE__{} = active, %{"@propagate" => propagate} = local, options, popts) do
     # 4) If local context is not an array, set it to an array containing only local context.
-    update(active, [local], Keyword.put(options, :propagate, propagate), processor_options)
+    update(active, [local], Keyword.put(options, :propagate, propagate), popts)
   end
 
   # 4) If local context is not an array, set it to an array containing only local context.
