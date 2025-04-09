@@ -1,5 +1,5 @@
 defmodule JSON.LD.Utils do
-  @moduledoc nil
+  @moduledoc false
 
   alias RDF.IRI
   require Logger

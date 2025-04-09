@@ -3,6 +3,32 @@ defmodule JSON.LD.Options do
   Options accepted by the JSON-LD processing algorithms.
 
   as specified at <https://www.w3.org/TR/json-ld11-api/#the-jsonldoptions-type>
+
+  ## Additional options
+
+  Besides the standard JSON-LD options described in the specification, this implementation
+  provides the following additional options:
+
+  - `:lowercase_language` - When set to `true` (default), language tags are automatically
+    converted to lowercase during processing.
+  - `:warn` - Configures how warnings are handled during processing. Possible values:
+    - `:default` - Uses the value from the application config (defaults to `:log`)
+    - `:ignore` - Silently ignores warnings
+    - `:raise` - Raises an exception on warnings
+    - `:log` - Logs warnings using Logger
+    - `true` - Same as `:default`
+    - `false` - Same as `:ignore`
+    - A function accepting a message string
+
+    The default warning behavior can be configured in your application config:
+
+        config :json_ld,
+          warn: :log  # or any other valid warning option, except :default
+
+  ## Limitations
+
+  The `:produce_generalized_rdf` option is currently not supported due to lack of Generalized RDF
+  support in RDF.ex.
   """
 
   alias RDF.IRI

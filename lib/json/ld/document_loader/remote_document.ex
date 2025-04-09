@@ -6,10 +6,9 @@ defmodule JSON.LD.DocumentLoader.RemoteDocument do
 
   1. A struct representing remote documents as specified in https://www.w3.org/TR/json-ld11-api/#remotedocument
   2. The core implementation of remote document loading according to
-     <https://www.w3.org/TR/json-ld11-api/#remote-document-and-context-retrieval>
-
-  Custom `JSON.LD.DocumentLoader` implementations can reuse this by calling `load/3` or
-  implementing their own loading logic.
+     <https://www.w3.org/TR/json-ld11-api/#remote-document-and-context-retrieval> so that
+     custom `JSON.LD.DocumentLoader` implementations can reuse this by calling `load/3` or
+     implementing their own loading logic.
 
   ## Custom HTTP clients
 

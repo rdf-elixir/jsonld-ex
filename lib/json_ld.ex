@@ -1,10 +1,10 @@
 defmodule JSON.LD do
   @moduledoc """
-  An implementation of JSON-LD 1.0.
+  An implementation of JSON-LD 1.1.
 
-  As an implementation of the `RDF.Serialization.Format` behaviour of RDF.ex
+  It includes an implementation of the `RDF.Serialization.Format` behaviour of RDF.ex.
 
-  see <https://json-ld.org/>
+  See <https://json-ld.org/>
   """
 
   use RDF.Serialization.Format
