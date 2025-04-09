@@ -1,0 +1,6114 @@
+@prefix dc: <http://purl.org/dc/terms/> .
+@prefix doap: <http://usefulinc.com/ns/doap#> .
+@prefix earl: <http://www.w3.org/ns/earl#> .
+@prefix foaf: <http://xmlns.com/foaf/0.1/> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+<>
+    dc:issued "2025-04-09T16:12:07.926208Z"^^xsd:dateTime ;
+    foaf:maker <http://marcelotto.net/#me> ;
+    foaf:primaryTopic <https://hex.pm/packages/json_ld> .
+
+<http://marcelotto.net/#me>
+    a earl:Assertor, foaf:Person ;
+    foaf:homepage <http://marcelotto.net/> ;
+    foaf:name "Marcel Otto" .
+
+<https://hex.pm/packages/json_ld>
+    a doap:Project, earl:Software, earl:TestSubject ;
+    dc:creator <http://marcelotto.net/#me> ;
+    doap:bug-database <https://github.com/rdf-elixir/jsonld-ex/issues> ;
+    doap:category <http://dbpedia.org/resource/Elixir_(programming_language)>, <http://dbpedia.org/resource/Resource_Description_Framework> ;
+    doap:created "2017-06-25"^^xsd:date ;
+    doap:description "JSON-LD.ex is a pure-Elixir library implementation of JSON-LD as an RDF.ex serializer"@en ;
+    doap:developer <http://marcelotto.net/#me> ;
+    doap:documenter <http://marcelotto.net/#me> ;
+    doap:download-page <https://hex.pm/packages/json_ld> ;
+    doap:homepage <https://rdf-elixir.dev/> ;
+    doap:implements <http://www.w3.org/TR/json-ld-api/>, <http://www.w3.org/TR/json-ld/> ;
+    doap:maintainer <http://marcelotto.net/#me> ;
+    doap:name "JSON-LD.ex" ;
+    doap:platform "Erlang/OTP" ;
+    doap:programming-language "Elixir" ;
+    doap:release <https://hex.pm/packages/json_ld/1.0.0> ;
+    doap:repository <https://github.com/rdf-elixir/jsonld-ex> ;
+    doap:shortdesc "An implementation of JSON-LD for Elixir and RDF.ex" ;
+    foaf:maker <http://marcelotto.net/#me> .
+
+<https://hex.pm/packages/json_ld/1.0.0>
+    doap:name "JSON-LD.ex 1.0.0" ;
+    doap:revision "1.0.0" .
+
+[
+    a earl:Assertion ;
+    earl:assertedBy <http://marcelotto.net/#me> ;
+    earl:mode earl:automatic ;
+    earl:result [
+        a earl:TestResult ;
+        dc:date "2025-04-09T16:12:07.926208Z"^^xsd:dateTime ;
+        earl:outcome earl:passed
+    ] ;
+    earl:subject <https://hex.pm/packages/json_ld> ;
+    earl:test <https://w3c.github.io/json-ld-api/tests/#t0005>
+] .
+
+[
+    a earl:Assertion ;
+    earl:assertedBy <http://marcelotto.net/#me> ;
+    earl:mode earl:automatic ;
+    earl:result [
+        a earl:TestResult ;
+        dc:date "2025-04-09T16:12:07.926208Z"^^xsd:dateTime ;
+        earl:outcome earl:passed
+    ] ;
+    earl:subject <https://hex.pm/packages/json_ld> ;
+    earl:test <https://w3c.github.io/json-ld-api/tests/#t0006>
+] .
+
+[
+    a earl:Assertion ;
+    earl:assertedBy <http://marcelotto.net/#me> ;
+    earl:mode earl:automatic ;
+    earl:result [
+        a earl:TestResult ;
+        dc:date "2025-04-09T16:12:07.926208Z"^^xsd:dateTime ;
+        earl:outcome earl:passed
+    ] ;
+    earl:subject <https://hex.pm/packages/json_ld> ;
+    earl:test <https://w3c.github.io/json-ld-api/tests/#t0007>
+] .
+
+[
+    a earl:Assertion ;
+    earl:assertedBy <http://marcelotto.net/#me> ;
+    earl:mode earl:automatic ;
+    earl:result [
+        a earl:TestResult ;
+        dc:date "2025-04-09T16:12:07.926208Z"^^xsd:dateTime ;
+        earl:outcome earl:passed
+    ] ;
+    earl:subject <https://hex.pm/packages/json_ld> ;
+    earl:test <https://w3c.github.io/json-ld-api/tests/#t0008>
+] .
+
+[
+    a earl:Assertion ;
+    earl:assertedBy <http://marcelotto.net/#me> ;
+    earl:mode earl:automatic ;
+    earl:result [
+        a earl:TestResult ;
+        dc:date "2025-04-09T16:12:07.926208Z"^^xsd:dateTime ;
+        earl:outcome earl:passed
+    ] ;
+    earl:subject <https://hex.pm/packages/json_ld> ;
+    earl:test <https://w3c.github.io/json-ld-api/tests/#t0009>
+] .
+
+[
+    a earl:Assertion ;
+    earl:assertedBy <http://marcelotto.net/#me> ;
+    earl:mode earl:automatic ;
+    earl:result [
+        a earl:TestResult ;
+        dc:date "2025-04-09T16:12:07.926208Z"^^xsd:dateTime ;
+        earl:outcome earl:passed
+    ] ;
+    earl:subject <https://hex.pm/packages/json_ld> ;
+    earl:test <https://w3c.github.io/json-ld-api/tests/#t0010>
+] .
+
+[
+    a earl:Assertion ;
+    earl:assertedBy <http://marcelotto.net/#me> ;
+    earl:mode earl:automatic ;
+    earl:result [
+        a earl:TestResult ;
+        dc:date "2025-04-09T16:12:07.926208Z"^^xsd:dateTime ;
+        earl:outcome earl:passed
+    ] ;
+    earl:subject <https://hex.pm/packages/json_ld> ;
+    earl:test <https://w3c.github.io/json-ld-api/tests/#t0011>
+] .
+
+[
+    a earl:Assertion ;
+    earl:assertedBy <http://marcelotto.net/#me> ;
+    earl:mode earl:automatic ;
+    earl:result [
+        a earl:TestResult ;
+        dc:date "2025-04-09T16:12:07.926208Z"^^xsd:dateTime ;
+        earl:outcome earl:passed
+    ] ;
+    earl:subject <https://hex.pm/packages/json_ld> ;
+    earl:test <https://w3c.github.io/json-ld-api/tests/#t0012>
+] .
+
+[
+    a earl:Assertion ;
+    earl:assertedBy <http://marcelotto.net/#me> ;
+    earl:mode earl:automatic ;
+    earl:result [
+        a earl:TestResult ;
+        dc:date "2025-04-09T16:12:07.926208Z"^^xsd:dateTime ;
+        earl:outcome earl:passed
+    ] ;
+    earl:subject <https://hex.pm/packages/json_ld> ;
+    earl:test <https://w3c.github.io/json-ld-api/tests/#t0013>
+] .
+
+[
+    a earl:Assertion ;
+    earl:assertedBy <http://marcelotto.net/#me> ;
+    earl:mode earl:automatic ;
+    earl:result [
+        a earl:TestResult ;
+        dc:date "2025-04-09T16:12:07.926208Z"^^xsd:dateTime ;
+        earl:outcome earl:passed
+    ] ;
+    earl:subject <https://hex.pm/packages/json_ld> ;
+    earl:test <https://w3c.github.io/json-ld-api/tests/#t0014>
+] .
+
+[
+    a earl:Assertion ;
+    earl:assertedBy <http://marcelotto.net/#me> ;
+    earl:mode earl:automatic ;
+    earl:result [
+        a earl:TestResult ;
+        dc:date "2025-04-09T16:12:07.926208Z"^^xsd:dateTime ;
+        earl:outcome earl:passed
+    ] ;
+    earl:subject <https://hex.pm/packages/json_ld> ;
+    earl:test <https://w3c.github.io/json-ld-api/tests/#t0015>
+] .
+
+[
+    a earl:Assertion ;
+    earl:assertedBy <http://marcelotto.net/#me> ;
+    earl:mode earl:automatic ;
+    earl:result [
+        a earl:TestResult ;
+        dc:date "2025-04-09T16:12:07.926208Z"^^xsd:dateTime ;
+        earl:outcome earl:passed
+    ] ;
+    earl:subject <https://hex.pm/packages/json_ld> ;
+    earl:test <https://w3c.github.io/json-ld-api/tests/#t0016>
+] .
+
+[
+    a earl:Assertion ;
+    earl:assertedBy <http://marcelotto.net/#me> ;
+    earl:mode earl:automatic ;
+    earl:result [
+        a earl:TestResult ;
+        dc:date "2025-04-09T16:12:07.926208Z"^^xsd:dateTime ;
+        earl:outcome earl:passed
+    ] ;
+    earl:subject <https://hex.pm/packages/json_ld> ;
+    earl:test <https://w3c.github.io/json-ld-api/tests/#t0017>
+] .
+
+[
+    a earl:Assertion ;
+    earl:assertedBy <http://marcelotto.net/#me> ;
+    earl:mode earl:automatic ;
+    earl:result [
+        a earl:TestResult ;
+        dc:date "2025-04-09T16:12:07.926208Z"^^xsd:dateTime ;
+        earl:outcome earl:passed
+    ] ;
+    earl:subject <https://hex.pm/packages/json_ld> ;
+    earl:test <https://w3c.github.io/json-ld-api/tests/#t0018>
+] .
+
+[
+    a earl:Assertion ;
+    earl:assertedBy <http://marcelotto.net/#me> ;
+    earl:mode earl:automatic ;
+    earl:result [
+        a earl:TestResult ;
+        dc:date "2025-04-09T16:12:07.926208Z"^^xsd:dateTime ;
+        earl:outcome earl:passed
+    ] ;
+    earl:subject <https://hex.pm/packages/json_ld> ;
+    earl:test <https://w3c.github.io/json-ld-api/tests/#t0019>
+] .
+
+[
+    a earl:Assertion ;
+    earl:assertedBy <http://marcelotto.net/#me> ;
+    earl:mode earl:automatic ;
+    earl:result [
+        a earl:TestResult ;
+        dc:date "2025-04-09T16:12:07.926208Z"^^xsd:dateTime ;
+        earl:outcome earl:passed
+    ] ;
+    earl:subject <https://hex.pm/packages/json_ld> ;
+    earl:test <https://w3c.github.io/json-ld-api/tests/#t0020>
+] .
+
+[
+    a earl:Assertion ;
+    earl:assertedBy <http://marcelotto.net/#me> ;
+    earl:mode earl:automatic ;
+    earl:result [
+        a earl:TestResult ;
+        dc:date "2025-04-09T16:12:07.926208Z"^^xsd:dateTime ;
+        earl:outcome earl:passed
+    ] ;
+    earl:subject <https://hex.pm/packages/json_ld> ;
+    earl:test <https://w3c.github.io/json-ld-api/tests/#t0022>
+] .
+
+[
+    a earl:Assertion ;
+    earl:assertedBy <http://marcelotto.net/#me> ;
+    earl:mode earl:automatic ;
+    earl:result [
+        a earl:TestResult ;
+        dc:date "2025-04-09T16:12:07.926208Z"^^xsd:dateTime ;
+        earl:outcome earl:passed
+    ] ;
+    earl:subject <https://hex.pm/packages/json_ld> ;
+    earl:test <https://w3c.github.io/json-ld-api/tests/#t0023>
+] .
+
+[
+    a earl:Assertion ;
+    earl:assertedBy <http://marcelotto.net/#me> ;
+    earl:mode earl:automatic ;
+    earl:result [
+        a earl:TestResult ;
+        dc:date "2025-04-09T16:12:07.926208Z"^^xsd:dateTime ;
+        earl:outcome earl:passed
+    ] ;
+    earl:subject <https://hex.pm/packages/json_ld> ;
+    earl:test <https://w3c.github.io/json-ld-api/tests/#t0024>
+] .
+
+[
+    a earl:Assertion ;
+    earl:assertedBy <http://marcelotto.net/#me> ;
+    earl:mode earl:automatic ;
+    earl:result [
+        a earl:TestResult ;
+        dc:date "2025-04-09T16:12:07.926208Z"^^xsd:dateTime ;
+        earl:outcome earl:passed
+    ] ;
+    earl:subject <https://hex.pm/packages/json_ld> ;
+    earl:test <https://w3c.github.io/json-ld-api/tests/#t0025>
+] .
+
+[
+    a earl:Assertion ;
+    earl:assertedBy <http://marcelotto.net/#me> ;
+    earl:mode earl:automatic ;
+    earl:result [
+        a earl:TestResult ;
+        dc:date "2025-04-09T16:12:07.926208Z"^^xsd:dateTime ;
+        earl:outcome earl:passed
+    ] ;
+    earl:subject <https://hex.pm/packages/json_ld> ;
+    earl:test <https://w3c.github.io/json-ld-api/tests/#t0026>
+] .
+
+[
+    a earl:Assertion ;
+    earl:assertedBy <http://marcelotto.net/#me> ;
+    earl:mode earl:automatic ;
+    earl:result [
+        a earl:TestResult ;
+        dc:date "2025-04-09T16:12:07.926208Z"^^xsd:dateTime ;
+        earl:outcome earl:passed
+    ] ;
+    earl:subject <https://hex.pm/packages/json_ld> ;
+    earl:test <https://w3c.github.io/json-ld-api/tests/#t0027>
+] .
+
+[
+    a earl:Assertion ;
+    earl:assertedBy <http://marcelotto.net/#me> ;
+    earl:mode earl:automatic ;
+    earl:result [
+        a earl:TestResult ;
+        dc:date "2025-04-09T16:12:07.926208Z"^^xsd:dateTime ;
+        earl:outcome earl:passed
+    ] ;
+    earl:subject <https://hex.pm/packages/json_ld> ;
+    earl:test <https://w3c.github.io/json-ld-api/tests/#t0028>
+] .
+
+[
+    a earl:Assertion ;
+    earl:assertedBy <http://marcelotto.net/#me> ;
+    earl:mode earl:automatic ;
+    earl:result [
+        a earl:TestResult ;
+        dc:date "2025-04-09T16:12:07.926208Z"^^xsd:dateTime ;
+        earl:outcome earl:passed
+    ] ;
+    earl:subject <https://hex.pm/packages/json_ld> ;
+    earl:test <https://w3c.github.io/json-ld-api/tests/#t0029>
+] .
+
+[
+    a earl:Assertion ;
+    earl:assertedBy <http://marcelotto.net/#me> ;
+    earl:mode earl:automatic ;
+    earl:result [
+        a earl:TestResult ;
+        dc:date "2025-04-09T16:12:07.926208Z"^^xsd:dateTime ;
+        earl:outcome earl:passed
+    ] ;
+    earl:subject <https://hex.pm/packages/json_ld> ;
+    earl:test <https://w3c.github.io/json-ld-api/tests/#t0030>
+] .
+
+[
+    a earl:Assertion ;
+    earl:assertedBy <http://marcelotto.net/#me> ;
+    earl:mode earl:automatic ;
+    earl:result [
+        a earl:TestResult ;
+        dc:date "2025-04-09T16:12:07.926208Z"^^xsd:dateTime ;
+        earl:outcome earl:passed
+    ] ;
+    earl:subject <https://hex.pm/packages/json_ld> ;
+    earl:test <https://w3c.github.io/json-ld-api/tests/#t0031>
+] .
+
+[
+    a earl:Assertion ;
+    earl:assertedBy <http://marcelotto.net/#me> ;
+    earl:mode earl:automatic ;
+    earl:result [
+        a earl:TestResult ;
+        dc:date "2025-04-09T16:12:07.926208Z"^^xsd:dateTime ;
+        earl:outcome earl:passed
+    ] ;
+    earl:subject <https://hex.pm/packages/json_ld> ;
+    earl:test <https://w3c.github.io/json-ld-api/tests/#t0032>
+] .
+
+[
+    a earl:Assertion ;
+    earl:assertedBy <http://marcelotto.net/#me> ;
+    earl:mode earl:automatic ;
+    earl:result [
+        a earl:TestResult ;
+        dc:date "2025-04-09T16:12:07.926208Z"^^xsd:dateTime ;
+        earl:outcome earl:passed
+    ] ;
+    earl:subject <https://hex.pm/packages/json_ld> ;
+    earl:test <https://w3c.github.io/json-ld-api/tests/#t0033>
+] .
+
+[
+    a earl:Assertion ;
+    earl:assertedBy <http://marcelotto.net/#me> ;
+    earl:mode earl:automatic ;
+    earl:result [
+        a earl:TestResult ;
+        dc:date "2025-04-09T16:12:07.926208Z"^^xsd:dateTime ;
+        earl:outcome earl:passed
+    ] ;
+    earl:subject <https://hex.pm/packages/json_ld> ;
+    earl:test <https://w3c.github.io/json-ld-api/tests/#t0034>
+] .
+
+[
+    a earl:Assertion ;
+    earl:assertedBy <http://marcelotto.net/#me> ;
+    earl:mode earl:automatic ;
+    earl:result [
+        a earl:TestResult ;
+        dc:date "2025-04-09T16:12:07.926208Z"^^xsd:dateTime ;
+        earl:outcome earl:passed
+    ] ;
+    earl:subject <https://hex.pm/packages/json_ld> ;
+    earl:test <https://w3c.github.io/json-ld-api/tests/#t0035>
+] .
+
+[
+    a earl:Assertion ;
+    earl:assertedBy <http://marcelotto.net/#me> ;
+    earl:mode earl:automatic ;
+    earl:result [
+        a earl:TestResult ;
+        dc:date "2025-04-09T16:12:07.926208Z"^^xsd:dateTime ;
+        earl:outcome earl:passed
+    ] ;
+    earl:subject <https://hex.pm/packages/json_ld> ;
+    earl:test <https://w3c.github.io/json-ld-api/tests/#t0036>
+] .
+
+[
+    a earl:Assertion ;
+    earl:assertedBy <http://marcelotto.net/#me> ;
+    earl:mode earl:automatic ;
+    earl:result [
+        a earl:TestResult ;
+        dc:date "2025-04-09T16:12:07.926208Z"^^xsd:dateTime ;
+        earl:outcome earl:passed
+    ] ;
+    earl:subject <https://hex.pm/packages/json_ld> ;
+    earl:test <https://w3c.github.io/json-ld-api/tests/#t0113>
+] .
+
+[
+    a earl:Assertion ;
+    earl:assertedBy <http://marcelotto.net/#me> ;
+    earl:mode earl:automatic ;
+    earl:result [
+        a earl:TestResult ;
+        dc:date "2025-04-09T16:12:07.926208Z"^^xsd:dateTime ;
+        earl:outcome earl:passed
+    ] ;
+    earl:subject <https://hex.pm/packages/json_ld> ;
+    earl:test <https://w3c.github.io/json-ld-api/tests/#t0114>
+] .
+
+[
+    a earl:Assertion ;
+    earl:assertedBy <http://marcelotto.net/#me> ;
+    earl:mode earl:automatic ;
+    earl:result [
+        a earl:TestResult ;
+        dc:date "2025-04-09T16:12:07.926208Z"^^xsd:dateTime ;
+        earl:outcome earl:passed
+    ] ;
+    earl:subject <https://hex.pm/packages/json_ld> ;
+    earl:test <https://w3c.github.io/json-ld-api/tests/#t0115>
+] .
+
+[
+    a earl:Assertion ;
+    earl:assertedBy <http://marcelotto.net/#me> ;
+    earl:mode earl:automatic ;
+    earl:result [
+        a earl:TestResult ;
+        dc:date "2025-04-09T16:12:07.926208Z"^^xsd:dateTime ;
+        earl:outcome earl:passed
+    ] ;
+    earl:subject <https://hex.pm/packages/json_ld> ;
+    earl:test <https://w3c.github.io/json-ld-api/tests/#t0116>
+] .
+
+[
+    a earl:Assertion ;
+    earl:assertedBy <http://marcelotto.net/#me> ;
+    earl:mode earl:automatic ;
+    earl:result [
+        a earl:TestResult ;
+        dc:date "2025-04-09T16:12:07.926208Z"^^xsd:dateTime ;
+        earl:outcome earl:passed
+    ] ;
+    earl:subject <https://hex.pm/packages/json_ld> ;
+    earl:test <https://w3c.github.io/json-ld-api/tests/#t0117>
+] .
+
+[
+    a earl:Assertion ;
+    earl:assertedBy <http://marcelotto.net/#me> ;
+    earl:mode earl:automatic ;
+    earl:result [
+        a earl:TestResult ;
+        dc:date "2025-04-09T16:12:07.926208Z"^^xsd:dateTime ;
+        earl:outcome earl:passed
+    ] ;
+    earl:subject <https://hex.pm/packages/json_ld> ;
+    earl:test <https://w3c.github.io/json-ld-api/tests/#t0119>
+] .
+
+[
+    a earl:Assertion ;
+    earl:assertedBy <http://marcelotto.net/#me> ;
+    earl:mode earl:automatic ;
+    earl:result [
+        a earl:TestResult ;
+        dc:date "2025-04-09T16:12:07.926208Z"^^xsd:dateTime ;
+        earl:outcome earl:passed
+    ] ;
+    earl:subject <https://hex.pm/packages/json_ld> ;
+    earl:test <https://w3c.github.io/json-ld-api/tests/#t0120>
+] .
+
+[
+    a earl:Assertion ;
+    earl:assertedBy <http://marcelotto.net/#me> ;
+    earl:mode earl:automatic ;
+    earl:result [
+        a earl:TestResult ;
+        dc:date "2025-04-09T16:12:07.926208Z"^^xsd:dateTime ;
+        earl:outcome earl:passed
+    ] ;
+    earl:subject <https://hex.pm/packages/json_ld> ;
+    earl:test <https://w3c.github.io/json-ld-api/tests/#t0121>
+] .
+
+[
+    a earl:Assertion ;
+    earl:assertedBy <http://marcelotto.net/#me> ;
+    earl:mode earl:automatic ;
+    earl:result [
+        a earl:TestResult ;
+        dc:date "2025-04-09T16:12:07.926208Z"^^xsd:dateTime ;
+        earl:outcome earl:passed
+    ] ;
+    earl:subject <https://hex.pm/packages/json_ld> ;
+    earl:test <https://w3c.github.io/json-ld-api/tests/#t0122>
+] .
+
+[
+    a earl:Assertion ;
+    earl:assertedBy <http://marcelotto.net/#me> ;
+    earl:mode earl:automatic ;
+    earl:result [
+        a earl:TestResult ;
+        dc:date "2025-04-09T16:12:07.926208Z"^^xsd:dateTime ;
+        earl:outcome earl:passed
+    ] ;
+    earl:subject <https://hex.pm/packages/json_ld> ;
+    earl:test <https://w3c.github.io/json-ld-api/tests/#t0123>
+] .
+
+[
+    a earl:Assertion ;
+    earl:assertedBy <http://marcelotto.net/#me> ;
+    earl:mode earl:automatic ;
+    earl:result [
+        a earl:TestResult ;
+        dc:date "2025-04-09T16:12:07.926208Z"^^xsd:dateTime ;
+        earl:outcome earl:passed
+    ] ;
+    earl:subject <https://hex.pm/packages/json_ld> ;
+    earl:test <https://w3c.github.io/json-ld-api/tests/#t0124>
+] .
+
+[
+    a earl:Assertion ;
+    earl:assertedBy <http://marcelotto.net/#me> ;
+    earl:mode earl:automatic ;
+    earl:result [
+        a earl:TestResult ;
+        dc:date "2025-04-09T16:12:07.926208Z"^^xsd:dateTime ;
+        earl:outcome earl:passed
+    ] ;
+    earl:subject <https://hex.pm/packages/json_ld> ;
+    earl:test <https://w3c.github.io/json-ld-api/tests/#t0125>
+] .
+
+[
+    a earl:Assertion ;
+    earl:assertedBy <http://marcelotto.net/#me> ;
+    earl:mode earl:automatic ;
+    earl:result [
+        a earl:TestResult ;
+        dc:date "2025-04-09T16:12:07.926208Z"^^xsd:dateTime ;
+        earl:outcome earl:passed
+    ] ;
+    earl:subject <https://hex.pm/packages/json_ld> ;
+    earl:test <https://w3c.github.io/json-ld-api/tests/#t0126>
+] .
+
+[
+    a earl:Assertion ;
+    earl:assertedBy <http://marcelotto.net/#me> ;
+    earl:mode earl:automatic ;
+    earl:result [
+        a earl:TestResult ;
+        dc:date "2025-04-09T16:12:07.926208Z"^^xsd:dateTime ;
+        earl:outcome earl:passed
+    ] ;
+    earl:subject <https://hex.pm/packages/json_ld> ;
+    earl:test <https://w3c.github.io/json-ld-api/tests/#t0127>
+] .
+
+[
+    a earl:Assertion ;
+    earl:assertedBy <http://marcelotto.net/#me> ;
+    earl:mode earl:automatic ;
+    earl:result [
+        a earl:TestResult ;
+        dc:date "2025-04-09T16:12:07.926208Z"^^xsd:dateTime ;
+        earl:outcome earl:passed
+    ] ;
+    earl:subject <https://hex.pm/packages/json_ld> ;
+    earl:test <https://w3c.github.io/json-ld-api/tests/#t0128>
+] .
+
+[
+    a earl:Assertion ;
+    earl:assertedBy <http://marcelotto.net/#me> ;
+    earl:mode earl:automatic ;
+    earl:result [
+        a earl:TestResult ;
+        dc:date "2025-04-09T16:12:07.926208Z"^^xsd:dateTime ;
+        earl:outcome earl:passed
+    ] ;
+    earl:subject <https://hex.pm/packages/json_ld> ;
+    earl:test <https://w3c.github.io/json-ld-api/tests/#t0129>
+] .
+
+[
+    a earl:Assertion ;
+    earl:assertedBy <http://marcelotto.net/#me> ;
+    earl:mode earl:automatic ;
+    earl:result [
+        a earl:TestResult ;
+        dc:date "2025-04-09T16:12:07.926208Z"^^xsd:dateTime ;
+        earl:outcome earl:passed
+    ] ;
+    earl:subject <https://hex.pm/packages/json_ld> ;
+    earl:test <https://w3c.github.io/json-ld-api/tests/#t0130>
+] .
+
+[
+    a earl:Assertion ;
+    earl:assertedBy <http://marcelotto.net/#me> ;
+    earl:mode earl:automatic ;
+    earl:result [
+        a earl:TestResult ;
+        dc:date "2025-04-09T16:12:07.926208Z"^^xsd:dateTime ;
+        earl:outcome earl:passed
+    ] ;
+    earl:subject <https://hex.pm/packages/json_ld> ;
+    earl:test <https://w3c.github.io/json-ld-api/tests/#t0131>
+] .
+
+[
+    a earl:Assertion ;
+    earl:assertedBy <http://marcelotto.net/#me> ;
+    earl:mode earl:automatic ;
+    earl:result [
+        a earl:TestResult ;
+        dc:date "2025-04-09T16:12:07.926208Z"^^xsd:dateTime ;
+        earl:outcome earl:passed
+    ] ;
+    earl:subject <https://hex.pm/packages/json_ld> ;
+    earl:test <https://w3c.github.io/json-ld-api/tests/#t0132>
+] .
+
+[
+    a earl:Assertion ;
+    earl:assertedBy <http://marcelotto.net/#me> ;
+    earl:mode earl:automatic ;
+    earl:result [
+        a earl:TestResult ;
+        dc:date "2025-04-09T16:12:07.926208Z"^^xsd:dateTime ;
+        earl:outcome earl:passed
+    ] ;
+    earl:subject <https://hex.pm/packages/json_ld> ;
+    earl:test <https://w3c.github.io/json-ld-api/tests/#t0133>
+] .
+
+[
+    a earl:Assertion ;
+    earl:assertedBy <http://marcelotto.net/#me> ;
+    earl:mode earl:automatic ;
+    earl:result [
+        a earl:TestResult ;
+        dc:date "2025-04-09T16:12:07.926208Z"^^xsd:dateTime ;
+        earl:outcome earl:passed
+    ] ;
+    earl:subject <https://hex.pm/packages/json_ld> ;
+    earl:test <https://w3c.github.io/json-ld-api/tests/#tc001>
+] .
+
+[
+    a earl:Assertion ;
+    earl:assertedBy <http://marcelotto.net/#me> ;
+    earl:mode earl:automatic ;
+    earl:result [
+        a earl:TestResult ;
+        dc:date "2025-04-09T16:12:07.926208Z"^^xsd:dateTime ;
+        earl:outcome earl:passed
+    ] ;
+    earl:subject <https://hex.pm/packages/json_ld> ;
+    earl:test <https://w3c.github.io/json-ld-api/tests/#tc002>
+] .
+
+[
+    a earl:Assertion ;
+    earl:assertedBy <http://marcelotto.net/#me> ;
+    earl:mode earl:automatic ;
+    earl:result [
+        a earl:TestResult ;
+        dc:date "2025-04-09T16:12:07.926208Z"^^xsd:dateTime ;
+        earl:outcome earl:passed
+    ] ;
+    earl:subject <https://hex.pm/packages/json_ld> ;
+    earl:test <https://w3c.github.io/json-ld-api/tests/#tc003>
+] .
+
+[
+    a earl:Assertion ;
+    earl:assertedBy <http://marcelotto.net/#me> ;
+    earl:mode earl:automatic ;
+    earl:result [
+        a earl:TestResult ;
+        dc:date "2025-04-09T16:12:07.926208Z"^^xsd:dateTime ;
+        earl:outcome earl:passed
+    ] ;
+    earl:subject <https://hex.pm/packages/json_ld> ;
+    earl:test <https://w3c.github.io/json-ld-api/tests/#tc004>
+] .
+
+[
+    a earl:Assertion ;
+    earl:assertedBy <http://marcelotto.net/#me> ;
+    earl:mode earl:automatic ;
+    earl:result [
+        a earl:TestResult ;
+        dc:date "2025-04-09T16:12:07.926208Z"^^xsd:dateTime ;
+        earl:outcome earl:passed
+    ] ;
+    earl:subject <https://hex.pm/packages/json_ld> ;
+    earl:test <https://w3c.github.io/json-ld-api/tests/#tc005>
+] .
+
+[
+    a earl:Assertion ;
+    earl:assertedBy <http://marcelotto.net/#me> ;
+    earl:mode earl:automatic ;
+    earl:result [
+        a earl:TestResult ;
+        dc:date "2025-04-09T16:12:07.926208Z"^^xsd:dateTime ;
+        earl:outcome earl:passed
+    ] ;
+    earl:subject <https://hex.pm/packages/json_ld> ;
+    earl:test <https://w3c.github.io/json-ld-api/tests/#tc006>
+] .
+
+[
+    a earl:Assertion ;
+    earl:assertedBy <http://marcelotto.net/#me> ;
+    earl:mode earl:automatic ;
+    earl:result [
+        a earl:TestResult ;
+        dc:date "2025-04-09T16:12:07.926208Z"^^xsd:dateTime ;
+        earl:outcome earl:passed
+    ] ;
+    earl:subject <https://hex.pm/packages/json_ld> ;
+    earl:test <https://w3c.github.io/json-ld-api/tests/#tc007>
+] .
+
+[
+    a earl:Assertion ;
+    earl:assertedBy <http://marcelotto.net/#me> ;
+    earl:mode earl:automatic ;
+    earl:result [
+        a earl:TestResult ;
+        dc:date "2025-04-09T16:12:07.926208Z"^^xsd:dateTime ;
+        earl:outcome earl:passed
+    ] ;
+    earl:subject <https://hex.pm/packages/json_ld> ;
+    earl:test <https://w3c.github.io/json-ld-api/tests/#tc008>
+] .
+
+[
+    a earl:Assertion ;
+    earl:assertedBy <http://marcelotto.net/#me> ;
+    earl:mode earl:automatic ;
+    earl:result [
+        a earl:TestResult ;
+        dc:date "2025-04-09T16:12:07.926208Z"^^xsd:dateTime ;
+        earl:outcome earl:passed
+    ] ;
+    earl:subject <https://hex.pm/packages/json_ld> ;
+    earl:test <https://w3c.github.io/json-ld-api/tests/#tc009>
+] .
+
+[
+    a earl:Assertion ;
+    earl:assertedBy <http://marcelotto.net/#me> ;
+    earl:mode earl:automatic ;
+    earl:result [
+        a earl:TestResult ;
+        dc:date "2025-04-09T16:12:07.926208Z"^^xsd:dateTime ;
+        earl:outcome earl:passed
+    ] ;
+    earl:subject <https://hex.pm/packages/json_ld> ;
+    earl:test <https://w3c.github.io/json-ld-api/tests/#tc010>
+] .
+
+[
+    a earl:Assertion ;
+    earl:assertedBy <http://marcelotto.net/#me> ;
+    earl:mode earl:automatic ;
+    earl:result [
+        a earl:TestResult ;
+        dc:date "2025-04-09T16:12:07.926208Z"^^xsd:dateTime ;
+        earl:outcome earl:passed
+    ] ;
+    earl:subject <https://hex.pm/packages/json_ld> ;
+    earl:test <https://w3c.github.io/json-ld-api/tests/#tc011>
+] .
+
+[
+    a earl:Assertion ;
+    earl:assertedBy <http://marcelotto.net/#me> ;
+    earl:mode earl:automatic ;
+    earl:result [
+        a earl:TestResult ;
+        dc:date "2025-04-09T16:12:07.926208Z"^^xsd:dateTime ;
+        earl:outcome earl:passed
+    ] ;
+    earl:subject <https://hex.pm/packages/json_ld> ;
+    earl:test <https://w3c.github.io/json-ld-api/tests/#tc012>
+] .
+
+[
+    a earl:Assertion ;
+    earl:assertedBy <http://marcelotto.net/#me> ;
+    earl:mode earl:automatic ;
+    earl:result [
+        a earl:TestResult ;
+        dc:date "2025-04-09T16:12:07.926208Z"^^xsd:dateTime ;
+        earl:outcome earl:passed
+    ] ;
+    earl:subject <https://hex.pm/packages/json_ld> ;
+    earl:test <https://w3c.github.io/json-ld-api/tests/#tc013>
+] .
+
+[
+    a earl:Assertion ;
+    earl:assertedBy <http://marcelotto.net/#me> ;
+    earl:mode earl:automatic ;
+    earl:result [
+        a earl:TestResult ;
+        dc:date "2025-04-09T16:12:07.926208Z"^^xsd:dateTime ;
+        earl:outcome earl:passed
+    ] ;
+    earl:subject <https://hex.pm/packages/json_ld> ;
+    earl:test <https://w3c.github.io/json-ld-api/tests/#tc014>
+] .
+
+[
+    a earl:Assertion ;
+    earl:assertedBy <http://marcelotto.net/#me> ;
+    earl:mode earl:automatic ;
+    earl:result [
+        a earl:TestResult ;
+        dc:date "2025-04-09T16:12:07.926208Z"^^xsd:dateTime ;
+        earl:outcome earl:passed
+    ] ;
+    earl:subject <https://hex.pm/packages/json_ld> ;
+    earl:test <https://w3c.github.io/json-ld-api/tests/#tc015>
+] .
+
+[
+    a earl:Assertion ;
+    earl:assertedBy <http://marcelotto.net/#me> ;
+    earl:mode earl:automatic ;
+    earl:result [
+        a earl:TestResult ;
+        dc:date "2025-04-09T16:12:07.926208Z"^^xsd:dateTime ;
+        earl:outcome earl:passed
+    ] ;
+    earl:subject <https://hex.pm/packages/json_ld> ;
+    earl:test <https://w3c.github.io/json-ld-api/tests/#tc016>
+] .
+
+[
+    a earl:Assertion ;
+    earl:assertedBy <http://marcelotto.net/#me> ;
+    earl:mode earl:automatic ;
+    earl:result [
+        a earl:TestResult ;
+        dc:date "2025-04-09T16:12:07.926208Z"^^xsd:dateTime ;
+        earl:outcome earl:passed
+    ] ;
+    earl:subject <https://hex.pm/packages/json_ld> ;
+    earl:test <https://w3c.github.io/json-ld-api/tests/#tc017>
+] .
+
+[
+    a earl:Assertion ;
+    earl:assertedBy <http://marcelotto.net/#me> ;
+    earl:mode earl:automatic ;
+    earl:result [
+        a earl:TestResult ;
+        dc:date "2025-04-09T16:12:07.926208Z"^^xsd:dateTime ;
+        earl:outcome earl:passed
+    ] ;
+    earl:subject <https://hex.pm/packages/json_ld> ;
+    earl:test <https://w3c.github.io/json-ld-api/tests/#tc018>
+] .
+
+[
+    a earl:Assertion ;
+    earl:assertedBy <http://marcelotto.net/#me> ;
+    earl:mode earl:automatic ;
+    earl:result [
+        a earl:TestResult ;
+        dc:date "2025-04-09T16:12:07.926208Z"^^xsd:dateTime ;
+        earl:outcome earl:passed
+    ] ;
+    earl:subject <https://hex.pm/packages/json_ld> ;
+    earl:test <https://w3c.github.io/json-ld-api/tests/#tc019>
+] .
+
+[
+    a earl:Assertion ;
+    earl:assertedBy <http://marcelotto.net/#me> ;
+    earl:mode earl:automatic ;
+    earl:result [
+        a earl:TestResult ;
+        dc:date "2025-04-09T16:12:07.926208Z"^^xsd:dateTime ;
+        earl:outcome earl:passed
+    ] ;
+    earl:subject <https://hex.pm/packages/json_ld> ;
+    earl:test <https://w3c.github.io/json-ld-api/tests/#tc020>
+] .
+
+[
+    a earl:Assertion ;
+    earl:assertedBy <http://marcelotto.net/#me> ;
+    earl:mode earl:automatic ;
+    earl:result [
+        a earl:TestResult ;
+        dc:date "2025-04-09T16:12:07.926208Z"^^xsd:dateTime ;
+        earl:outcome earl:passed
+    ] ;
+    earl:subject <https://hex.pm/packages/json_ld> ;
+    earl:test <https://w3c.github.io/json-ld-api/tests/#tc021>
+] .
+
+[
+    a earl:Assertion ;
+    earl:assertedBy <http://marcelotto.net/#me> ;
+    earl:mode earl:automatic ;
+    earl:result [
+        a earl:TestResult ;
+        dc:date "2025-04-09T16:12:07.926208Z"^^xsd:dateTime ;
+        earl:outcome earl:passed
+    ] ;
+    earl:subject <https://hex.pm/packages/json_ld> ;
+    earl:test <https://w3c.github.io/json-ld-api/tests/#tc022>
+] .
+
+[
+    a earl:Assertion ;
+    earl:assertedBy <http://marcelotto.net/#me> ;
+    earl:mode earl:automatic ;
+    earl:result [
+        a earl:TestResult ;
+        dc:date "2025-04-09T16:12:07.926208Z"^^xsd:dateTime ;
+        earl:outcome earl:passed
+    ] ;
+    earl:subject <https://hex.pm/packages/json_ld> ;
+    earl:test <https://w3c.github.io/json-ld-api/tests/#tc023>
+] .
+
+[
+    a earl:Assertion ;
+    earl:assertedBy <http://marcelotto.net/#me> ;
+    earl:mode earl:automatic ;
+    earl:result [
+        a earl:TestResult ;
+        dc:date "2025-04-09T16:12:07.926208Z"^^xsd:dateTime ;
+        earl:outcome earl:passed
+    ] ;
+    earl:subject <https://hex.pm/packages/json_ld> ;
+    earl:test <https://w3c.github.io/json-ld-api/tests/#tc024>
+] .
+
+[
+    a earl:Assertion ;
+    earl:assertedBy <http://marcelotto.net/#me> ;
+    earl:mode earl:automatic ;
+    earl:result [
+        a earl:TestResult ;
+        dc:date "2025-04-09T16:12:07.926208Z"^^xsd:dateTime ;
+        earl:outcome earl:passed
+    ] ;
+    earl:subject <https://hex.pm/packages/json_ld> ;
+    earl:test <https://w3c.github.io/json-ld-api/tests/#tc025>
+] .
+
+[
+    a earl:Assertion ;
+    earl:assertedBy <http://marcelotto.net/#me> ;
+    earl:mode earl:automatic ;
+    earl:result [
+        a earl:TestResult ;
+        dc:date "2025-04-09T16:12:07.926208Z"^^xsd:dateTime ;
+        earl:outcome earl:passed
+    ] ;
+    earl:subject <https://hex.pm/packages/json_ld> ;
+    earl:test <https://w3c.github.io/json-ld-api/tests/#tc026>
+] .
+
+[
+    a earl:Assertion ;
+    earl:assertedBy <http://marcelotto.net/#me> ;
+    earl:mode earl:automatic ;
+    earl:result [
+        a earl:TestResult ;
+        dc:date "2025-04-09T16:12:07.926208Z"^^xsd:dateTime ;
+        earl:outcome earl:passed
+    ] ;
+    earl:subject <https://hex.pm/packages/json_ld> ;
+    earl:test <https://w3c.github.io/json-ld-api/tests/#tc027>
+] .
+
+[
+    a earl:Assertion ;
+    earl:assertedBy <http://marcelotto.net/#me> ;
+    earl:mode earl:automatic ;
+    earl:result [
+        a earl:TestResult ;
+        dc:date "2025-04-09T16:12:07.926208Z"^^xsd:dateTime ;
+        earl:outcome earl:passed
+    ] ;
+    earl:subject <https://hex.pm/packages/json_ld> ;
+    earl:test <https://w3c.github.io/json-ld-api/tests/#tc028>
+] .
+
+[
+    a earl:Assertion ;
+    earl:assertedBy <http://marcelotto.net/#me> ;
+    earl:mode earl:automatic ;
+    earl:result [
+        a earl:TestResult ;
+        dc:date "2025-04-09T16:12:07.926208Z"^^xsd:dateTime ;
+        earl:outcome earl:passed
+    ] ;
+    earl:subject <https://hex.pm/packages/json_ld> ;
+    earl:test <https://w3c.github.io/json-ld-api/tests/#tc031>
+] .
+
+[
+    a earl:Assertion ;
+    earl:assertedBy <http://marcelotto.net/#me> ;
+    earl:mode earl:automatic ;
+    earl:result [
+        a earl:TestResult ;
+        dc:date "2025-04-09T16:12:07.926208Z"^^xsd:dateTime ;
+        earl:outcome earl:passed
+    ] ;
+    earl:subject <https://hex.pm/packages/json_ld> ;
+    earl:test <https://w3c.github.io/json-ld-api/tests/#tc034>
+] .
+
+[
+    a earl:Assertion ;
+    earl:assertedBy <http://marcelotto.net/#me> ;
+    earl:mode earl:automatic ;
+    earl:result [
+        a earl:TestResult ;
+        dc:date "2025-04-09T16:12:07.926208Z"^^xsd:dateTime ;
+        earl:outcome earl:passed
+    ] ;
+    earl:subject <https://hex.pm/packages/json_ld> ;
+    earl:test <https://w3c.github.io/json-ld-api/tests/#tc035>
+] .
+
+[
+    a earl:Assertion ;
+    earl:assertedBy <http://marcelotto.net/#me> ;
+    earl:mode earl:automatic ;
+    earl:result [
+        a earl:TestResult ;
+        dc:date "2025-04-09T16:12:07.926208Z"^^xsd:dateTime ;
+        earl:outcome earl:passed
+    ] ;
+    earl:subject <https://hex.pm/packages/json_ld> ;
+    earl:test <https://w3c.github.io/json-ld-api/tests/#tc036>
+] .
+
+[
+    a earl:Assertion ;
+    earl:assertedBy <http://marcelotto.net/#me> ;
+    earl:mode earl:automatic ;
+    earl:result [
+        a earl:TestResult ;
+        dc:date "2025-04-09T16:12:07.926208Z"^^xsd:dateTime ;
+        earl:outcome earl:passed
+    ] ;
+    earl:subject <https://hex.pm/packages/json_ld> ;
+    earl:test <https://w3c.github.io/json-ld-api/tests/#tc037>
+] .
+
+[
+    a earl:Assertion ;
+    earl:assertedBy <http://marcelotto.net/#me> ;
+    earl:mode earl:automatic ;
+    earl:result [
+        a earl:TestResult ;
+        dc:date "2025-04-09T16:12:07.926208Z"^^xsd:dateTime ;
+        earl:outcome earl:passed
+    ] ;
+    earl:subject <https://hex.pm/packages/json_ld> ;
+    earl:test <https://w3c.github.io/json-ld-api/tests/#tc038>
+] .
+
+[
+    a earl:Assertion ;
+    earl:assertedBy <http://marcelotto.net/#me> ;
+    earl:mode earl:automatic ;
+    earl:result [
+        a earl:TestResult ;
+        dc:date "2025-04-09T16:12:07.926208Z"^^xsd:dateTime ;
+        earl:outcome earl:passed
+    ] ;
+    earl:subject <https://hex.pm/packages/json_ld> ;
+    earl:test <https://w3c.github.io/json-ld-api/tests/#tdi01>
+] .
+
+[
+    a earl:Assertion ;
+    earl:assertedBy <http://marcelotto.net/#me> ;
+    earl:mode earl:automatic ;
+    earl:result [
+        a earl:TestResult ;
+        dc:date "2025-04-09T16:12:07.926208Z"^^xsd:dateTime ;
+        earl:outcome earl:passed
+    ] ;
+    earl:subject <https://hex.pm/packages/json_ld> ;
+    earl:test <https://w3c.github.io/json-ld-api/tests/#tdi02>
+] .
+
+[
+    a earl:Assertion ;
+    earl:assertedBy <http://marcelotto.net/#me> ;
+    earl:mode earl:automatic ;
+    earl:result [
+        a earl:TestResult ;
+        dc:date "2025-04-09T16:12:07.926208Z"^^xsd:dateTime ;
+        earl:outcome earl:passed
+    ] ;
+    earl:subject <https://hex.pm/packages/json_ld> ;
+    earl:test <https://w3c.github.io/json-ld-api/tests/#tdi03>
+] .
+
+[
+    a earl:Assertion ;
+    earl:assertedBy <http://marcelotto.net/#me> ;
+    earl:mode earl:automatic ;
+    earl:result [
+        a earl:TestResult ;
+        dc:date "2025-04-09T16:12:07.926208Z"^^xsd:dateTime ;
+        earl:outcome earl:passed
+    ] ;
+    earl:subject <https://hex.pm/packages/json_ld> ;
+    earl:test <https://w3c.github.io/json-ld-api/tests/#tdi04>
+] .
+
+[
+    a earl:Assertion ;
+    earl:assertedBy <http://marcelotto.net/#me> ;
+    earl:mode earl:automatic ;
+    earl:result [
+        a earl:TestResult ;
+        dc:date "2025-04-09T16:12:07.926208Z"^^xsd:dateTime ;
+        earl:outcome earl:passed
+    ] ;
+    earl:subject <https://hex.pm/packages/json_ld> ;
+    earl:test <https://w3c.github.io/json-ld-api/tests/#tdi05>
+] .
+
+[
+    a earl:Assertion ;
+    earl:assertedBy <http://marcelotto.net/#me> ;
+    earl:mode earl:automatic ;
+    earl:result [
+        a earl:TestResult ;
+        dc:date "2025-04-09T16:12:07.926208Z"^^xsd:dateTime ;
+        earl:outcome earl:passed
+    ] ;
+    earl:subject <https://hex.pm/packages/json_ld> ;
+    earl:test <https://w3c.github.io/json-ld-api/tests/#tdi06>
+] .
+
+[
+    a earl:Assertion ;
+    earl:assertedBy <http://marcelotto.net/#me> ;
+    earl:mode earl:automatic ;
+    earl:result [
+        a earl:TestResult ;
+        dc:date "2025-04-09T16:12:07.926208Z"^^xsd:dateTime ;
+        earl:outcome earl:passed
+    ] ;
+    earl:subject <https://hex.pm/packages/json_ld> ;
+    earl:test <https://w3c.github.io/json-ld-api/tests/#tdi07>
+] .
+
+[
+    a earl:Assertion ;
+    earl:assertedBy <http://marcelotto.net/#me> ;
+    earl:mode earl:automatic ;
+    earl:result [
+        a earl:TestResult ;
+        dc:date "2025-04-09T16:12:07.926208Z"^^xsd:dateTime ;
+        earl:outcome earl:passed
+    ] ;
+    earl:subject <https://hex.pm/packages/json_ld> ;
+    earl:test <https://w3c.github.io/json-ld-api/tests/#tdi09>
+] .
+
+[
+    a earl:Assertion ;
+    earl:assertedBy <http://marcelotto.net/#me> ;
+    earl:mode earl:automatic ;
+    earl:result [
+        a earl:TestResult ;
+        dc:date "2025-04-09T16:12:07.926208Z"^^xsd:dateTime ;
+        earl:outcome earl:passed
+    ] ;
+    earl:subject <https://hex.pm/packages/json_ld> ;
+    earl:test <https://w3c.github.io/json-ld-api/tests/#tdi10>
+] .
+
+[
+    a earl:Assertion ;
+    earl:assertedBy <http://marcelotto.net/#me> ;
+    earl:mode earl:automatic ;
+    earl:result [
+        a earl:TestResult ;
+        dc:date "2025-04-09T16:12:07.926208Z"^^xsd:dateTime ;
+        earl:outcome earl:passed
+    ] ;
+    earl:subject <https://hex.pm/packages/json_ld> ;
+    earl:test <https://w3c.github.io/json-ld-api/tests/#tdi11>
+] .
+
+[
+    a earl:Assertion ;
+    earl:assertedBy <http://marcelotto.net/#me> ;
+    earl:mode earl:automatic ;
+    earl:result [
+        a earl:TestResult ;
+        dc:date "2025-04-09T16:12:07.926208Z"^^xsd:dateTime ;
+        earl:outcome earl:passed
+    ] ;
+    earl:subject <https://hex.pm/packages/json_ld> ;
+    earl:test <https://w3c.github.io/json-ld-api/tests/#tdi12>
+] .
+
+[
+    a earl:Assertion ;
+    earl:assertedBy <http://marcelotto.net/#me> ;
+    earl:mode earl:automatic ;
+    earl:result [
+        a earl:TestResult ;
+        dc:date "2025-04-09T16:12:07.926208Z"^^xsd:dateTime ;
+        earl:outcome earl:passed
+    ] ;
+    earl:subject <https://hex.pm/packages/json_ld> ;
+    earl:test <https://w3c.github.io/json-ld-api/tests/#te001>
+] .
+
+[
+    a earl:Assertion ;
+    earl:assertedBy <http://marcelotto.net/#me> ;
+    earl:mode earl:automatic ;
+    earl:result [
+        a earl:TestResult ;
+        dc:date "2025-04-09T16:12:07.926208Z"^^xsd:dateTime ;
+        earl:outcome earl:passed
+    ] ;
+    earl:subject <https://hex.pm/packages/json_ld> ;
+    earl:test <https://w3c.github.io/json-ld-api/tests/#te002>
+] .
+
+[
+    a earl:Assertion ;
+    earl:assertedBy <http://marcelotto.net/#me> ;
+    earl:mode earl:automatic ;
+    earl:result [
+        a earl:TestResult ;
+        dc:date "2025-04-09T16:12:07.926208Z"^^xsd:dateTime ;
+        earl:outcome earl:passed
+    ] ;
+    earl:subject <https://hex.pm/packages/json_ld> ;
+    earl:test <https://w3c.github.io/json-ld-api/tests/#te003>
+] .
+
+[
+    a earl:Assertion ;
+    earl:assertedBy <http://marcelotto.net/#me> ;
+    earl:mode earl:automatic ;
+    earl:result [
+        a earl:TestResult ;
+        dc:date "2025-04-09T16:12:07.926208Z"^^xsd:dateTime ;
+        earl:outcome earl:passed
+    ] ;
+    earl:subject <https://hex.pm/packages/json_ld> ;
+    earl:test <https://w3c.github.io/json-ld-api/tests/#te004>
+] .
+
+[
+    a earl:Assertion ;
+    earl:assertedBy <http://marcelotto.net/#me> ;
+    earl:mode earl:automatic ;
+    earl:result [
+        a earl:TestResult ;
+        dc:date "2025-04-09T16:12:07.926208Z"^^xsd:dateTime ;
+        earl:outcome earl:passed
+    ] ;
+    earl:subject <https://hex.pm/packages/json_ld> ;
+    earl:test <https://w3c.github.io/json-ld-api/tests/#te005>
+] .
+
+[
+    a earl:Assertion ;
+    earl:assertedBy <http://marcelotto.net/#me> ;
+    earl:mode earl:automatic ;
+    earl:result [
+        a earl:TestResult ;
+        dc:date "2025-04-09T16:12:07.926208Z"^^xsd:dateTime ;
+        earl:outcome earl:passed
+    ] ;
+    earl:subject <https://hex.pm/packages/json_ld> ;
+    earl:test <https://w3c.github.io/json-ld-api/tests/#te006>
+] .
+
+[
+    a earl:Assertion ;
+    earl:assertedBy <http://marcelotto.net/#me> ;
+    earl:mode earl:automatic ;
+    earl:result [
+        a earl:TestResult ;
+        dc:date "2025-04-09T16:12:07.926208Z"^^xsd:dateTime ;
+        earl:outcome earl:passed
+    ] ;
+    earl:subject <https://hex.pm/packages/json_ld> ;
+    earl:test <https://w3c.github.io/json-ld-api/tests/#te007>
+] .
+
+[
+    a earl:Assertion ;
+    earl:assertedBy <http://marcelotto.net/#me> ;
+    earl:mode earl:automatic ;
+    earl:result [
+        a earl:TestResult ;
+        dc:date "2025-04-09T16:12:07.926208Z"^^xsd:dateTime ;
+        earl:outcome earl:passed
+    ] ;
+    earl:subject <https://hex.pm/packages/json_ld> ;
+    earl:test <https://w3c.github.io/json-ld-api/tests/#te008>
+] .
+
+[
+    a earl:Assertion ;
+    earl:assertedBy <http://marcelotto.net/#me> ;
+    earl:mode earl:automatic ;
+    earl:result [
+        a earl:TestResult ;
+        dc:date "2025-04-09T16:12:07.926208Z"^^xsd:dateTime ;
+        earl:outcome earl:passed
+    ] ;
+    earl:subject <https://hex.pm/packages/json_ld> ;
+    earl:test <https://w3c.github.io/json-ld-api/tests/#te009>
+] .
+
+[
+    a earl:Assertion ;
+    earl:assertedBy <http://marcelotto.net/#me> ;
+    earl:mode earl:automatic ;
+    earl:result [
+        a earl:TestResult ;
+        dc:date "2025-04-09T16:12:07.926208Z"^^xsd:dateTime ;
+        earl:outcome earl:passed
+    ] ;
+    earl:subject <https://hex.pm/packages/json_ld> ;
+    earl:test <https://w3c.github.io/json-ld-api/tests/#te010>
+] .
+
+[
+    a earl:Assertion ;
+    earl:assertedBy <http://marcelotto.net/#me> ;
+    earl:mode earl:automatic ;
+    earl:result [
+        a earl:TestResult ;
+        dc:date "2025-04-09T16:12:07.926208Z"^^xsd:dateTime ;
+        earl:outcome earl:passed
+    ] ;
+    earl:subject <https://hex.pm/packages/json_ld> ;
+    earl:test <https://w3c.github.io/json-ld-api/tests/#te011>
+] .
+
+[
+    a earl:Assertion ;
+    earl:assertedBy <http://marcelotto.net/#me> ;
+    earl:mode earl:automatic ;
+    earl:result [
+        a earl:TestResult ;
+        dc:date "2025-04-09T16:12:07.926208Z"^^xsd:dateTime ;
+        earl:outcome earl:passed
+    ] ;
+    earl:subject <https://hex.pm/packages/json_ld> ;
+    earl:test <https://w3c.github.io/json-ld-api/tests/#te012>
+] .
+
+[
+    a earl:Assertion ;
+    earl:assertedBy <http://marcelotto.net/#me> ;
+    earl:mode earl:automatic ;
+    earl:result [
+        a earl:TestResult ;
+        dc:date "2025-04-09T16:12:07.926208Z"^^xsd:dateTime ;
+        earl:outcome earl:passed
+    ] ;
+    earl:subject <https://hex.pm/packages/json_ld> ;
+    earl:test <https://w3c.github.io/json-ld-api/tests/#te013>
+] .
+
+[
+    a earl:Assertion ;
+    earl:assertedBy <http://marcelotto.net/#me> ;
+    earl:mode earl:automatic ;
+    earl:result [
+        a earl:TestResult ;
+        dc:date "2025-04-09T16:12:07.926208Z"^^xsd:dateTime ;
+        earl:outcome earl:passed
+    ] ;
+    earl:subject <https://hex.pm/packages/json_ld> ;
+    earl:test <https://w3c.github.io/json-ld-api/tests/#te015>
+] .
+
+[
+    a earl:Assertion ;
+    earl:assertedBy <http://marcelotto.net/#me> ;
+    earl:mode earl:automatic ;
+    earl:result [
+        a earl:TestResult ;
+        dc:date "2025-04-09T16:12:07.926208Z"^^xsd:dateTime ;
+        earl:outcome earl:passed
+    ] ;
+    earl:subject <https://hex.pm/packages/json_ld> ;
+    earl:test <https://w3c.github.io/json-ld-api/tests/#te016>
+] .
+
+[
+    a earl:Assertion ;
+    earl:assertedBy <http://marcelotto.net/#me> ;
+    earl:mode earl:automatic ;
+    earl:result [
+        a earl:TestResult ;
+        dc:date "2025-04-09T16:12:07.926208Z"^^xsd:dateTime ;
+        earl:outcome earl:passed
+    ] ;
+    earl:subject <https://hex.pm/packages/json_ld> ;
+    earl:test <https://w3c.github.io/json-ld-api/tests/#te017>
+] .
+
+[
+    a earl:Assertion ;
+    earl:assertedBy <http://marcelotto.net/#me> ;
+    earl:mode earl:automatic ;
+    earl:result [
+        a earl:TestResult ;
+        dc:date "2025-04-09T16:12:07.926208Z"^^xsd:dateTime ;
+        earl:outcome earl:passed
+    ] ;
+    earl:subject <https://hex.pm/packages/json_ld> ;
+    earl:test <https://w3c.github.io/json-ld-api/tests/#te018>
+] .
+
+[
+    a earl:Assertion ;
+    earl:assertedBy <http://marcelotto.net/#me> ;
+    earl:mode earl:automatic ;
+    earl:result [
+        a earl:TestResult ;
+        dc:date "2025-04-09T16:12:07.926208Z"^^xsd:dateTime ;
+        earl:outcome earl:passed
+    ] ;
+    earl:subject <https://hex.pm/packages/json_ld> ;
+    earl:test <https://w3c.github.io/json-ld-api/tests/#te019>
+] .
+
+[
+    a earl:Assertion ;
+    earl:assertedBy <http://marcelotto.net/#me> ;
+    earl:mode earl:automatic ;
+    earl:result [
+        a earl:TestResult ;
+        dc:date "2025-04-09T16:12:07.926208Z"^^xsd:dateTime ;
+        earl:outcome earl:passed
+    ] ;
+    earl:subject <https://hex.pm/packages/json_ld> ;
+    earl:test <https://w3c.github.io/json-ld-api/tests/#te020>
+] .
+
+[
+    a earl:Assertion ;
+    earl:assertedBy <http://marcelotto.net/#me> ;
+    earl:mode earl:automatic ;
+    earl:result [
+        a earl:TestResult ;
+        dc:date "2025-04-09T16:12:07.926208Z"^^xsd:dateTime ;
+        earl:outcome earl:passed
+    ] ;
+    earl:subject <https://hex.pm/packages/json_ld> ;
+    earl:test <https://w3c.github.io/json-ld-api/tests/#te021>
+] .
+
+[
+    a earl:Assertion ;
+    earl:assertedBy <http://marcelotto.net/#me> ;
+    earl:mode earl:automatic ;
+    earl:result [
+        a earl:TestResult ;
+        dc:date "2025-04-09T16:12:07.926208Z"^^xsd:dateTime ;
+        earl:outcome earl:passed
+    ] ;
+    earl:subject <https://hex.pm/packages/json_ld> ;
+    earl:test <https://w3c.github.io/json-ld-api/tests/#te022>
+] .
+
+[
+    a earl:Assertion ;
+    earl:assertedBy <http://marcelotto.net/#me> ;
+    earl:mode earl:automatic ;
+    earl:result [
+        a earl:TestResult ;
+        dc:date "2025-04-09T16:12:07.926208Z"^^xsd:dateTime ;
+        earl:outcome earl:passed
+    ] ;
+    earl:subject <https://hex.pm/packages/json_ld> ;
+    earl:test <https://w3c.github.io/json-ld-api/tests/#te023>
+] .
+
+[
+    a earl:Assertion ;
+    earl:assertedBy <http://marcelotto.net/#me> ;
+    earl:mode earl:automatic ;
+    earl:result [
+        a earl:TestResult ;
+        dc:date "2025-04-09T16:12:07.926208Z"^^xsd:dateTime ;
+        earl:outcome earl:passed
+    ] ;
+    earl:subject <https://hex.pm/packages/json_ld> ;
+    earl:test <https://w3c.github.io/json-ld-api/tests/#te024>
+] .
+
+[
+    a earl:Assertion ;
+    earl:assertedBy <http://marcelotto.net/#me> ;
+    earl:mode earl:automatic ;
+    earl:result [
+        a earl:TestResult ;
+        dc:date "2025-04-09T16:12:07.926208Z"^^xsd:dateTime ;
+        earl:outcome earl:passed
+    ] ;
+    earl:subject <https://hex.pm/packages/json_ld> ;
+    earl:test <https://w3c.github.io/json-ld-api/tests/#te025>
+] .
+
+[
+    a earl:Assertion ;
+    earl:assertedBy <http://marcelotto.net/#me> ;
+    earl:mode earl:automatic ;
+    earl:result [
+        a earl:TestResult ;
+        dc:date "2025-04-09T16:12:07.926208Z"^^xsd:dateTime ;
+        earl:outcome earl:untested
+    ] ;
+    earl:subject <https://hex.pm/packages/json_ld> ;
+    earl:test <https://w3c.github.io/json-ld-api/tests/#t0118>
+] .
+
+[
+    a earl:Assertion ;
+    earl:assertedBy <http://marcelotto.net/#me> ;
+    earl:mode earl:automatic ;
+    earl:result [
+        a earl:TestResult ;
+        dc:date "2025-04-09T16:12:07.926208Z"^^xsd:dateTime ;
+        earl:outcome earl:untested
+    ] ;
+    earl:subject <https://hex.pm/packages/json_ld> ;
+    earl:test <https://w3c.github.io/json-ld-api/tests/#te014>
+] .
+
+[
+    a earl:Assertion ;
+    earl:assertedBy <http://marcelotto.net/#me> ;
+    earl:mode earl:automatic ;
+    earl:result [
+        a earl:TestResult ;
+        dc:date "2025-04-09T16:12:07.926208Z"^^xsd:dateTime ;
+        earl:outcome earl:untested
+    ] ;
+    earl:subject <https://hex.pm/packages/json_ld> ;
+    earl:test <https://w3c.github.io/json-ld-api/tests/#te026>
+] .
+
+[
+    a earl:Assertion ;
+    earl:assertedBy <http://marcelotto.net/#me> ;
+    earl:mode earl:automatic ;
+    earl:result [
+        a earl:TestResult ;
+        dc:date "2025-04-09T16:12:07.926208Z"^^xsd:dateTime ;
+        earl:outcome earl:untested
+    ] ;
+    earl:subject <https://hex.pm/packages/json_ld> ;
+    earl:test <https://w3c.github.io/json-ld-api/tests/#te038>
+] .
+
+[
+    a earl:Assertion ;
+    earl:assertedBy <http://marcelotto.net/#me> ;
+    earl:mode earl:automatic ;
+    earl:result [
+        a earl:TestResult ;
+        dc:date "2025-04-09T16:12:07.926208Z"^^xsd:dateTime ;
+        earl:outcome earl:untested
+    ] ;
+    earl:subject <https://hex.pm/packages/json_ld> ;
+    earl:test <https://w3c.github.io/json-ld-api/tests/#te071>
+] .
+
+[
+    a earl:Assertion ;
+    earl:assertedBy <http://marcelotto.net/#me> ;
+    earl:mode earl:automatic ;
+    earl:result [
+        a earl:TestResult ;
+        dc:date "2025-04-09T16:12:07.926208Z"^^xsd:dateTime ;
+        earl:outcome earl:failed
+    ] ;
+    earl:subject <https://hex.pm/packages/json_ld> ;
+    earl:test <https://w3c.github.io/json-ld-api/tests/#te075>
+] .
+
+[
+    a earl:Assertion ;
+    earl:assertedBy <http://marcelotto.net/#me> ;
+    earl:mode earl:automatic ;
+    earl:result [
+        a earl:TestResult ;
+        dc:date "2025-04-09T16:12:07.926208Z"^^xsd:dateTime ;
+        earl:outcome earl:failed
+    ] ;
+    earl:subject <https://hex.pm/packages/json_ld> ;
+    earl:test <https://w3c.github.io/json-ld-api/tests/#te122>
+] .
+
+[
+    a earl:Assertion ;
+    earl:assertedBy <http://marcelotto.net/#me> ;
+    earl:mode earl:automatic ;
+    earl:result [
+        a earl:TestResult ;
+        dc:date "2025-04-09T16:12:07.926208Z"^^xsd:dateTime ;
+        earl:outcome earl:untested
+    ] ;
+    earl:subject <https://hex.pm/packages/json_ld> ;
+    earl:test <https://w3c.github.io/json-ld-api/tests/#te115>
+] .
+
+[
+    a earl:Assertion ;
+    earl:assertedBy <http://marcelotto.net/#me> ;
+    earl:mode earl:automatic ;
+    earl:result [
+        a earl:TestResult ;
+        dc:date "2025-04-09T16:12:07.926208Z"^^xsd:dateTime ;
+        earl:outcome earl:untested
+    ] ;
+    earl:subject <https://hex.pm/packages/json_ld> ;
+    earl:test <https://w3c.github.io/json-ld-api/tests/#te116>
+] .
+
+[
+    a earl:Assertion ;
+    earl:assertedBy <http://marcelotto.net/#me> ;
+    earl:mode earl:automatic ;
+    earl:result [
+        a earl:TestResult ;
+        dc:date "2025-04-09T16:12:07.926208Z"^^xsd:dateTime ;
+        earl:outcome earl:untested
+    ] ;
+    earl:subject <https://hex.pm/packages/json_ld> ;
+    earl:test <https://w3c.github.io/json-ld-api/tests/#ter02>
+] .
+
+[
+    a earl:Assertion ;
+    earl:assertedBy <http://marcelotto.net/#me> ;
+    earl:mode earl:automatic ;
+    earl:result [
+        a earl:TestResult ;
+        dc:date "2025-04-09T16:12:07.926208Z"^^xsd:dateTime ;
+        earl:outcome earl:passed
+    ] ;
+    earl:subject <https://hex.pm/packages/json_ld> ;
+    earl:test <https://w3c.github.io/json-ld-api/tests/#te027>
+] .
+
+[
+    a earl:Assertion ;
+    earl:assertedBy <http://marcelotto.net/#me> ;
+    earl:mode earl:automatic ;
+    earl:result [
+        a earl:TestResult ;
+        dc:date "2025-04-09T16:12:07.926208Z"^^xsd:dateTime ;
+        earl:outcome earl:untested
+    ] ;
+    earl:subject <https://hex.pm/packages/json_ld> ;
+    earl:test <https://w3c.github.io/json-ld-api/tests/#ter03>
+] .
+
+[
+    a earl:Assertion ;
+    earl:assertedBy <http://marcelotto.net/#me> ;
+    earl:mode earl:automatic ;
+    earl:result [
+        a earl:TestResult ;
+        dc:date "2025-04-09T16:12:07.926208Z"^^xsd:dateTime ;
+        earl:outcome earl:passed
+    ] ;
+    earl:subject <https://hex.pm/packages/json_ld> ;
+    earl:test <https://w3c.github.io/json-ld-api/tests/#te028>
+] .
+
+[
+    a earl:Assertion ;
+    earl:assertedBy <http://marcelotto.net/#me> ;
+    earl:mode earl:automatic ;
+    earl:result [
+        a earl:TestResult ;
+        dc:date "2025-04-09T16:12:07.926208Z"^^xsd:dateTime ;
+        earl:outcome earl:untested
+    ] ;
+    earl:subject <https://hex.pm/packages/json_ld> ;
+    earl:test <https://w3c.github.io/json-ld-api/tests/#ter24>
+] .
+
+[
+    a earl:Assertion ;
+    earl:assertedBy <http://marcelotto.net/#me> ;
+    earl:mode earl:automatic ;
+    earl:result [
+        a earl:TestResult ;
+        dc:date "2025-04-09T16:12:07.926208Z"^^xsd:dateTime ;
+        earl:outcome earl:passed
+    ] ;
+    earl:subject <https://hex.pm/packages/json_ld> ;
+    earl:test <https://w3c.github.io/json-ld-api/tests/#te029>
+] .
+
+[
+    a earl:Assertion ;
+    earl:assertedBy <http://marcelotto.net/#me> ;
+    earl:mode earl:automatic ;
+    earl:result [
+        a earl:TestResult ;
+        dc:date "2025-04-09T16:12:07.926208Z"^^xsd:dateTime ;
+        earl:outcome earl:untested
+    ] ;
+    earl:subject <https://hex.pm/packages/json_ld> ;
+    earl:test <https://w3c.github.io/json-ld-api/tests/#ter32>
+] .
+
+[
+    a earl:Assertion ;
+    earl:assertedBy <http://marcelotto.net/#me> ;
+    earl:mode earl:automatic ;
+    earl:result [
+        a earl:TestResult ;
+        dc:date "2025-04-09T16:12:07.926208Z"^^xsd:dateTime ;
+        earl:outcome earl:passed
+    ] ;
+    earl:subject <https://hex.pm/packages/json_ld> ;
+    earl:test <https://w3c.github.io/json-ld-api/tests/#te030>
+] .
+
+[
+    a earl:Assertion ;
+    earl:assertedBy <http://marcelotto.net/#me> ;
+    earl:mode earl:automatic ;
+    earl:result [
+        a earl:TestResult ;
+        dc:date "2025-04-09T16:12:07.926208Z"^^xsd:dateTime ;
+        earl:outcome earl:passed
+    ] ;
+    earl:subject <https://hex.pm/packages/json_ld> ;
+    earl:test <https://w3c.github.io/json-ld-api/tests/#t0001>
+] .
+
+[
+    a earl:Assertion ;
+    earl:assertedBy <http://marcelotto.net/#me> ;
+    earl:mode earl:automatic ;
+    earl:result [
+        a earl:TestResult ;
+        dc:date "2025-04-09T16:12:07.926208Z"^^xsd:dateTime ;
+        earl:outcome earl:passed
+    ] ;
+    earl:subject <https://hex.pm/packages/json_ld> ;
+    earl:test <https://w3c.github.io/json-ld-api/tests/#te031>
+] .
+
+[
+    a earl:Assertion ;
+    earl:assertedBy <http://marcelotto.net/#me> ;
+    earl:mode earl:automatic ;
+    earl:result [
+        a earl:TestResult ;
+        dc:date "2025-04-09T16:12:07.926208Z"^^xsd:dateTime ;
+        earl:outcome earl:passed
+    ] ;
+    earl:subject <https://hex.pm/packages/json_ld> ;
+    earl:test <https://w3c.github.io/json-ld-api/tests/#t0002>
+] .
+
+[
+    a earl:Assertion ;
+    earl:assertedBy <http://marcelotto.net/#me> ;
+    earl:mode earl:automatic ;
+    earl:result [
+        a earl:TestResult ;
+        dc:date "2025-04-09T16:12:07.926208Z"^^xsd:dateTime ;
+        earl:outcome earl:passed
+    ] ;
+    earl:subject <https://hex.pm/packages/json_ld> ;
+    earl:test <https://w3c.github.io/json-ld-api/tests/#te032>
+] .
+
+[
+    a earl:Assertion ;
+    earl:assertedBy <http://marcelotto.net/#me> ;
+    earl:mode earl:automatic ;
+    earl:result [
+        a earl:TestResult ;
+        dc:date "2025-04-09T16:12:07.926208Z"^^xsd:dateTime ;
+        earl:outcome earl:passed
+    ] ;
+    earl:subject <https://hex.pm/packages/json_ld> ;
+    earl:test <https://w3c.github.io/json-ld-api/tests/#t0003>
+] .
+
+[
+    a earl:Assertion ;
+    earl:assertedBy <http://marcelotto.net/#me> ;
+    earl:mode earl:automatic ;
+    earl:result [
+        a earl:TestResult ;
+        dc:date "2025-04-09T16:12:07.926208Z"^^xsd:dateTime ;
+        earl:outcome earl:passed
+    ] ;
+    earl:subject <https://hex.pm/packages/json_ld> ;
+    earl:test <https://w3c.github.io/json-ld-api/tests/#te033>
+] .
+
+[
+    a earl:Assertion ;
+    earl:assertedBy <http://marcelotto.net/#me> ;
+    earl:mode earl:automatic ;
+    earl:result [
+        a earl:TestResult ;
+        dc:date "2025-04-09T16:12:07.926208Z"^^xsd:dateTime ;
+        earl:outcome earl:passed
+    ] ;
+    earl:subject <https://hex.pm/packages/json_ld> ;
+    earl:test <https://w3c.github.io/json-ld-api/tests/#t0004>
+] .
+
+[
+    a earl:Assertion ;
+    earl:assertedBy <http://marcelotto.net/#me> ;
+    earl:mode earl:automatic ;
+    earl:result [
+        a earl:TestResult ;
+        dc:date "2025-04-09T16:12:07.926208Z"^^xsd:dateTime ;
+        earl:outcome earl:passed
+    ] ;
+    earl:subject <https://hex.pm/packages/json_ld> ;
+    earl:test <https://w3c.github.io/json-ld-api/tests/#te034>
+] .
+
+[
+    a earl:Assertion ;
+    earl:assertedBy <http://marcelotto.net/#me> ;
+    earl:mode earl:automatic ;
+    earl:result [
+        a earl:TestResult ;
+        dc:date "2025-04-09T16:12:07.926208Z"^^xsd:dateTime ;
+        earl:outcome earl:passed
+    ] ;
+    earl:subject <https://hex.pm/packages/json_ld> ;
+    earl:test <https://w3c.github.io/json-ld-api/tests/#tnt16>
+] .
+
+[
+    a earl:Assertion ;
+    earl:assertedBy <http://marcelotto.net/#me> ;
+    earl:mode earl:automatic ;
+    earl:result [
+        a earl:TestResult ;
+        dc:date "2025-04-09T16:12:07.926208Z"^^xsd:dateTime ;
+        earl:outcome earl:passed
+    ] ;
+    earl:subject <https://hex.pm/packages/json_ld> ;
+    earl:test <https://w3c.github.io/json-ld-api/tests/#te035>
+] .
+
+[
+    a earl:Assertion ;
+    earl:assertedBy <http://marcelotto.net/#me> ;
+    earl:mode earl:automatic ;
+    earl:result [
+        a earl:TestResult ;
+        dc:date "2025-04-09T16:12:07.926208Z"^^xsd:dateTime ;
+        earl:outcome earl:passed
+    ] ;
+    earl:subject <https://hex.pm/packages/json_ld> ;
+    earl:test <https://w3c.github.io/json-ld-api/tests/#te036>
+] .
+
+[
+    a earl:Assertion ;
+    earl:assertedBy <http://marcelotto.net/#me> ;
+    earl:mode earl:automatic ;
+    earl:result [
+        a earl:TestResult ;
+        dc:date "2025-04-09T16:12:07.926208Z"^^xsd:dateTime ;
+        earl:outcome earl:passed
+    ] ;
+    earl:subject <https://hex.pm/packages/json_ld> ;
+    earl:test <https://w3c.github.io/json-ld-api/tests/#te037>
+] .
+
+[
+    a earl:Assertion ;
+    earl:assertedBy <http://marcelotto.net/#me> ;
+    earl:mode earl:automatic ;
+    earl:result [
+        a earl:TestResult ;
+        dc:date "2025-04-09T16:12:07.926208Z"^^xsd:dateTime ;
+        earl:outcome earl:passed
+    ] ;
+    earl:subject <https://hex.pm/packages/json_ld> ;
+    earl:test <https://w3c.github.io/json-ld-api/tests/#te039>
+] .
+
+[
+    a earl:Assertion ;
+    earl:assertedBy <http://marcelotto.net/#me> ;
+    earl:mode earl:automatic ;
+    earl:result [
+        a earl:TestResult ;
+        dc:date "2025-04-09T16:12:07.926208Z"^^xsd:dateTime ;
+        earl:outcome earl:passed
+    ] ;
+    earl:subject <https://hex.pm/packages/json_ld> ;
+    earl:test <https://w3c.github.io/json-ld-api/tests/#te040>
+] .
+
+[
+    a earl:Assertion ;
+    earl:assertedBy <http://marcelotto.net/#me> ;
+    earl:mode earl:automatic ;
+    earl:result [
+        a earl:TestResult ;
+        dc:date "2025-04-09T16:12:07.926208Z"^^xsd:dateTime ;
+        earl:outcome earl:passed
+    ] ;
+    earl:subject <https://hex.pm/packages/json_ld> ;
+    earl:test <https://w3c.github.io/json-ld-api/tests/#te041>
+] .
+
+[
+    a earl:Assertion ;
+    earl:assertedBy <http://marcelotto.net/#me> ;
+    earl:mode earl:automatic ;
+    earl:result [
+        a earl:TestResult ;
+        dc:date "2025-04-09T16:12:07.926208Z"^^xsd:dateTime ;
+        earl:outcome earl:passed
+    ] ;
+    earl:subject <https://hex.pm/packages/json_ld> ;
+    earl:test <https://w3c.github.io/json-ld-api/tests/#te042>
+] .
+
+[
+    a earl:Assertion ;
+    earl:assertedBy <http://marcelotto.net/#me> ;
+    earl:mode earl:automatic ;
+    earl:result [
+        a earl:TestResult ;
+        dc:date "2025-04-09T16:12:07.926208Z"^^xsd:dateTime ;
+        earl:outcome earl:passed
+    ] ;
+    earl:subject <https://hex.pm/packages/json_ld> ;
+    earl:test <https://w3c.github.io/json-ld-api/tests/#te043>
+] .
+
+[
+    a earl:Assertion ;
+    earl:assertedBy <http://marcelotto.net/#me> ;
+    earl:mode earl:automatic ;
+    earl:result [
+        a earl:TestResult ;
+        dc:date "2025-04-09T16:12:07.926208Z"^^xsd:dateTime ;
+        earl:outcome earl:passed
+    ] ;
+    earl:subject <https://hex.pm/packages/json_ld> ;
+    earl:test <https://w3c.github.io/json-ld-api/tests/#te044>
+] .
+
+[
+    a earl:Assertion ;
+    earl:assertedBy <http://marcelotto.net/#me> ;
+    earl:mode earl:automatic ;
+    earl:result [
+        a earl:TestResult ;
+        dc:date "2025-04-09T16:12:07.926208Z"^^xsd:dateTime ;
+        earl:outcome earl:passed
+    ] ;
+    earl:subject <https://hex.pm/packages/json_ld> ;
+    earl:test <https://w3c.github.io/json-ld-api/tests/#te045>
+] .
+
+[
+    a earl:Assertion ;
+    earl:assertedBy <http://marcelotto.net/#me> ;
+    earl:mode earl:automatic ;
+    earl:result [
+        a earl:TestResult ;
+        dc:date "2025-04-09T16:12:07.926208Z"^^xsd:dateTime ;
+        earl:outcome earl:passed
+    ] ;
+    earl:subject <https://hex.pm/packages/json_ld> ;
+    earl:test <https://w3c.github.io/json-ld-api/tests/#te046>
+] .
+
+[
+    a earl:Assertion ;
+    earl:assertedBy <http://marcelotto.net/#me> ;
+    earl:mode earl:automatic ;
+    earl:result [
+        a earl:TestResult ;
+        dc:date "2025-04-09T16:12:07.926208Z"^^xsd:dateTime ;
+        earl:outcome earl:passed
+    ] ;
+    earl:subject <https://hex.pm/packages/json_ld> ;
+    earl:test <https://w3c.github.io/json-ld-api/tests/#te047>
+] .
+
+[
+    a earl:Assertion ;
+    earl:assertedBy <http://marcelotto.net/#me> ;
+    earl:mode earl:automatic ;
+    earl:result [
+        a earl:TestResult ;
+        dc:date "2025-04-09T16:12:07.926208Z"^^xsd:dateTime ;
+        earl:outcome earl:passed
+    ] ;
+    earl:subject <https://hex.pm/packages/json_ld> ;
+    earl:test <https://w3c.github.io/json-ld-api/tests/#te048>
+] .
+
+[
+    a earl:Assertion ;
+    earl:assertedBy <http://marcelotto.net/#me> ;
+    earl:mode earl:automatic ;
+    earl:result [
+        a earl:TestResult ;
+        dc:date "2025-04-09T16:12:07.926208Z"^^xsd:dateTime ;
+        earl:outcome earl:passed
+    ] ;
+    earl:subject <https://hex.pm/packages/json_ld> ;
+    earl:test <https://w3c.github.io/json-ld-api/tests/#te049>
+] .
+
+[
+    a earl:Assertion ;
+    earl:assertedBy <http://marcelotto.net/#me> ;
+    earl:mode earl:automatic ;
+    earl:result [
+        a earl:TestResult ;
+        dc:date "2025-04-09T16:12:07.926208Z"^^xsd:dateTime ;
+        earl:outcome earl:passed
+    ] ;
+    earl:subject <https://hex.pm/packages/json_ld> ;
+    earl:test <https://w3c.github.io/json-ld-api/tests/#te050>
+] .
+
+[
+    a earl:Assertion ;
+    earl:assertedBy <http://marcelotto.net/#me> ;
+    earl:mode earl:automatic ;
+    earl:result [
+        a earl:TestResult ;
+        dc:date "2025-04-09T16:12:07.926208Z"^^xsd:dateTime ;
+        earl:outcome earl:passed
+    ] ;
+    earl:subject <https://hex.pm/packages/json_ld> ;
+    earl:test <https://w3c.github.io/json-ld-api/tests/#te051>
+] .
+
+[
+    a earl:Assertion ;
+    earl:assertedBy <http://marcelotto.net/#me> ;
+    earl:mode earl:automatic ;
+    earl:result [
+        a earl:TestResult ;
+        dc:date "2025-04-09T16:12:07.926208Z"^^xsd:dateTime ;
+        earl:outcome earl:passed
+    ] ;
+    earl:subject <https://hex.pm/packages/json_ld> ;
+    earl:test <https://w3c.github.io/json-ld-api/tests/#te052>
+] .
+
+[
+    a earl:Assertion ;
+    earl:assertedBy <http://marcelotto.net/#me> ;
+    earl:mode earl:automatic ;
+    earl:result [
+        a earl:TestResult ;
+        dc:date "2025-04-09T16:12:07.926208Z"^^xsd:dateTime ;
+        earl:outcome earl:passed
+    ] ;
+    earl:subject <https://hex.pm/packages/json_ld> ;
+    earl:test <https://w3c.github.io/json-ld-api/tests/#te053>
+] .
+
+[
+    a earl:Assertion ;
+    earl:assertedBy <http://marcelotto.net/#me> ;
+    earl:mode earl:automatic ;
+    earl:result [
+        a earl:TestResult ;
+        dc:date "2025-04-09T16:12:07.926208Z"^^xsd:dateTime ;
+        earl:outcome earl:passed
+    ] ;
+    earl:subject <https://hex.pm/packages/json_ld> ;
+    earl:test <https://w3c.github.io/json-ld-api/tests/#te054>
+] .
+
+[
+    a earl:Assertion ;
+    earl:assertedBy <http://marcelotto.net/#me> ;
+    earl:mode earl:automatic ;
+    earl:result [
+        a earl:TestResult ;
+        dc:date "2025-04-09T16:12:07.926208Z"^^xsd:dateTime ;
+        earl:outcome earl:passed
+    ] ;
+    earl:subject <https://hex.pm/packages/json_ld> ;
+    earl:test <https://w3c.github.io/json-ld-api/tests/#te055>
+] .
+
+[
+    a earl:Assertion ;
+    earl:assertedBy <http://marcelotto.net/#me> ;
+    earl:mode earl:automatic ;
+    earl:result [
+        a earl:TestResult ;
+        dc:date "2025-04-09T16:12:07.926208Z"^^xsd:dateTime ;
+        earl:outcome earl:passed
+    ] ;
+    earl:subject <https://hex.pm/packages/json_ld> ;
+    earl:test <https://w3c.github.io/json-ld-api/tests/#te056>
+] .
+
+[
+    a earl:Assertion ;
+    earl:assertedBy <http://marcelotto.net/#me> ;
+    earl:mode earl:automatic ;
+    earl:result [
+        a earl:TestResult ;
+        dc:date "2025-04-09T16:12:07.926208Z"^^xsd:dateTime ;
+        earl:outcome earl:passed
+    ] ;
+    earl:subject <https://hex.pm/packages/json_ld> ;
+    earl:test <https://w3c.github.io/json-ld-api/tests/#te057>
+] .
+
+[
+    a earl:Assertion ;
+    earl:assertedBy <http://marcelotto.net/#me> ;
+    earl:mode earl:automatic ;
+    earl:result [
+        a earl:TestResult ;
+        dc:date "2025-04-09T16:12:07.926208Z"^^xsd:dateTime ;
+        earl:outcome earl:passed
+    ] ;
+    earl:subject <https://hex.pm/packages/json_ld> ;
+    earl:test <https://w3c.github.io/json-ld-api/tests/#te058>
+] .
+
+[
+    a earl:Assertion ;
+    earl:assertedBy <http://marcelotto.net/#me> ;
+    earl:mode earl:automatic ;
+    earl:result [
+        a earl:TestResult ;
+        dc:date "2025-04-09T16:12:07.926208Z"^^xsd:dateTime ;
+        earl:outcome earl:passed
+    ] ;
+    earl:subject <https://hex.pm/packages/json_ld> ;
+    earl:test <https://w3c.github.io/json-ld-api/tests/#te059>
+] .
+
+[
+    a earl:Assertion ;
+    earl:assertedBy <http://marcelotto.net/#me> ;
+    earl:mode earl:automatic ;
+    earl:result [
+        a earl:TestResult ;
+        dc:date "2025-04-09T16:12:07.926208Z"^^xsd:dateTime ;
+        earl:outcome earl:passed
+    ] ;
+    earl:subject <https://hex.pm/packages/json_ld> ;
+    earl:test <https://w3c.github.io/json-ld-api/tests/#te060>
+] .
+
+[
+    a earl:Assertion ;
+    earl:assertedBy <http://marcelotto.net/#me> ;
+    earl:mode earl:automatic ;
+    earl:result [
+        a earl:TestResult ;
+        dc:date "2025-04-09T16:12:07.926208Z"^^xsd:dateTime ;
+        earl:outcome earl:passed
+    ] ;
+    earl:subject <https://hex.pm/packages/json_ld> ;
+    earl:test <https://w3c.github.io/json-ld-api/tests/#te061>
+] .
+
+[
+    a earl:Assertion ;
+    earl:assertedBy <http://marcelotto.net/#me> ;
+    earl:mode earl:automatic ;
+    earl:result [
+        a earl:TestResult ;
+        dc:date "2025-04-09T16:12:07.926208Z"^^xsd:dateTime ;
+        earl:outcome earl:passed
+    ] ;
+    earl:subject <https://hex.pm/packages/json_ld> ;
+    earl:test <https://w3c.github.io/json-ld-api/tests/#te062>
+] .
+
+[
+    a earl:Assertion ;
+    earl:assertedBy <http://marcelotto.net/#me> ;
+    earl:mode earl:automatic ;
+    earl:result [
+        a earl:TestResult ;
+        dc:date "2025-04-09T16:12:07.926208Z"^^xsd:dateTime ;
+        earl:outcome earl:passed
+    ] ;
+    earl:subject <https://hex.pm/packages/json_ld> ;
+    earl:test <https://w3c.github.io/json-ld-api/tests/#te063>
+] .
+
+[
+    a earl:Assertion ;
+    earl:assertedBy <http://marcelotto.net/#me> ;
+    earl:mode earl:automatic ;
+    earl:result [
+        a earl:TestResult ;
+        dc:date "2025-04-09T16:12:07.926208Z"^^xsd:dateTime ;
+        earl:outcome earl:passed
+    ] ;
+    earl:subject <https://hex.pm/packages/json_ld> ;
+    earl:test <https://w3c.github.io/json-ld-api/tests/#te064>
+] .
+
+[
+    a earl:Assertion ;
+    earl:assertedBy <http://marcelotto.net/#me> ;
+    earl:mode earl:automatic ;
+    earl:result [
+        a earl:TestResult ;
+        dc:date "2025-04-09T16:12:07.926208Z"^^xsd:dateTime ;
+        earl:outcome earl:passed
+    ] ;
+    earl:subject <https://hex.pm/packages/json_ld> ;
+    earl:test <https://w3c.github.io/json-ld-api/tests/#te065>
+] .
+
+[
+    a earl:Assertion ;
+    earl:assertedBy <http://marcelotto.net/#me> ;
+    earl:mode earl:automatic ;
+    earl:result [
+        a earl:TestResult ;
+        dc:date "2025-04-09T16:12:07.926208Z"^^xsd:dateTime ;
+        earl:outcome earl:passed
+    ] ;
+    earl:subject <https://hex.pm/packages/json_ld> ;
+    earl:test <https://w3c.github.io/json-ld-api/tests/#te066>
+] .
+
+[
+    a earl:Assertion ;
+    earl:assertedBy <http://marcelotto.net/#me> ;
+    earl:mode earl:automatic ;
+    earl:result [
+        a earl:TestResult ;
+        dc:date "2025-04-09T16:12:07.926208Z"^^xsd:dateTime ;
+        earl:outcome earl:passed
+    ] ;
+    earl:subject <https://hex.pm/packages/json_ld> ;
+    earl:test <https://w3c.github.io/json-ld-api/tests/#te067>
+] .
+
+[
+    a earl:Assertion ;
+    earl:assertedBy <http://marcelotto.net/#me> ;
+    earl:mode earl:automatic ;
+    earl:result [
+        a earl:TestResult ;
+        dc:date "2025-04-09T16:12:07.926208Z"^^xsd:dateTime ;
+        earl:outcome earl:passed
+    ] ;
+    earl:subject <https://hex.pm/packages/json_ld> ;
+    earl:test <https://w3c.github.io/json-ld-api/tests/#te068>
+] .
+
+[
+    a earl:Assertion ;
+    earl:assertedBy <http://marcelotto.net/#me> ;
+    earl:mode earl:automatic ;
+    earl:result [
+        a earl:TestResult ;
+        dc:date "2025-04-09T16:12:07.926208Z"^^xsd:dateTime ;
+        earl:outcome earl:passed
+    ] ;
+    earl:subject <https://hex.pm/packages/json_ld> ;
+    earl:test <https://w3c.github.io/json-ld-api/tests/#te069>
+] .
+
+[
+    a earl:Assertion ;
+    earl:assertedBy <http://marcelotto.net/#me> ;
+    earl:mode earl:automatic ;
+    earl:result [
+        a earl:TestResult ;
+        dc:date "2025-04-09T16:12:07.926208Z"^^xsd:dateTime ;
+        earl:outcome earl:passed
+    ] ;
+    earl:subject <https://hex.pm/packages/json_ld> ;
+    earl:test <https://w3c.github.io/json-ld-api/tests/#te070>
+] .
+
+[
+    a earl:Assertion ;
+    earl:assertedBy <http://marcelotto.net/#me> ;
+    earl:mode earl:automatic ;
+    earl:result [
+        a earl:TestResult ;
+        dc:date "2025-04-09T16:12:07.926208Z"^^xsd:dateTime ;
+        earl:outcome earl:passed
+    ] ;
+    earl:subject <https://hex.pm/packages/json_ld> ;
+    earl:test <https://w3c.github.io/json-ld-api/tests/#te072>
+] .
+
+[
+    a earl:Assertion ;
+    earl:assertedBy <http://marcelotto.net/#me> ;
+    earl:mode earl:automatic ;
+    earl:result [
+        a earl:TestResult ;
+        dc:date "2025-04-09T16:12:07.926208Z"^^xsd:dateTime ;
+        earl:outcome earl:passed
+    ] ;
+    earl:subject <https://hex.pm/packages/json_ld> ;
+    earl:test <https://w3c.github.io/json-ld-api/tests/#te073>
+] .
+
+[
+    a earl:Assertion ;
+    earl:assertedBy <http://marcelotto.net/#me> ;
+    earl:mode earl:automatic ;
+    earl:result [
+        a earl:TestResult ;
+        dc:date "2025-04-09T16:12:07.926208Z"^^xsd:dateTime ;
+        earl:outcome earl:passed
+    ] ;
+    earl:subject <https://hex.pm/packages/json_ld> ;
+    earl:test <https://w3c.github.io/json-ld-api/tests/#te074>
+] .
+
+[
+    a earl:Assertion ;
+    earl:assertedBy <http://marcelotto.net/#me> ;
+    earl:mode earl:automatic ;
+    earl:result [
+        a earl:TestResult ;
+        dc:date "2025-04-09T16:12:07.926208Z"^^xsd:dateTime ;
+        earl:outcome earl:passed
+    ] ;
+    earl:subject <https://hex.pm/packages/json_ld> ;
+    earl:test <https://w3c.github.io/json-ld-api/tests/#te076>
+] .
+
+[
+    a earl:Assertion ;
+    earl:assertedBy <http://marcelotto.net/#me> ;
+    earl:mode earl:automatic ;
+    earl:result [
+        a earl:TestResult ;
+        dc:date "2025-04-09T16:12:07.926208Z"^^xsd:dateTime ;
+        earl:outcome earl:passed
+    ] ;
+    earl:subject <https://hex.pm/packages/json_ld> ;
+    earl:test <https://w3c.github.io/json-ld-api/tests/#te077>
+] .
+
+[
+    a earl:Assertion ;
+    earl:assertedBy <http://marcelotto.net/#me> ;
+    earl:mode earl:automatic ;
+    earl:result [
+        a earl:TestResult ;
+        dc:date "2025-04-09T16:12:07.926208Z"^^xsd:dateTime ;
+        earl:outcome earl:passed
+    ] ;
+    earl:subject <https://hex.pm/packages/json_ld> ;
+    earl:test <https://w3c.github.io/json-ld-api/tests/#te078>
+] .
+
+[
+    a earl:Assertion ;
+    earl:assertedBy <http://marcelotto.net/#me> ;
+    earl:mode earl:automatic ;
+    earl:result [
+        a earl:TestResult ;
+        dc:date "2025-04-09T16:12:07.926208Z"^^xsd:dateTime ;
+        earl:outcome earl:passed
+    ] ;
+    earl:subject <https://hex.pm/packages/json_ld> ;
+    earl:test <https://w3c.github.io/json-ld-api/tests/#te079>
+] .
+
+[
+    a earl:Assertion ;
+    earl:assertedBy <http://marcelotto.net/#me> ;
+    earl:mode earl:automatic ;
+    earl:result [
+        a earl:TestResult ;
+        dc:date "2025-04-09T16:12:07.926208Z"^^xsd:dateTime ;
+        earl:outcome earl:passed
+    ] ;
+    earl:subject <https://hex.pm/packages/json_ld> ;
+    earl:test <https://w3c.github.io/json-ld-api/tests/#te080>
+] .
+
+[
+    a earl:Assertion ;
+    earl:assertedBy <http://marcelotto.net/#me> ;
+    earl:mode earl:automatic ;
+    earl:result [
+        a earl:TestResult ;
+        dc:date "2025-04-09T16:12:07.926208Z"^^xsd:dateTime ;
+        earl:outcome earl:passed
+    ] ;
+    earl:subject <https://hex.pm/packages/json_ld> ;
+    earl:test <https://w3c.github.io/json-ld-api/tests/#te081>
+] .
+
+[
+    a earl:Assertion ;
+    earl:assertedBy <http://marcelotto.net/#me> ;
+    earl:mode earl:automatic ;
+    earl:result [
+        a earl:TestResult ;
+        dc:date "2025-04-09T16:12:07.926208Z"^^xsd:dateTime ;
+        earl:outcome earl:passed
+    ] ;
+    earl:subject <https://hex.pm/packages/json_ld> ;
+    earl:test <https://w3c.github.io/json-ld-api/tests/#te082>
+] .
+
+[
+    a earl:Assertion ;
+    earl:assertedBy <http://marcelotto.net/#me> ;
+    earl:mode earl:automatic ;
+    earl:result [
+        a earl:TestResult ;
+        dc:date "2025-04-09T16:12:07.926208Z"^^xsd:dateTime ;
+        earl:outcome earl:passed
+    ] ;
+    earl:subject <https://hex.pm/packages/json_ld> ;
+    earl:test <https://w3c.github.io/json-ld-api/tests/#te083>
+] .
+
+[
+    a earl:Assertion ;
+    earl:assertedBy <http://marcelotto.net/#me> ;
+    earl:mode earl:automatic ;
+    earl:result [
+        a earl:TestResult ;
+        dc:date "2025-04-09T16:12:07.926208Z"^^xsd:dateTime ;
+        earl:outcome earl:passed
+    ] ;
+    earl:subject <https://hex.pm/packages/json_ld> ;
+    earl:test <https://w3c.github.io/json-ld-api/tests/#te084>
+] .
+
+[
+    a earl:Assertion ;
+    earl:assertedBy <http://marcelotto.net/#me> ;
+    earl:mode earl:automatic ;
+    earl:result [
+        a earl:TestResult ;
+        dc:date "2025-04-09T16:12:07.926208Z"^^xsd:dateTime ;
+        earl:outcome earl:passed
+    ] ;
+    earl:subject <https://hex.pm/packages/json_ld> ;
+    earl:test <https://w3c.github.io/json-ld-api/tests/#te085>
+] .
+
+[
+    a earl:Assertion ;
+    earl:assertedBy <http://marcelotto.net/#me> ;
+    earl:mode earl:automatic ;
+    earl:result [
+        a earl:TestResult ;
+        dc:date "2025-04-09T16:12:07.926208Z"^^xsd:dateTime ;
+        earl:outcome earl:passed
+    ] ;
+    earl:subject <https://hex.pm/packages/json_ld> ;
+    earl:test <https://w3c.github.io/json-ld-api/tests/#te086>
+] .
+
+[
+    a earl:Assertion ;
+    earl:assertedBy <http://marcelotto.net/#me> ;
+    earl:mode earl:automatic ;
+    earl:result [
+        a earl:TestResult ;
+        dc:date "2025-04-09T16:12:07.926208Z"^^xsd:dateTime ;
+        earl:outcome earl:passed
+    ] ;
+    earl:subject <https://hex.pm/packages/json_ld> ;
+    earl:test <https://w3c.github.io/json-ld-api/tests/#te087>
+] .
+
+[
+    a earl:Assertion ;
+    earl:assertedBy <http://marcelotto.net/#me> ;
+    earl:mode earl:automatic ;
+    earl:result [
+        a earl:TestResult ;
+        dc:date "2025-04-09T16:12:07.926208Z"^^xsd:dateTime ;
+        earl:outcome earl:passed
+    ] ;
+    earl:subject <https://hex.pm/packages/json_ld> ;
+    earl:test <https://w3c.github.io/json-ld-api/tests/#te088>
+] .
+
+[
+    a earl:Assertion ;
+    earl:assertedBy <http://marcelotto.net/#me> ;
+    earl:mode earl:automatic ;
+    earl:result [
+        a earl:TestResult ;
+        dc:date "2025-04-09T16:12:07.926208Z"^^xsd:dateTime ;
+        earl:outcome earl:passed
+    ] ;
+    earl:subject <https://hex.pm/packages/json_ld> ;
+    earl:test <https://w3c.github.io/json-ld-api/tests/#te089>
+] .
+
+[
+    a earl:Assertion ;
+    earl:assertedBy <http://marcelotto.net/#me> ;
+    earl:mode earl:automatic ;
+    earl:result [
+        a earl:TestResult ;
+        dc:date "2025-04-09T16:12:07.926208Z"^^xsd:dateTime ;
+        earl:outcome earl:passed
+    ] ;
+    earl:subject <https://hex.pm/packages/json_ld> ;
+    earl:test <https://w3c.github.io/json-ld-api/tests/#te090>
+] .
+
+[
+    a earl:Assertion ;
+    earl:assertedBy <http://marcelotto.net/#me> ;
+    earl:mode earl:automatic ;
+    earl:result [
+        a earl:TestResult ;
+        dc:date "2025-04-09T16:12:07.926208Z"^^xsd:dateTime ;
+        earl:outcome earl:passed
+    ] ;
+    earl:subject <https://hex.pm/packages/json_ld> ;
+    earl:test <https://w3c.github.io/json-ld-api/tests/#te091>
+] .
+
+[
+    a earl:Assertion ;
+    earl:assertedBy <http://marcelotto.net/#me> ;
+    earl:mode earl:automatic ;
+    earl:result [
+        a earl:TestResult ;
+        dc:date "2025-04-09T16:12:07.926208Z"^^xsd:dateTime ;
+        earl:outcome earl:passed
+    ] ;
+    earl:subject <https://hex.pm/packages/json_ld> ;
+    earl:test <https://w3c.github.io/json-ld-api/tests/#te092>
+] .
+
+[
+    a earl:Assertion ;
+    earl:assertedBy <http://marcelotto.net/#me> ;
+    earl:mode earl:automatic ;
+    earl:result [
+        a earl:TestResult ;
+        dc:date "2025-04-09T16:12:07.926208Z"^^xsd:dateTime ;
+        earl:outcome earl:passed
+    ] ;
+    earl:subject <https://hex.pm/packages/json_ld> ;
+    earl:test <https://w3c.github.io/json-ld-api/tests/#te093>
+] .
+
+[
+    a earl:Assertion ;
+    earl:assertedBy <http://marcelotto.net/#me> ;
+    earl:mode earl:automatic ;
+    earl:result [
+        a earl:TestResult ;
+        dc:date "2025-04-09T16:12:07.926208Z"^^xsd:dateTime ;
+        earl:outcome earl:passed
+    ] ;
+    earl:subject <https://hex.pm/packages/json_ld> ;
+    earl:test <https://w3c.github.io/json-ld-api/tests/#te094>
+] .
+
+[
+    a earl:Assertion ;
+    earl:assertedBy <http://marcelotto.net/#me> ;
+    earl:mode earl:automatic ;
+    earl:result [
+        a earl:TestResult ;
+        dc:date "2025-04-09T16:12:07.926208Z"^^xsd:dateTime ;
+        earl:outcome earl:passed
+    ] ;
+    earl:subject <https://hex.pm/packages/json_ld> ;
+    earl:test <https://w3c.github.io/json-ld-api/tests/#te095>
+] .
+
+[
+    a earl:Assertion ;
+    earl:assertedBy <http://marcelotto.net/#me> ;
+    earl:mode earl:automatic ;
+    earl:result [
+        a earl:TestResult ;
+        dc:date "2025-04-09T16:12:07.926208Z"^^xsd:dateTime ;
+        earl:outcome earl:passed
+    ] ;
+    earl:subject <https://hex.pm/packages/json_ld> ;
+    earl:test <https://w3c.github.io/json-ld-api/tests/#te096>
+] .
+
+[
+    a earl:Assertion ;
+    earl:assertedBy <http://marcelotto.net/#me> ;
+    earl:mode earl:automatic ;
+    earl:result [
+        a earl:TestResult ;
+        dc:date "2025-04-09T16:12:07.926208Z"^^xsd:dateTime ;
+        earl:outcome earl:passed
+    ] ;
+    earl:subject <https://hex.pm/packages/json_ld> ;
+    earl:test <https://w3c.github.io/json-ld-api/tests/#te097>
+] .
+
+[
+    a earl:Assertion ;
+    earl:assertedBy <http://marcelotto.net/#me> ;
+    earl:mode earl:automatic ;
+    earl:result [
+        a earl:TestResult ;
+        dc:date "2025-04-09T16:12:07.926208Z"^^xsd:dateTime ;
+        earl:outcome earl:passed
+    ] ;
+    earl:subject <https://hex.pm/packages/json_ld> ;
+    earl:test <https://w3c.github.io/json-ld-api/tests/#te098>
+] .
+
+[
+    a earl:Assertion ;
+    earl:assertedBy <http://marcelotto.net/#me> ;
+    earl:mode earl:automatic ;
+    earl:result [
+        a earl:TestResult ;
+        dc:date "2025-04-09T16:12:07.926208Z"^^xsd:dateTime ;
+        earl:outcome earl:passed
+    ] ;
+    earl:subject <https://hex.pm/packages/json_ld> ;
+    earl:test <https://w3c.github.io/json-ld-api/tests/#te099>
+] .
+
+[
+    a earl:Assertion ;
+    earl:assertedBy <http://marcelotto.net/#me> ;
+    earl:mode earl:automatic ;
+    earl:result [
+        a earl:TestResult ;
+        dc:date "2025-04-09T16:12:07.926208Z"^^xsd:dateTime ;
+        earl:outcome earl:passed
+    ] ;
+    earl:subject <https://hex.pm/packages/json_ld> ;
+    earl:test <https://w3c.github.io/json-ld-api/tests/#te100>
+] .
+
+[
+    a earl:Assertion ;
+    earl:assertedBy <http://marcelotto.net/#me> ;
+    earl:mode earl:automatic ;
+    earl:result [
+        a earl:TestResult ;
+        dc:date "2025-04-09T16:12:07.926208Z"^^xsd:dateTime ;
+        earl:outcome earl:passed
+    ] ;
+    earl:subject <https://hex.pm/packages/json_ld> ;
+    earl:test <https://w3c.github.io/json-ld-api/tests/#te101>
+] .
+
+[
+    a earl:Assertion ;
+    earl:assertedBy <http://marcelotto.net/#me> ;
+    earl:mode earl:automatic ;
+    earl:result [
+        a earl:TestResult ;
+        dc:date "2025-04-09T16:12:07.926208Z"^^xsd:dateTime ;
+        earl:outcome earl:passed
+    ] ;
+    earl:subject <https://hex.pm/packages/json_ld> ;
+    earl:test <https://w3c.github.io/json-ld-api/tests/#te102>
+] .
+
+[
+    a earl:Assertion ;
+    earl:assertedBy <http://marcelotto.net/#me> ;
+    earl:mode earl:automatic ;
+    earl:result [
+        a earl:TestResult ;
+        dc:date "2025-04-09T16:12:07.926208Z"^^xsd:dateTime ;
+        earl:outcome earl:passed
+    ] ;
+    earl:subject <https://hex.pm/packages/json_ld> ;
+    earl:test <https://w3c.github.io/json-ld-api/tests/#te103>
+] .
+
+[
+    a earl:Assertion ;
+    earl:assertedBy <http://marcelotto.net/#me> ;
+    earl:mode earl:automatic ;
+    earl:result [
+        a earl:TestResult ;
+        dc:date "2025-04-09T16:12:07.926208Z"^^xsd:dateTime ;
+        earl:outcome earl:passed
+    ] ;
+    earl:subject <https://hex.pm/packages/json_ld> ;
+    earl:test <https://w3c.github.io/json-ld-api/tests/#te104>
+] .
+
+[
+    a earl:Assertion ;
+    earl:assertedBy <http://marcelotto.net/#me> ;
+    earl:mode earl:automatic ;
+    earl:result [
+        a earl:TestResult ;
+        dc:date "2025-04-09T16:12:07.926208Z"^^xsd:dateTime ;
+        earl:outcome earl:passed
+    ] ;
+    earl:subject <https://hex.pm/packages/json_ld> ;
+    earl:test <https://w3c.github.io/json-ld-api/tests/#te105>
+] .
+
+[
+    a earl:Assertion ;
+    earl:assertedBy <http://marcelotto.net/#me> ;
+    earl:mode earl:automatic ;
+    earl:result [
+        a earl:TestResult ;
+        dc:date "2025-04-09T16:12:07.926208Z"^^xsd:dateTime ;
+        earl:outcome earl:passed
+    ] ;
+    earl:subject <https://hex.pm/packages/json_ld> ;
+    earl:test <https://w3c.github.io/json-ld-api/tests/#te106>
+] .
+
+[
+    a earl:Assertion ;
+    earl:assertedBy <http://marcelotto.net/#me> ;
+    earl:mode earl:automatic ;
+    earl:result [
+        a earl:TestResult ;
+        dc:date "2025-04-09T16:12:07.926208Z"^^xsd:dateTime ;
+        earl:outcome earl:passed
+    ] ;
+    earl:subject <https://hex.pm/packages/json_ld> ;
+    earl:test <https://w3c.github.io/json-ld-api/tests/#te107>
+] .
+
+[
+    a earl:Assertion ;
+    earl:assertedBy <http://marcelotto.net/#me> ;
+    earl:mode earl:automatic ;
+    earl:result [
+        a earl:TestResult ;
+        dc:date "2025-04-09T16:12:07.926208Z"^^xsd:dateTime ;
+        earl:outcome earl:passed
+    ] ;
+    earl:subject <https://hex.pm/packages/json_ld> ;
+    earl:test <https://w3c.github.io/json-ld-api/tests/#te108>
+] .
+
+[
+    a earl:Assertion ;
+    earl:assertedBy <http://marcelotto.net/#me> ;
+    earl:mode earl:automatic ;
+    earl:result [
+        a earl:TestResult ;
+        dc:date "2025-04-09T16:12:07.926208Z"^^xsd:dateTime ;
+        earl:outcome earl:passed
+    ] ;
+    earl:subject <https://hex.pm/packages/json_ld> ;
+    earl:test <https://w3c.github.io/json-ld-api/tests/#te109>
+] .
+
+[
+    a earl:Assertion ;
+    earl:assertedBy <http://marcelotto.net/#me> ;
+    earl:mode earl:automatic ;
+    earl:result [
+        a earl:TestResult ;
+        dc:date "2025-04-09T16:12:07.926208Z"^^xsd:dateTime ;
+        earl:outcome earl:passed
+    ] ;
+    earl:subject <https://hex.pm/packages/json_ld> ;
+    earl:test <https://w3c.github.io/json-ld-api/tests/#te110>
+] .
+
+[
+    a earl:Assertion ;
+    earl:assertedBy <http://marcelotto.net/#me> ;
+    earl:mode earl:automatic ;
+    earl:result [
+        a earl:TestResult ;
+        dc:date "2025-04-09T16:12:07.926208Z"^^xsd:dateTime ;
+        earl:outcome earl:passed
+    ] ;
+    earl:subject <https://hex.pm/packages/json_ld> ;
+    earl:test <https://w3c.github.io/json-ld-api/tests/#te111>
+] .
+
+[
+    a earl:Assertion ;
+    earl:assertedBy <http://marcelotto.net/#me> ;
+    earl:mode earl:automatic ;
+    earl:result [
+        a earl:TestResult ;
+        dc:date "2025-04-09T16:12:07.926208Z"^^xsd:dateTime ;
+        earl:outcome earl:passed
+    ] ;
+    earl:subject <https://hex.pm/packages/json_ld> ;
+    earl:test <https://w3c.github.io/json-ld-api/tests/#te112>
+] .
+
+[
+    a earl:Assertion ;
+    earl:assertedBy <http://marcelotto.net/#me> ;
+    earl:mode earl:automatic ;
+    earl:result [
+        a earl:TestResult ;
+        dc:date "2025-04-09T16:12:07.926208Z"^^xsd:dateTime ;
+        earl:outcome earl:passed
+    ] ;
+    earl:subject <https://hex.pm/packages/json_ld> ;
+    earl:test <https://w3c.github.io/json-ld-api/tests/#te113>
+] .
+
+[
+    a earl:Assertion ;
+    earl:assertedBy <http://marcelotto.net/#me> ;
+    earl:mode earl:automatic ;
+    earl:result [
+        a earl:TestResult ;
+        dc:date "2025-04-09T16:12:07.926208Z"^^xsd:dateTime ;
+        earl:outcome earl:passed
+    ] ;
+    earl:subject <https://hex.pm/packages/json_ld> ;
+    earl:test <https://w3c.github.io/json-ld-api/tests/#te114>
+] .
+
+[
+    a earl:Assertion ;
+    earl:assertedBy <http://marcelotto.net/#me> ;
+    earl:mode earl:automatic ;
+    earl:result [
+        a earl:TestResult ;
+        dc:date "2025-04-09T16:12:07.926208Z"^^xsd:dateTime ;
+        earl:outcome earl:passed
+    ] ;
+    earl:subject <https://hex.pm/packages/json_ld> ;
+    earl:test <https://w3c.github.io/json-ld-api/tests/#te117>
+] .
+
+[
+    a earl:Assertion ;
+    earl:assertedBy <http://marcelotto.net/#me> ;
+    earl:mode earl:automatic ;
+    earl:result [
+        a earl:TestResult ;
+        dc:date "2025-04-09T16:12:07.926208Z"^^xsd:dateTime ;
+        earl:outcome earl:passed
+    ] ;
+    earl:subject <https://hex.pm/packages/json_ld> ;
+    earl:test <https://w3c.github.io/json-ld-api/tests/#te118>
+] .
+
+[
+    a earl:Assertion ;
+    earl:assertedBy <http://marcelotto.net/#me> ;
+    earl:mode earl:automatic ;
+    earl:result [
+        a earl:TestResult ;
+        dc:date "2025-04-09T16:12:07.926208Z"^^xsd:dateTime ;
+        earl:outcome earl:passed
+    ] ;
+    earl:subject <https://hex.pm/packages/json_ld> ;
+    earl:test <https://w3c.github.io/json-ld-api/tests/#te119>
+] .
+
+[
+    a earl:Assertion ;
+    earl:assertedBy <http://marcelotto.net/#me> ;
+    earl:mode earl:automatic ;
+    earl:result [
+        a earl:TestResult ;
+        dc:date "2025-04-09T16:12:07.926208Z"^^xsd:dateTime ;
+        earl:outcome earl:passed
+    ] ;
+    earl:subject <https://hex.pm/packages/json_ld> ;
+    earl:test <https://w3c.github.io/json-ld-api/tests/#te120>
+] .
+
+[
+    a earl:Assertion ;
+    earl:assertedBy <http://marcelotto.net/#me> ;
+    earl:mode earl:automatic ;
+    earl:result [
+        a earl:TestResult ;
+        dc:date "2025-04-09T16:12:07.926208Z"^^xsd:dateTime ;
+        earl:outcome earl:passed
+    ] ;
+    earl:subject <https://hex.pm/packages/json_ld> ;
+    earl:test <https://w3c.github.io/json-ld-api/tests/#te121>
+] .
+
+[
+    a earl:Assertion ;
+    earl:assertedBy <http://marcelotto.net/#me> ;
+    earl:mode earl:automatic ;
+    earl:result [
+        a earl:TestResult ;
+        dc:date "2025-04-09T16:12:07.926208Z"^^xsd:dateTime ;
+        earl:outcome earl:passed
+    ] ;
+    earl:subject <https://hex.pm/packages/json_ld> ;
+    earl:test <https://w3c.github.io/json-ld-api/tests/#te124>
+] .
+
+[
+    a earl:Assertion ;
+    earl:assertedBy <http://marcelotto.net/#me> ;
+    earl:mode earl:automatic ;
+    earl:result [
+        a earl:TestResult ;
+        dc:date "2025-04-09T16:12:07.926208Z"^^xsd:dateTime ;
+        earl:outcome earl:passed
+    ] ;
+    earl:subject <https://hex.pm/packages/json_ld> ;
+    earl:test <https://w3c.github.io/json-ld-api/tests/#te125>
+] .
+
+[
+    a earl:Assertion ;
+    earl:assertedBy <http://marcelotto.net/#me> ;
+    earl:mode earl:automatic ;
+    earl:result [
+        a earl:TestResult ;
+        dc:date "2025-04-09T16:12:07.926208Z"^^xsd:dateTime ;
+        earl:outcome earl:passed
+    ] ;
+    earl:subject <https://hex.pm/packages/json_ld> ;
+    earl:test <https://w3c.github.io/json-ld-api/tests/#te126>
+] .
+
+[
+    a earl:Assertion ;
+    earl:assertedBy <http://marcelotto.net/#me> ;
+    earl:mode earl:automatic ;
+    earl:result [
+        a earl:TestResult ;
+        dc:date "2025-04-09T16:12:07.926208Z"^^xsd:dateTime ;
+        earl:outcome earl:passed
+    ] ;
+    earl:subject <https://hex.pm/packages/json_ld> ;
+    earl:test <https://w3c.github.io/json-ld-api/tests/#te127>
+] .
+
+[
+    a earl:Assertion ;
+    earl:assertedBy <http://marcelotto.net/#me> ;
+    earl:mode earl:automatic ;
+    earl:result [
+        a earl:TestResult ;
+        dc:date "2025-04-09T16:12:07.926208Z"^^xsd:dateTime ;
+        earl:outcome earl:passed
+    ] ;
+    earl:subject <https://hex.pm/packages/json_ld> ;
+    earl:test <https://w3c.github.io/json-ld-api/tests/#te128>
+] .
+
+[
+    a earl:Assertion ;
+    earl:assertedBy <http://marcelotto.net/#me> ;
+    earl:mode earl:automatic ;
+    earl:result [
+        a earl:TestResult ;
+        dc:date "2025-04-09T16:12:07.926208Z"^^xsd:dateTime ;
+        earl:outcome earl:passed
+    ] ;
+    earl:subject <https://hex.pm/packages/json_ld> ;
+    earl:test <https://w3c.github.io/json-ld-api/tests/#te129>
+] .
+
+[
+    a earl:Assertion ;
+    earl:assertedBy <http://marcelotto.net/#me> ;
+    earl:mode earl:automatic ;
+    earl:result [
+        a earl:TestResult ;
+        dc:date "2025-04-09T16:12:07.926208Z"^^xsd:dateTime ;
+        earl:outcome earl:passed
+    ] ;
+    earl:subject <https://hex.pm/packages/json_ld> ;
+    earl:test <https://w3c.github.io/json-ld-api/tests/#te130>
+] .
+
+[
+    a earl:Assertion ;
+    earl:assertedBy <http://marcelotto.net/#me> ;
+    earl:mode earl:automatic ;
+    earl:result [
+        a earl:TestResult ;
+        dc:date "2025-04-09T16:12:07.926208Z"^^xsd:dateTime ;
+        earl:outcome earl:passed
+    ] ;
+    earl:subject <https://hex.pm/packages/json_ld> ;
+    earl:test <https://w3c.github.io/json-ld-api/tests/#tin01>
+] .
+
+[
+    a earl:Assertion ;
+    earl:assertedBy <http://marcelotto.net/#me> ;
+    earl:mode earl:automatic ;
+    earl:result [
+        a earl:TestResult ;
+        dc:date "2025-04-09T16:12:07.926208Z"^^xsd:dateTime ;
+        earl:outcome earl:passed
+    ] ;
+    earl:subject <https://hex.pm/packages/json_ld> ;
+    earl:test <https://w3c.github.io/json-ld-api/tests/#tin02>
+] .
+
+[
+    a earl:Assertion ;
+    earl:assertedBy <http://marcelotto.net/#me> ;
+    earl:mode earl:automatic ;
+    earl:result [
+        a earl:TestResult ;
+        dc:date "2025-04-09T16:12:07.926208Z"^^xsd:dateTime ;
+        earl:outcome earl:passed
+    ] ;
+    earl:subject <https://hex.pm/packages/json_ld> ;
+    earl:test <https://w3c.github.io/json-ld-api/tests/#tin03>
+] .
+
+[
+    a earl:Assertion ;
+    earl:assertedBy <http://marcelotto.net/#me> ;
+    earl:mode earl:automatic ;
+    earl:result [
+        a earl:TestResult ;
+        dc:date "2025-04-09T16:12:07.926208Z"^^xsd:dateTime ;
+        earl:outcome earl:passed
+    ] ;
+    earl:subject <https://hex.pm/packages/json_ld> ;
+    earl:test <https://w3c.github.io/json-ld-api/tests/#tin04>
+] .
+
+[
+    a earl:Assertion ;
+    earl:assertedBy <http://marcelotto.net/#me> ;
+    earl:mode earl:automatic ;
+    earl:result [
+        a earl:TestResult ;
+        dc:date "2025-04-09T16:12:07.926208Z"^^xsd:dateTime ;
+        earl:outcome earl:passed
+    ] ;
+    earl:subject <https://hex.pm/packages/json_ld> ;
+    earl:test <https://w3c.github.io/json-ld-api/tests/#tin05>
+] .
+
+[
+    a earl:Assertion ;
+    earl:assertedBy <http://marcelotto.net/#me> ;
+    earl:mode earl:automatic ;
+    earl:result [
+        a earl:TestResult ;
+        dc:date "2025-04-09T16:12:07.926208Z"^^xsd:dateTime ;
+        earl:outcome earl:passed
+    ] ;
+    earl:subject <https://hex.pm/packages/json_ld> ;
+    earl:test <https://w3c.github.io/json-ld-api/tests/#tin06>
+] .
+
+[
+    a earl:Assertion ;
+    earl:assertedBy <http://marcelotto.net/#me> ;
+    earl:mode earl:automatic ;
+    earl:result [
+        a earl:TestResult ;
+        dc:date "2025-04-09T16:12:07.926208Z"^^xsd:dateTime ;
+        earl:outcome earl:passed
+    ] ;
+    earl:subject <https://hex.pm/packages/json_ld> ;
+    earl:test <https://w3c.github.io/json-ld-api/tests/#tjs01>
+] .
+
+[
+    a earl:Assertion ;
+    earl:assertedBy <http://marcelotto.net/#me> ;
+    earl:mode earl:automatic ;
+    earl:result [
+        a earl:TestResult ;
+        dc:date "2025-04-09T16:12:07.926208Z"^^xsd:dateTime ;
+        earl:outcome earl:passed
+    ] ;
+    earl:subject <https://hex.pm/packages/json_ld> ;
+    earl:test <https://w3c.github.io/json-ld-api/tests/#tjs02>
+] .
+
+[
+    a earl:Assertion ;
+    earl:assertedBy <http://marcelotto.net/#me> ;
+    earl:mode earl:automatic ;
+    earl:result [
+        a earl:TestResult ;
+        dc:date "2025-04-09T16:12:07.926208Z"^^xsd:dateTime ;
+        earl:outcome earl:passed
+    ] ;
+    earl:subject <https://hex.pm/packages/json_ld> ;
+    earl:test <https://w3c.github.io/json-ld-api/tests/#tjs03>
+] .
+
+[
+    a earl:Assertion ;
+    earl:assertedBy <http://marcelotto.net/#me> ;
+    earl:mode earl:automatic ;
+    earl:result [
+        a earl:TestResult ;
+        dc:date "2025-04-09T16:12:07.926208Z"^^xsd:dateTime ;
+        earl:outcome earl:passed
+    ] ;
+    earl:subject <https://hex.pm/packages/json_ld> ;
+    earl:test <https://w3c.github.io/json-ld-api/tests/#tjs04>
+] .
+
+[
+    a earl:Assertion ;
+    earl:assertedBy <http://marcelotto.net/#me> ;
+    earl:mode earl:automatic ;
+    earl:result [
+        a earl:TestResult ;
+        dc:date "2025-04-09T16:12:07.926208Z"^^xsd:dateTime ;
+        earl:outcome earl:passed
+    ] ;
+    earl:subject <https://hex.pm/packages/json_ld> ;
+    earl:test <https://w3c.github.io/json-ld-api/tests/#tjs05>
+] .
+
+[
+    a earl:Assertion ;
+    earl:assertedBy <http://marcelotto.net/#me> ;
+    earl:mode earl:automatic ;
+    earl:result [
+        a earl:TestResult ;
+        dc:date "2025-04-09T16:12:07.926208Z"^^xsd:dateTime ;
+        earl:outcome earl:passed
+    ] ;
+    earl:subject <https://hex.pm/packages/json_ld> ;
+    earl:test <https://w3c.github.io/json-ld-api/tests/#tjs06>
+] .
+
+[
+    a earl:Assertion ;
+    earl:assertedBy <http://marcelotto.net/#me> ;
+    earl:mode earl:automatic ;
+    earl:result [
+        a earl:TestResult ;
+        dc:date "2025-04-09T16:12:07.926208Z"^^xsd:dateTime ;
+        earl:outcome earl:passed
+    ] ;
+    earl:subject <https://hex.pm/packages/json_ld> ;
+    earl:test <https://w3c.github.io/json-ld-api/tests/#tjs07>
+] .
+
+[
+    a earl:Assertion ;
+    earl:assertedBy <http://marcelotto.net/#me> ;
+    earl:mode earl:automatic ;
+    earl:result [
+        a earl:TestResult ;
+        dc:date "2025-04-09T16:12:07.926208Z"^^xsd:dateTime ;
+        earl:outcome earl:passed
+    ] ;
+    earl:subject <https://hex.pm/packages/json_ld> ;
+    earl:test <https://w3c.github.io/json-ld-api/tests/#tjs08>
+] .
+
+[
+    a earl:Assertion ;
+    earl:assertedBy <http://marcelotto.net/#me> ;
+    earl:mode earl:automatic ;
+    earl:result [
+        a earl:TestResult ;
+        dc:date "2025-04-09T16:12:07.926208Z"^^xsd:dateTime ;
+        earl:outcome earl:passed
+    ] ;
+    earl:subject <https://hex.pm/packages/json_ld> ;
+    earl:test <https://w3c.github.io/json-ld-api/tests/#tjs09>
+] .
+
+[
+    a earl:Assertion ;
+    earl:assertedBy <http://marcelotto.net/#me> ;
+    earl:mode earl:automatic ;
+    earl:result [
+        a earl:TestResult ;
+        dc:date "2025-04-09T16:12:07.926208Z"^^xsd:dateTime ;
+        earl:outcome earl:passed
+    ] ;
+    earl:subject <https://hex.pm/packages/json_ld> ;
+    earl:test <https://w3c.github.io/json-ld-api/tests/#tjs10>
+] .
+
+[
+    a earl:Assertion ;
+    earl:assertedBy <http://marcelotto.net/#me> ;
+    earl:mode earl:automatic ;
+    earl:result [
+        a earl:TestResult ;
+        dc:date "2025-04-09T16:12:07.926208Z"^^xsd:dateTime ;
+        earl:outcome earl:passed
+    ] ;
+    earl:subject <https://hex.pm/packages/json_ld> ;
+    earl:test <https://w3c.github.io/json-ld-api/tests/#tjs11>
+] .
+
+[
+    a earl:Assertion ;
+    earl:assertedBy <http://marcelotto.net/#me> ;
+    earl:mode earl:automatic ;
+    earl:result [
+        a earl:TestResult ;
+        dc:date "2025-04-09T16:12:07.926208Z"^^xsd:dateTime ;
+        earl:outcome earl:passed
+    ] ;
+    earl:subject <https://hex.pm/packages/json_ld> ;
+    earl:test <https://w3c.github.io/json-ld-api/tests/#tjs12>
+] .
+
+[
+    a earl:Assertion ;
+    earl:assertedBy <http://marcelotto.net/#me> ;
+    earl:mode earl:automatic ;
+    earl:result [
+        a earl:TestResult ;
+        dc:date "2025-04-09T16:12:07.926208Z"^^xsd:dateTime ;
+        earl:outcome earl:passed
+    ] ;
+    earl:subject <https://hex.pm/packages/json_ld> ;
+    earl:test <https://w3c.github.io/json-ld-api/tests/#tjs13>
+] .
+
+[
+    a earl:Assertion ;
+    earl:assertedBy <http://marcelotto.net/#me> ;
+    earl:mode earl:automatic ;
+    earl:result [
+        a earl:TestResult ;
+        dc:date "2025-04-09T16:12:07.926208Z"^^xsd:dateTime ;
+        earl:outcome earl:passed
+    ] ;
+    earl:subject <https://hex.pm/packages/json_ld> ;
+    earl:test <https://w3c.github.io/json-ld-api/tests/#tjs14>
+] .
+
+[
+    a earl:Assertion ;
+    earl:assertedBy <http://marcelotto.net/#me> ;
+    earl:mode earl:automatic ;
+    earl:result [
+        a earl:TestResult ;
+        dc:date "2025-04-09T16:12:07.926208Z"^^xsd:dateTime ;
+        earl:outcome earl:passed
+    ] ;
+    earl:subject <https://hex.pm/packages/json_ld> ;
+    earl:test <https://w3c.github.io/json-ld-api/tests/#tjs15>
+] .
+
+[
+    a earl:Assertion ;
+    earl:assertedBy <http://marcelotto.net/#me> ;
+    earl:mode earl:automatic ;
+    earl:result [
+        a earl:TestResult ;
+        dc:date "2025-04-09T16:12:07.926208Z"^^xsd:dateTime ;
+        earl:outcome earl:passed
+    ] ;
+    earl:subject <https://hex.pm/packages/json_ld> ;
+    earl:test <https://w3c.github.io/json-ld-api/tests/#tjs16>
+] .
+
+[
+    a earl:Assertion ;
+    earl:assertedBy <http://marcelotto.net/#me> ;
+    earl:mode earl:automatic ;
+    earl:result [
+        a earl:TestResult ;
+        dc:date "2025-04-09T16:12:07.926208Z"^^xsd:dateTime ;
+        earl:outcome earl:passed
+    ] ;
+    earl:subject <https://hex.pm/packages/json_ld> ;
+    earl:test <https://w3c.github.io/json-ld-api/tests/#tjs17>
+] .
+
+[
+    a earl:Assertion ;
+    earl:assertedBy <http://marcelotto.net/#me> ;
+    earl:mode earl:automatic ;
+    earl:result [
+        a earl:TestResult ;
+        dc:date "2025-04-09T16:12:07.926208Z"^^xsd:dateTime ;
+        earl:outcome earl:passed
+    ] ;
+    earl:subject <https://hex.pm/packages/json_ld> ;
+    earl:test <https://w3c.github.io/json-ld-api/tests/#tjs18>
+] .
+
+[
+    a earl:Assertion ;
+    earl:assertedBy <http://marcelotto.net/#me> ;
+    earl:mode earl:automatic ;
+    earl:result [
+        a earl:TestResult ;
+        dc:date "2025-04-09T16:12:07.926208Z"^^xsd:dateTime ;
+        earl:outcome earl:passed
+    ] ;
+    earl:subject <https://hex.pm/packages/json_ld> ;
+    earl:test <https://w3c.github.io/json-ld-api/tests/#tjs19>
+] .
+
+[
+    a earl:Assertion ;
+    earl:assertedBy <http://marcelotto.net/#me> ;
+    earl:mode earl:automatic ;
+    earl:result [
+        a earl:TestResult ;
+        dc:date "2025-04-09T16:12:07.926208Z"^^xsd:dateTime ;
+        earl:outcome earl:passed
+    ] ;
+    earl:subject <https://hex.pm/packages/json_ld> ;
+    earl:test <https://w3c.github.io/json-ld-api/tests/#tjs20>
+] .
+
+[
+    a earl:Assertion ;
+    earl:assertedBy <http://marcelotto.net/#me> ;
+    earl:mode earl:automatic ;
+    earl:result [
+        a earl:TestResult ;
+        dc:date "2025-04-09T16:12:07.926208Z"^^xsd:dateTime ;
+        earl:outcome earl:passed
+    ] ;
+    earl:subject <https://hex.pm/packages/json_ld> ;
+    earl:test <https://w3c.github.io/json-ld-api/tests/#tjs21>
+] .
+
+[
+    a earl:Assertion ;
+    earl:assertedBy <http://marcelotto.net/#me> ;
+    earl:mode earl:automatic ;
+    earl:result [
+        a earl:TestResult ;
+        dc:date "2025-04-09T16:12:07.926208Z"^^xsd:dateTime ;
+        earl:outcome earl:passed
+    ] ;
+    earl:subject <https://hex.pm/packages/json_ld> ;
+    earl:test <https://w3c.github.io/json-ld-api/tests/#tjs22>
+] .
+
+[
+    a earl:Assertion ;
+    earl:assertedBy <http://marcelotto.net/#me> ;
+    earl:mode earl:automatic ;
+    earl:result [
+        a earl:TestResult ;
+        dc:date "2025-04-09T16:12:07.926208Z"^^xsd:dateTime ;
+        earl:outcome earl:passed
+    ] ;
+    earl:subject <https://hex.pm/packages/json_ld> ;
+    earl:test <https://w3c.github.io/json-ld-api/tests/#tjs23>
+] .
+
+[
+    a earl:Assertion ;
+    earl:assertedBy <http://marcelotto.net/#me> ;
+    earl:mode earl:automatic ;
+    earl:result [
+        a earl:TestResult ;
+        dc:date "2025-04-09T16:12:07.926208Z"^^xsd:dateTime ;
+        earl:outcome earl:passed
+    ] ;
+    earl:subject <https://hex.pm/packages/json_ld> ;
+    earl:test <https://w3c.github.io/json-ld-api/tests/#tli01>
+] .
+
+[
+    a earl:Assertion ;
+    earl:assertedBy <http://marcelotto.net/#me> ;
+    earl:mode earl:automatic ;
+    earl:result [
+        a earl:TestResult ;
+        dc:date "2025-04-09T16:12:07.926208Z"^^xsd:dateTime ;
+        earl:outcome earl:passed
+    ] ;
+    earl:subject <https://hex.pm/packages/json_ld> ;
+    earl:test <https://w3c.github.io/json-ld-api/tests/#tli02>
+] .
+
+[
+    a earl:Assertion ;
+    earl:assertedBy <http://marcelotto.net/#me> ;
+    earl:mode earl:automatic ;
+    earl:result [
+        a earl:TestResult ;
+        dc:date "2025-04-09T16:12:07.926208Z"^^xsd:dateTime ;
+        earl:outcome earl:passed
+    ] ;
+    earl:subject <https://hex.pm/packages/json_ld> ;
+    earl:test <https://w3c.github.io/json-ld-api/tests/#tli03>
+] .
+
+[
+    a earl:Assertion ;
+    earl:assertedBy <http://marcelotto.net/#me> ;
+    earl:mode earl:automatic ;
+    earl:result [
+        a earl:TestResult ;
+        dc:date "2025-04-09T16:12:07.926208Z"^^xsd:dateTime ;
+        earl:outcome earl:passed
+    ] ;
+    earl:subject <https://hex.pm/packages/json_ld> ;
+    earl:test <https://w3c.github.io/json-ld-api/tests/#tli04>
+] .
+
+[
+    a earl:Assertion ;
+    earl:assertedBy <http://marcelotto.net/#me> ;
+    earl:mode earl:automatic ;
+    earl:result [
+        a earl:TestResult ;
+        dc:date "2025-04-09T16:12:07.926208Z"^^xsd:dateTime ;
+        earl:outcome earl:passed
+    ] ;
+    earl:subject <https://hex.pm/packages/json_ld> ;
+    earl:test <https://w3c.github.io/json-ld-api/tests/#tli05>
+] .
+
+[
+    a earl:Assertion ;
+    earl:assertedBy <http://marcelotto.net/#me> ;
+    earl:mode earl:automatic ;
+    earl:result [
+        a earl:TestResult ;
+        dc:date "2025-04-09T16:12:07.926208Z"^^xsd:dateTime ;
+        earl:outcome earl:passed
+    ] ;
+    earl:subject <https://hex.pm/packages/json_ld> ;
+    earl:test <https://w3c.github.io/json-ld-api/tests/#tli06>
+] .
+
+[
+    a earl:Assertion ;
+    earl:assertedBy <http://marcelotto.net/#me> ;
+    earl:mode earl:automatic ;
+    earl:result [
+        a earl:TestResult ;
+        dc:date "2025-04-09T16:12:07.926208Z"^^xsd:dateTime ;
+        earl:outcome earl:passed
+    ] ;
+    earl:subject <https://hex.pm/packages/json_ld> ;
+    earl:test <https://w3c.github.io/json-ld-api/tests/#tli07>
+] .
+
+[
+    a earl:Assertion ;
+    earl:assertedBy <http://marcelotto.net/#me> ;
+    earl:mode earl:automatic ;
+    earl:result [
+        a earl:TestResult ;
+        dc:date "2025-04-09T16:12:07.926208Z"^^xsd:dateTime ;
+        earl:outcome earl:passed
+    ] ;
+    earl:subject <https://hex.pm/packages/json_ld> ;
+    earl:test <https://w3c.github.io/json-ld-api/tests/#tli08>
+] .
+
+[
+    a earl:Assertion ;
+    earl:assertedBy <http://marcelotto.net/#me> ;
+    earl:mode earl:automatic ;
+    earl:result [
+        a earl:TestResult ;
+        dc:date "2025-04-09T16:12:07.926208Z"^^xsd:dateTime ;
+        earl:outcome earl:passed
+    ] ;
+    earl:subject <https://hex.pm/packages/json_ld> ;
+    earl:test <https://w3c.github.io/json-ld-api/tests/#tli09>
+] .
+
+[
+    a earl:Assertion ;
+    earl:assertedBy <http://marcelotto.net/#me> ;
+    earl:mode earl:automatic ;
+    earl:result [
+        a earl:TestResult ;
+        dc:date "2025-04-09T16:12:07.926208Z"^^xsd:dateTime ;
+        earl:outcome earl:passed
+    ] ;
+    earl:subject <https://hex.pm/packages/json_ld> ;
+    earl:test <https://w3c.github.io/json-ld-api/tests/#tli10>
+] .
+
+[
+    a earl:Assertion ;
+    earl:assertedBy <http://marcelotto.net/#me> ;
+    earl:mode earl:automatic ;
+    earl:result [
+        a earl:TestResult ;
+        dc:date "2025-04-09T16:12:07.926208Z"^^xsd:dateTime ;
+        earl:outcome earl:passed
+    ] ;
+    earl:subject <https://hex.pm/packages/json_ld> ;
+    earl:test <https://w3c.github.io/json-ld-api/tests/#tli11>
+] .
+
+[
+    a earl:Assertion ;
+    earl:assertedBy <http://marcelotto.net/#me> ;
+    earl:mode earl:automatic ;
+    earl:result [
+        a earl:TestResult ;
+        dc:date "2025-04-09T16:12:07.926208Z"^^xsd:dateTime ;
+        earl:outcome earl:passed
+    ] ;
+    earl:subject <https://hex.pm/packages/json_ld> ;
+    earl:test <https://w3c.github.io/json-ld-api/tests/#tli12>
+] .
+
+[
+    a earl:Assertion ;
+    earl:assertedBy <http://marcelotto.net/#me> ;
+    earl:mode earl:automatic ;
+    earl:result [
+        a earl:TestResult ;
+        dc:date "2025-04-09T16:12:07.926208Z"^^xsd:dateTime ;
+        earl:outcome earl:passed
+    ] ;
+    earl:subject <https://hex.pm/packages/json_ld> ;
+    earl:test <https://w3c.github.io/json-ld-api/tests/#tli13>
+] .
+
+[
+    a earl:Assertion ;
+    earl:assertedBy <http://marcelotto.net/#me> ;
+    earl:mode earl:automatic ;
+    earl:result [
+        a earl:TestResult ;
+        dc:date "2025-04-09T16:12:07.926208Z"^^xsd:dateTime ;
+        earl:outcome earl:passed
+    ] ;
+    earl:subject <https://hex.pm/packages/json_ld> ;
+    earl:test <https://w3c.github.io/json-ld-api/tests/#tli14>
+] .
+
+[
+    a earl:Assertion ;
+    earl:assertedBy <http://marcelotto.net/#me> ;
+    earl:mode earl:automatic ;
+    earl:result [
+        a earl:TestResult ;
+        dc:date "2025-04-09T16:12:07.926208Z"^^xsd:dateTime ;
+        earl:outcome earl:passed
+    ] ;
+    earl:subject <https://hex.pm/packages/json_ld> ;
+    earl:test <https://w3c.github.io/json-ld-api/tests/#tm001>
+] .
+
+[
+    a earl:Assertion ;
+    earl:assertedBy <http://marcelotto.net/#me> ;
+    earl:mode earl:automatic ;
+    earl:result [
+        a earl:TestResult ;
+        dc:date "2025-04-09T16:12:07.926208Z"^^xsd:dateTime ;
+        earl:outcome earl:passed
+    ] ;
+    earl:subject <https://hex.pm/packages/json_ld> ;
+    earl:test <https://w3c.github.io/json-ld-api/tests/#tm002>
+] .
+
+[
+    a earl:Assertion ;
+    earl:assertedBy <http://marcelotto.net/#me> ;
+    earl:mode earl:automatic ;
+    earl:result [
+        a earl:TestResult ;
+        dc:date "2025-04-09T16:12:07.926208Z"^^xsd:dateTime ;
+        earl:outcome earl:passed
+    ] ;
+    earl:subject <https://hex.pm/packages/json_ld> ;
+    earl:test <https://w3c.github.io/json-ld-api/tests/#tm003>
+] .
+
+[
+    a earl:Assertion ;
+    earl:assertedBy <http://marcelotto.net/#me> ;
+    earl:mode earl:automatic ;
+    earl:result [
+        a earl:TestResult ;
+        dc:date "2025-04-09T16:12:07.926208Z"^^xsd:dateTime ;
+        earl:outcome earl:passed
+    ] ;
+    earl:subject <https://hex.pm/packages/json_ld> ;
+    earl:test <https://w3c.github.io/json-ld-api/tests/#tm004>
+] .
+
+[
+    a earl:Assertion ;
+    earl:assertedBy <http://marcelotto.net/#me> ;
+    earl:mode earl:automatic ;
+    earl:result [
+        a earl:TestResult ;
+        dc:date "2025-04-09T16:12:07.926208Z"^^xsd:dateTime ;
+        earl:outcome earl:passed
+    ] ;
+    earl:subject <https://hex.pm/packages/json_ld> ;
+    earl:test <https://w3c.github.io/json-ld-api/tests/#tm005>
+] .
+
+[
+    a earl:Assertion ;
+    earl:assertedBy <http://marcelotto.net/#me> ;
+    earl:mode earl:automatic ;
+    earl:result [
+        a earl:TestResult ;
+        dc:date "2025-04-09T16:12:07.926208Z"^^xsd:dateTime ;
+        earl:outcome earl:passed
+    ] ;
+    earl:subject <https://hex.pm/packages/json_ld> ;
+    earl:test <https://w3c.github.io/json-ld-api/tests/#tm006>
+] .
+
+[
+    a earl:Assertion ;
+    earl:assertedBy <http://marcelotto.net/#me> ;
+    earl:mode earl:automatic ;
+    earl:result [
+        a earl:TestResult ;
+        dc:date "2025-04-09T16:12:07.926208Z"^^xsd:dateTime ;
+        earl:outcome earl:passed
+    ] ;
+    earl:subject <https://hex.pm/packages/json_ld> ;
+    earl:test <https://w3c.github.io/json-ld-api/tests/#tm007>
+] .
+
+[
+    a earl:Assertion ;
+    earl:assertedBy <http://marcelotto.net/#me> ;
+    earl:mode earl:automatic ;
+    earl:result [
+        a earl:TestResult ;
+        dc:date "2025-04-09T16:12:07.926208Z"^^xsd:dateTime ;
+        earl:outcome earl:passed
+    ] ;
+    earl:subject <https://hex.pm/packages/json_ld> ;
+    earl:test <https://w3c.github.io/json-ld-api/tests/#tm008>
+] .
+
+[
+    a earl:Assertion ;
+    earl:assertedBy <http://marcelotto.net/#me> ;
+    earl:mode earl:automatic ;
+    earl:result [
+        a earl:TestResult ;
+        dc:date "2025-04-09T16:12:07.926208Z"^^xsd:dateTime ;
+        earl:outcome earl:passed
+    ] ;
+    earl:subject <https://hex.pm/packages/json_ld> ;
+    earl:test <https://w3c.github.io/json-ld-api/tests/#tm009>
+] .
+
+[
+    a earl:Assertion ;
+    earl:assertedBy <http://marcelotto.net/#me> ;
+    earl:mode earl:automatic ;
+    earl:result [
+        a earl:TestResult ;
+        dc:date "2025-04-09T16:12:07.926208Z"^^xsd:dateTime ;
+        earl:outcome earl:passed
+    ] ;
+    earl:subject <https://hex.pm/packages/json_ld> ;
+    earl:test <https://w3c.github.io/json-ld-api/tests/#tm010>
+] .
+
+[
+    a earl:Assertion ;
+    earl:assertedBy <http://marcelotto.net/#me> ;
+    earl:mode earl:automatic ;
+    earl:result [
+        a earl:TestResult ;
+        dc:date "2025-04-09T16:12:07.926208Z"^^xsd:dateTime ;
+        earl:outcome earl:passed
+    ] ;
+    earl:subject <https://hex.pm/packages/json_ld> ;
+    earl:test <https://w3c.github.io/json-ld-api/tests/#tm011>
+] .
+
+[
+    a earl:Assertion ;
+    earl:assertedBy <http://marcelotto.net/#me> ;
+    earl:mode earl:automatic ;
+    earl:result [
+        a earl:TestResult ;
+        dc:date "2025-04-09T16:12:07.926208Z"^^xsd:dateTime ;
+        earl:outcome earl:passed
+    ] ;
+    earl:subject <https://hex.pm/packages/json_ld> ;
+    earl:test <https://w3c.github.io/json-ld-api/tests/#tm012>
+] .
+
+[
+    a earl:Assertion ;
+    earl:assertedBy <http://marcelotto.net/#me> ;
+    earl:mode earl:automatic ;
+    earl:result [
+        a earl:TestResult ;
+        dc:date "2025-04-09T16:12:07.926208Z"^^xsd:dateTime ;
+        earl:outcome earl:passed
+    ] ;
+    earl:subject <https://hex.pm/packages/json_ld> ;
+    earl:test <https://w3c.github.io/json-ld-api/tests/#tm013>
+] .
+
+[
+    a earl:Assertion ;
+    earl:assertedBy <http://marcelotto.net/#me> ;
+    earl:mode earl:automatic ;
+    earl:result [
+        a earl:TestResult ;
+        dc:date "2025-04-09T16:12:07.926208Z"^^xsd:dateTime ;
+        earl:outcome earl:passed
+    ] ;
+    earl:subject <https://hex.pm/packages/json_ld> ;
+    earl:test <https://w3c.github.io/json-ld-api/tests/#tm014>
+] .
+
+[
+    a earl:Assertion ;
+    earl:assertedBy <http://marcelotto.net/#me> ;
+    earl:mode earl:automatic ;
+    earl:result [
+        a earl:TestResult ;
+        dc:date "2025-04-09T16:12:07.926208Z"^^xsd:dateTime ;
+        earl:outcome earl:passed
+    ] ;
+    earl:subject <https://hex.pm/packages/json_ld> ;
+    earl:test <https://w3c.github.io/json-ld-api/tests/#tm015>
+] .
+
+[
+    a earl:Assertion ;
+    earl:assertedBy <http://marcelotto.net/#me> ;
+    earl:mode earl:automatic ;
+    earl:result [
+        a earl:TestResult ;
+        dc:date "2025-04-09T16:12:07.926208Z"^^xsd:dateTime ;
+        earl:outcome earl:passed
+    ] ;
+    earl:subject <https://hex.pm/packages/json_ld> ;
+    earl:test <https://w3c.github.io/json-ld-api/tests/#tm016>
+] .
+
+[
+    a earl:Assertion ;
+    earl:assertedBy <http://marcelotto.net/#me> ;
+    earl:mode earl:automatic ;
+    earl:result [
+        a earl:TestResult ;
+        dc:date "2025-04-09T16:12:07.926208Z"^^xsd:dateTime ;
+        earl:outcome earl:passed
+    ] ;
+    earl:subject <https://hex.pm/packages/json_ld> ;
+    earl:test <https://w3c.github.io/json-ld-api/tests/#tm017>
+] .
+
+[
+    a earl:Assertion ;
+    earl:assertedBy <http://marcelotto.net/#me> ;
+    earl:mode earl:automatic ;
+    earl:result [
+        a earl:TestResult ;
+        dc:date "2025-04-09T16:12:07.926208Z"^^xsd:dateTime ;
+        earl:outcome earl:passed
+    ] ;
+    earl:subject <https://hex.pm/packages/json_ld> ;
+    earl:test <https://w3c.github.io/json-ld-api/tests/#tm018>
+] .
+
+[
+    a earl:Assertion ;
+    earl:assertedBy <http://marcelotto.net/#me> ;
+    earl:mode earl:automatic ;
+    earl:result [
+        a earl:TestResult ;
+        dc:date "2025-04-09T16:12:07.926208Z"^^xsd:dateTime ;
+        earl:outcome earl:passed
+    ] ;
+    earl:subject <https://hex.pm/packages/json_ld> ;
+    earl:test <https://w3c.github.io/json-ld-api/tests/#tm019>
+] .
+
+[
+    a earl:Assertion ;
+    earl:assertedBy <http://marcelotto.net/#me> ;
+    earl:mode earl:automatic ;
+    earl:result [
+        a earl:TestResult ;
+        dc:date "2025-04-09T16:12:07.926208Z"^^xsd:dateTime ;
+        earl:outcome earl:passed
+    ] ;
+    earl:subject <https://hex.pm/packages/json_ld> ;
+    earl:test <https://w3c.github.io/json-ld-api/tests/#tn001>
+] .
+
+[
+    a earl:Assertion ;
+    earl:assertedBy <http://marcelotto.net/#me> ;
+    earl:mode earl:automatic ;
+    earl:result [
+        a earl:TestResult ;
+        dc:date "2025-04-09T16:12:07.926208Z"^^xsd:dateTime ;
+        earl:outcome earl:passed
+    ] ;
+    earl:subject <https://hex.pm/packages/json_ld> ;
+    earl:test <https://w3c.github.io/json-ld-api/tests/#tn002>
+] .
+
+[
+    a earl:Assertion ;
+    earl:assertedBy <http://marcelotto.net/#me> ;
+    earl:mode earl:automatic ;
+    earl:result [
+        a earl:TestResult ;
+        dc:date "2025-04-09T16:12:07.926208Z"^^xsd:dateTime ;
+        earl:outcome earl:passed
+    ] ;
+    earl:subject <https://hex.pm/packages/json_ld> ;
+    earl:test <https://w3c.github.io/json-ld-api/tests/#tn003>
+] .
+
+[
+    a earl:Assertion ;
+    earl:assertedBy <http://marcelotto.net/#me> ;
+    earl:mode earl:automatic ;
+    earl:result [
+        a earl:TestResult ;
+        dc:date "2025-04-09T16:12:07.926208Z"^^xsd:dateTime ;
+        earl:outcome earl:passed
+    ] ;
+    earl:subject <https://hex.pm/packages/json_ld> ;
+    earl:test <https://w3c.github.io/json-ld-api/tests/#tn004>
+] .
+
+[
+    a earl:Assertion ;
+    earl:assertedBy <http://marcelotto.net/#me> ;
+    earl:mode earl:automatic ;
+    earl:result [
+        a earl:TestResult ;
+        dc:date "2025-04-09T16:12:07.926208Z"^^xsd:dateTime ;
+        earl:outcome earl:passed
+    ] ;
+    earl:subject <https://hex.pm/packages/json_ld> ;
+    earl:test <https://w3c.github.io/json-ld-api/tests/#tn005>
+] .
+
+[
+    a earl:Assertion ;
+    earl:assertedBy <http://marcelotto.net/#me> ;
+    earl:mode earl:automatic ;
+    earl:result [
+        a earl:TestResult ;
+        dc:date "2025-04-09T16:12:07.926208Z"^^xsd:dateTime ;
+        earl:outcome earl:passed
+    ] ;
+    earl:subject <https://hex.pm/packages/json_ld> ;
+    earl:test <https://w3c.github.io/json-ld-api/tests/#tn006>
+] .
+
+[
+    a earl:Assertion ;
+    earl:assertedBy <http://marcelotto.net/#me> ;
+    earl:mode earl:automatic ;
+    earl:result [
+        a earl:TestResult ;
+        dc:date "2025-04-09T16:12:07.926208Z"^^xsd:dateTime ;
+        earl:outcome earl:passed
+    ] ;
+    earl:subject <https://hex.pm/packages/json_ld> ;
+    earl:test <https://w3c.github.io/json-ld-api/tests/#tn007>
+] .
+
+[
+    a earl:Assertion ;
+    earl:assertedBy <http://marcelotto.net/#me> ;
+    earl:mode earl:automatic ;
+    earl:result [
+        a earl:TestResult ;
+        dc:date "2025-04-09T16:12:07.926208Z"^^xsd:dateTime ;
+        earl:outcome earl:passed
+    ] ;
+    earl:subject <https://hex.pm/packages/json_ld> ;
+    earl:test <https://w3c.github.io/json-ld-api/tests/#tn008>
+] .
+
+[
+    a earl:Assertion ;
+    earl:assertedBy <http://marcelotto.net/#me> ;
+    earl:mode earl:automatic ;
+    earl:result [
+        a earl:TestResult ;
+        dc:date "2025-04-09T16:12:07.926208Z"^^xsd:dateTime ;
+        earl:outcome earl:passed
+    ] ;
+    earl:subject <https://hex.pm/packages/json_ld> ;
+    earl:test <https://w3c.github.io/json-ld-api/tests/#tp001>
+] .
+
+[
+    a earl:Assertion ;
+    earl:assertedBy <http://marcelotto.net/#me> ;
+    earl:mode earl:automatic ;
+    earl:result [
+        a earl:TestResult ;
+        dc:date "2025-04-09T16:12:07.926208Z"^^xsd:dateTime ;
+        earl:outcome earl:passed
+    ] ;
+    earl:subject <https://hex.pm/packages/json_ld> ;
+    earl:test <https://w3c.github.io/json-ld-api/tests/#tp002>
+] .
+
+[
+    a earl:Assertion ;
+    earl:assertedBy <http://marcelotto.net/#me> ;
+    earl:mode earl:automatic ;
+    earl:result [
+        a earl:TestResult ;
+        dc:date "2025-04-09T16:12:07.926208Z"^^xsd:dateTime ;
+        earl:outcome earl:passed
+    ] ;
+    earl:subject <https://hex.pm/packages/json_ld> ;
+    earl:test <https://w3c.github.io/json-ld-api/tests/#tp003>
+] .
+
+[
+    a earl:Assertion ;
+    earl:assertedBy <http://marcelotto.net/#me> ;
+    earl:mode earl:automatic ;
+    earl:result [
+        a earl:TestResult ;
+        dc:date "2025-04-09T16:12:07.926208Z"^^xsd:dateTime ;
+        earl:outcome earl:passed
+    ] ;
+    earl:subject <https://hex.pm/packages/json_ld> ;
+    earl:test <https://w3c.github.io/json-ld-api/tests/#tp004>
+] .
+
+[
+    a earl:Assertion ;
+    earl:assertedBy <http://marcelotto.net/#me> ;
+    earl:mode earl:automatic ;
+    earl:result [
+        a earl:TestResult ;
+        dc:date "2025-04-09T16:12:07.926208Z"^^xsd:dateTime ;
+        earl:outcome earl:passed
+    ] ;
+    earl:subject <https://hex.pm/packages/json_ld> ;
+    earl:test <https://w3c.github.io/json-ld-api/tests/#tpi06>
+] .
+
+[
+    a earl:Assertion ;
+    earl:assertedBy <http://marcelotto.net/#me> ;
+    earl:mode earl:automatic ;
+    earl:result [
+        a earl:TestResult ;
+        dc:date "2025-04-09T16:12:07.926208Z"^^xsd:dateTime ;
+        earl:outcome earl:passed
+    ] ;
+    earl:subject <https://hex.pm/packages/json_ld> ;
+    earl:test <https://w3c.github.io/json-ld-api/tests/#tpi07>
+] .
+
+[
+    a earl:Assertion ;
+    earl:assertedBy <http://marcelotto.net/#me> ;
+    earl:mode earl:automatic ;
+    earl:result [
+        a earl:TestResult ;
+        dc:date "2025-04-09T16:12:07.926208Z"^^xsd:dateTime ;
+        earl:outcome earl:passed
+    ] ;
+    earl:subject <https://hex.pm/packages/json_ld> ;
+    earl:test <https://w3c.github.io/json-ld-api/tests/#tpi08>
+] .
+
+[
+    a earl:Assertion ;
+    earl:assertedBy <http://marcelotto.net/#me> ;
+    earl:mode earl:automatic ;
+    earl:result [
+        a earl:TestResult ;
+        dc:date "2025-04-09T16:12:07.926208Z"^^xsd:dateTime ;
+        earl:outcome earl:passed
+    ] ;
+    earl:subject <https://hex.pm/packages/json_ld> ;
+    earl:test <https://w3c.github.io/json-ld-api/tests/#tpi09>
+] .
+
+[
+    a earl:Assertion ;
+    earl:assertedBy <http://marcelotto.net/#me> ;
+    earl:mode earl:automatic ;
+    earl:result [
+        a earl:TestResult ;
+        dc:date "2025-04-09T16:12:07.926208Z"^^xsd:dateTime ;
+        earl:outcome earl:passed
+    ] ;
+    earl:subject <https://hex.pm/packages/json_ld> ;
+    earl:test <https://w3c.github.io/json-ld-api/tests/#tpi10>
+] .
+
+[
+    a earl:Assertion ;
+    earl:assertedBy <http://marcelotto.net/#me> ;
+    earl:mode earl:automatic ;
+    earl:result [
+        a earl:TestResult ;
+        dc:date "2025-04-09T16:12:07.926208Z"^^xsd:dateTime ;
+        earl:outcome earl:passed
+    ] ;
+    earl:subject <https://hex.pm/packages/json_ld> ;
+    earl:test <https://w3c.github.io/json-ld-api/tests/#tpi11>
+] .
+
+[
+    a earl:Assertion ;
+    earl:assertedBy <http://marcelotto.net/#me> ;
+    earl:mode earl:automatic ;
+    earl:result [
+        a earl:TestResult ;
+        dc:date "2025-04-09T16:12:07.926208Z"^^xsd:dateTime ;
+        earl:outcome earl:passed
+    ] ;
+    earl:subject <https://hex.pm/packages/json_ld> ;
+    earl:test <https://w3c.github.io/json-ld-api/tests/#tpr02>
+] .
+
+[
+    a earl:Assertion ;
+    earl:assertedBy <http://marcelotto.net/#me> ;
+    earl:mode earl:automatic ;
+    earl:result [
+        a earl:TestResult ;
+        dc:date "2025-04-09T16:12:07.926208Z"^^xsd:dateTime ;
+        earl:outcome earl:passed
+    ] ;
+    earl:subject <https://hex.pm/packages/json_ld> ;
+    earl:test <https://w3c.github.io/json-ld-api/tests/#tpr06>
+] .
+
+[
+    a earl:Assertion ;
+    earl:assertedBy <http://marcelotto.net/#me> ;
+    earl:mode earl:automatic ;
+    earl:result [
+        a earl:TestResult ;
+        dc:date "2025-04-09T16:12:07.926208Z"^^xsd:dateTime ;
+        earl:outcome earl:passed
+    ] ;
+    earl:subject <https://hex.pm/packages/json_ld> ;
+    earl:test <https://w3c.github.io/json-ld-api/tests/#tpr10>
+] .
+
+[
+    a earl:Assertion ;
+    earl:assertedBy <http://marcelotto.net/#me> ;
+    earl:mode earl:automatic ;
+    earl:result [
+        a earl:TestResult ;
+        dc:date "2025-04-09T16:12:07.926208Z"^^xsd:dateTime ;
+        earl:outcome earl:passed
+    ] ;
+    earl:subject <https://hex.pm/packages/json_ld> ;
+    earl:test <https://w3c.github.io/json-ld-api/tests/#tpr13>
+] .
+
+[
+    a earl:Assertion ;
+    earl:assertedBy <http://marcelotto.net/#me> ;
+    earl:mode earl:automatic ;
+    earl:result [
+        a earl:TestResult ;
+        dc:date "2025-04-09T16:12:07.926208Z"^^xsd:dateTime ;
+        earl:outcome earl:passed
+    ] ;
+    earl:subject <https://hex.pm/packages/json_ld> ;
+    earl:test <https://w3c.github.io/json-ld-api/tests/#tpr14>
+] .
+
+[
+    a earl:Assertion ;
+    earl:assertedBy <http://marcelotto.net/#me> ;
+    earl:mode earl:automatic ;
+    earl:result [
+        a earl:TestResult ;
+        dc:date "2025-04-09T16:12:07.926208Z"^^xsd:dateTime ;
+        earl:outcome earl:passed
+    ] ;
+    earl:subject <https://hex.pm/packages/json_ld> ;
+    earl:test <https://w3c.github.io/json-ld-api/tests/#tpr15>
+] .
+
+[
+    a earl:Assertion ;
+    earl:assertedBy <http://marcelotto.net/#me> ;
+    earl:mode earl:automatic ;
+    earl:result [
+        a earl:TestResult ;
+        dc:date "2025-04-09T16:12:07.926208Z"^^xsd:dateTime ;
+        earl:outcome earl:passed
+    ] ;
+    earl:subject <https://hex.pm/packages/json_ld> ;
+    earl:test <https://w3c.github.io/json-ld-api/tests/#tpr16>
+] .
+
+[
+    a earl:Assertion ;
+    earl:assertedBy <http://marcelotto.net/#me> ;
+    earl:mode earl:automatic ;
+    earl:result [
+        a earl:TestResult ;
+        dc:date "2025-04-09T16:12:07.926208Z"^^xsd:dateTime ;
+        earl:outcome earl:passed
+    ] ;
+    earl:subject <https://hex.pm/packages/json_ld> ;
+    earl:test <https://w3c.github.io/json-ld-api/tests/#tpr19>
+] .
+
+[
+    a earl:Assertion ;
+    earl:assertedBy <http://marcelotto.net/#me> ;
+    earl:mode earl:automatic ;
+    earl:result [
+        a earl:TestResult ;
+        dc:date "2025-04-09T16:12:07.926208Z"^^xsd:dateTime ;
+        earl:outcome earl:passed
+    ] ;
+    earl:subject <https://hex.pm/packages/json_ld> ;
+    earl:test <https://w3c.github.io/json-ld-api/tests/#tpr22>
+] .
+
+[
+    a earl:Assertion ;
+    earl:assertedBy <http://marcelotto.net/#me> ;
+    earl:mode earl:automatic ;
+    earl:result [
+        a earl:TestResult ;
+        dc:date "2025-04-09T16:12:07.926208Z"^^xsd:dateTime ;
+        earl:outcome earl:passed
+    ] ;
+    earl:subject <https://hex.pm/packages/json_ld> ;
+    earl:test <https://w3c.github.io/json-ld-api/tests/#tpr23>
+] .
+
+[
+    a earl:Assertion ;
+    earl:assertedBy <http://marcelotto.net/#me> ;
+    earl:mode earl:automatic ;
+    earl:result [
+        a earl:TestResult ;
+        dc:date "2025-04-09T16:12:07.926208Z"^^xsd:dateTime ;
+        earl:outcome earl:passed
+    ] ;
+    earl:subject <https://hex.pm/packages/json_ld> ;
+    earl:test <https://w3c.github.io/json-ld-api/tests/#tpr24>
+] .
+
+[
+    a earl:Assertion ;
+    earl:assertedBy <http://marcelotto.net/#me> ;
+    earl:mode earl:automatic ;
+    earl:result [
+        a earl:TestResult ;
+        dc:date "2025-04-09T16:12:07.926208Z"^^xsd:dateTime ;
+        earl:outcome earl:passed
+    ] ;
+    earl:subject <https://hex.pm/packages/json_ld> ;
+    earl:test <https://w3c.github.io/json-ld-api/tests/#tpr25>
+] .
+
+[
+    a earl:Assertion ;
+    earl:assertedBy <http://marcelotto.net/#me> ;
+    earl:mode earl:automatic ;
+    earl:result [
+        a earl:TestResult ;
+        dc:date "2025-04-09T16:12:07.926208Z"^^xsd:dateTime ;
+        earl:outcome earl:passed
+    ] ;
+    earl:subject <https://hex.pm/packages/json_ld> ;
+    earl:test <https://w3c.github.io/json-ld-api/tests/#tpr27>
+] .
+
+[
+    a earl:Assertion ;
+    earl:assertedBy <http://marcelotto.net/#me> ;
+    earl:mode earl:automatic ;
+    earl:result [
+        a earl:TestResult ;
+        dc:date "2025-04-09T16:12:07.926208Z"^^xsd:dateTime ;
+        earl:outcome earl:passed
+    ] ;
+    earl:subject <https://hex.pm/packages/json_ld> ;
+    earl:test <https://w3c.github.io/json-ld-api/tests/#tpr29>
+] .
+
+[
+    a earl:Assertion ;
+    earl:assertedBy <http://marcelotto.net/#me> ;
+    earl:mode earl:automatic ;
+    earl:result [
+        a earl:TestResult ;
+        dc:date "2025-04-09T16:12:07.926208Z"^^xsd:dateTime ;
+        earl:outcome earl:passed
+    ] ;
+    earl:subject <https://hex.pm/packages/json_ld> ;
+    earl:test <https://w3c.github.io/json-ld-api/tests/#tpr30>
+] .
+
+[
+    a earl:Assertion ;
+    earl:assertedBy <http://marcelotto.net/#me> ;
+    earl:mode earl:automatic ;
+    earl:result [
+        a earl:TestResult ;
+        dc:date "2025-04-09T16:12:07.926208Z"^^xsd:dateTime ;
+        earl:outcome earl:passed
+    ] ;
+    earl:subject <https://hex.pm/packages/json_ld> ;
+    earl:test <https://w3c.github.io/json-ld-api/tests/#tpr34>
+] .
+
+[
+    a earl:Assertion ;
+    earl:assertedBy <http://marcelotto.net/#me> ;
+    earl:mode earl:automatic ;
+    earl:result [
+        a earl:TestResult ;
+        dc:date "2025-04-09T16:12:07.926208Z"^^xsd:dateTime ;
+        earl:outcome earl:passed
+    ] ;
+    earl:subject <https://hex.pm/packages/json_ld> ;
+    earl:test <https://w3c.github.io/json-ld-api/tests/#tpr35>
+] .
+
+[
+    a earl:Assertion ;
+    earl:assertedBy <http://marcelotto.net/#me> ;
+    earl:mode earl:automatic ;
+    earl:result [
+        a earl:TestResult ;
+        dc:date "2025-04-09T16:12:07.926208Z"^^xsd:dateTime ;
+        earl:outcome earl:passed
+    ] ;
+    earl:subject <https://hex.pm/packages/json_ld> ;
+    earl:test <https://w3c.github.io/json-ld-api/tests/#tpr36>
+] .
+
+[
+    a earl:Assertion ;
+    earl:assertedBy <http://marcelotto.net/#me> ;
+    earl:mode earl:automatic ;
+    earl:result [
+        a earl:TestResult ;
+        dc:date "2025-04-09T16:12:07.926208Z"^^xsd:dateTime ;
+        earl:outcome earl:passed
+    ] ;
+    earl:subject <https://hex.pm/packages/json_ld> ;
+    earl:test <https://w3c.github.io/json-ld-api/tests/#tpr37>
+] .
+
+[
+    a earl:Assertion ;
+    earl:assertedBy <http://marcelotto.net/#me> ;
+    earl:mode earl:automatic ;
+    earl:result [
+        a earl:TestResult ;
+        dc:date "2025-04-09T16:12:07.926208Z"^^xsd:dateTime ;
+        earl:outcome earl:passed
+    ] ;
+    earl:subject <https://hex.pm/packages/json_ld> ;
+    earl:test <https://w3c.github.io/json-ld-api/tests/#tpr38>
+] .
+
+[
+    a earl:Assertion ;
+    earl:assertedBy <http://marcelotto.net/#me> ;
+    earl:mode earl:automatic ;
+    earl:result [
+        a earl:TestResult ;
+        dc:date "2025-04-09T16:12:07.926208Z"^^xsd:dateTime ;
+        earl:outcome earl:passed
+    ] ;
+    earl:subject <https://hex.pm/packages/json_ld> ;
+    earl:test <https://w3c.github.io/json-ld-api/tests/#tpr39>
+] .
+
+[
+    a earl:Assertion ;
+    earl:assertedBy <http://marcelotto.net/#me> ;
+    earl:mode earl:automatic ;
+    earl:result [
+        a earl:TestResult ;
+        dc:date "2025-04-09T16:12:07.926208Z"^^xsd:dateTime ;
+        earl:outcome earl:passed
+    ] ;
+    earl:subject <https://hex.pm/packages/json_ld> ;
+    earl:test <https://w3c.github.io/json-ld-api/tests/#tpr40>
+] .
+
+[
+    a earl:Assertion ;
+    earl:assertedBy <http://marcelotto.net/#me> ;
+    earl:mode earl:automatic ;
+    earl:result [
+        a earl:TestResult ;
+        dc:date "2025-04-09T16:12:07.926208Z"^^xsd:dateTime ;
+        earl:outcome earl:passed
+    ] ;
+    earl:subject <https://hex.pm/packages/json_ld> ;
+    earl:test <https://w3c.github.io/json-ld-api/tests/#tpr41>
+] .
+
+[
+    a earl:Assertion ;
+    earl:assertedBy <http://marcelotto.net/#me> ;
+    earl:mode earl:automatic ;
+    earl:result [
+        a earl:TestResult ;
+        dc:date "2025-04-09T16:12:07.926208Z"^^xsd:dateTime ;
+        earl:outcome earl:passed
+    ] ;
+    earl:subject <https://hex.pm/packages/json_ld> ;
+    earl:test <https://w3c.github.io/json-ld-api/tests/#tpr43>
+] .
+
+[
+    a earl:Assertion ;
+    earl:assertedBy <http://marcelotto.net/#me> ;
+    earl:mode earl:automatic ;
+    earl:result [
+        a earl:TestResult ;
+        dc:date "2025-04-09T16:12:07.926208Z"^^xsd:dateTime ;
+        earl:outcome earl:passed
+    ] ;
+    earl:subject <https://hex.pm/packages/json_ld> ;
+    earl:test <https://w3c.github.io/json-ld-api/tests/#trt01>
+] .
+
+[
+    a earl:Assertion ;
+    earl:assertedBy <http://marcelotto.net/#me> ;
+    earl:mode earl:automatic ;
+    earl:result [
+        a earl:TestResult ;
+        dc:date "2025-04-09T16:12:07.926208Z"^^xsd:dateTime ;
+        earl:outcome earl:passed
+    ] ;
+    earl:subject <https://hex.pm/packages/json_ld> ;
+    earl:test <https://w3c.github.io/json-ld-api/tests/#tso05>
+] .
+
+[
+    a earl:Assertion ;
+    earl:assertedBy <http://marcelotto.net/#me> ;
+    earl:mode earl:automatic ;
+    earl:result [
+        a earl:TestResult ;
+        dc:date "2025-04-09T16:12:07.926208Z"^^xsd:dateTime ;
+        earl:outcome earl:passed
+    ] ;
+    earl:subject <https://hex.pm/packages/json_ld> ;
+    earl:test <https://w3c.github.io/json-ld-api/tests/#tso06>
+] .
+
+[
+    a earl:Assertion ;
+    earl:assertedBy <http://marcelotto.net/#me> ;
+    earl:mode earl:automatic ;
+    earl:result [
+        a earl:TestResult ;
+        dc:date "2025-04-09T16:12:07.926208Z"^^xsd:dateTime ;
+        earl:outcome earl:passed
+    ] ;
+    earl:subject <https://hex.pm/packages/json_ld> ;
+    earl:test <https://w3c.github.io/json-ld-api/tests/#tso08>
+] .
+
+[
+    a earl:Assertion ;
+    earl:assertedBy <http://marcelotto.net/#me> ;
+    earl:mode earl:automatic ;
+    earl:result [
+        a earl:TestResult ;
+        dc:date "2025-04-09T16:12:07.926208Z"^^xsd:dateTime ;
+        earl:outcome earl:passed
+    ] ;
+    earl:subject <https://hex.pm/packages/json_ld> ;
+    earl:test <https://w3c.github.io/json-ld-api/tests/#tso09>
+] .
+
+[
+    a earl:Assertion ;
+    earl:assertedBy <http://marcelotto.net/#me> ;
+    earl:mode earl:automatic ;
+    earl:result [
+        a earl:TestResult ;
+        dc:date "2025-04-09T16:12:07.926208Z"^^xsd:dateTime ;
+        earl:outcome earl:passed
+    ] ;
+    earl:subject <https://hex.pm/packages/json_ld> ;
+    earl:test <https://w3c.github.io/json-ld-api/tests/#tso11>
+] .
+
+[
+    a earl:Assertion ;
+    earl:assertedBy <http://marcelotto.net/#me> ;
+    earl:mode earl:automatic ;
+    earl:result [
+        a earl:TestResult ;
+        dc:date "2025-04-09T16:12:07.926208Z"^^xsd:dateTime ;
+        earl:outcome earl:passed
+    ] ;
+    earl:subject <https://hex.pm/packages/json_ld> ;
+    earl:test <https://w3c.github.io/json-ld-api/tests/#ttn02>
+] .
+
+[
+    a earl:Assertion ;
+    earl:assertedBy <http://marcelotto.net/#me> ;
+    earl:mode earl:automatic ;
+    earl:result [
+        a earl:TestResult ;
+        dc:date "2025-04-09T16:12:07.926208Z"^^xsd:dateTime ;
+        earl:outcome earl:passed
+    ] ;
+    earl:subject <https://hex.pm/packages/json_ld> ;
+    earl:test <https://w3c.github.io/json-ld-api/tests/#twf01>
+] .
+
+[
+    a earl:Assertion ;
+    earl:assertedBy <http://marcelotto.net/#me> ;
+    earl:mode earl:automatic ;
+    earl:result [
+        a earl:TestResult ;
+        dc:date "2025-04-09T16:12:07.926208Z"^^xsd:dateTime ;
+        earl:outcome earl:passed
+    ] ;
+    earl:subject <https://hex.pm/packages/json_ld> ;
+    earl:test <https://w3c.github.io/json-ld-api/tests/#twf02>
+] .
+
+[
+    a earl:Assertion ;
+    earl:assertedBy <http://marcelotto.net/#me> ;
+    earl:mode earl:automatic ;
+    earl:result [
+        a earl:TestResult ;
+        dc:date "2025-04-09T16:12:07.926208Z"^^xsd:dateTime ;
+        earl:outcome earl:passed
+    ] ;
+    earl:subject <https://hex.pm/packages/json_ld> ;
+    earl:test <https://w3c.github.io/json-ld-api/tests/#twf03>
+] .
+
+[
+    a earl:Assertion ;
+    earl:assertedBy <http://marcelotto.net/#me> ;
+    earl:mode earl:automatic ;
+    earl:result [
+        a earl:TestResult ;
+        dc:date "2025-04-09T16:12:07.926208Z"^^xsd:dateTime ;
+        earl:outcome earl:passed
+    ] ;
+    earl:subject <https://hex.pm/packages/json_ld> ;
+    earl:test <https://w3c.github.io/json-ld-api/tests/#twf04>
+] .
+
+[
+    a earl:Assertion ;
+    earl:assertedBy <http://marcelotto.net/#me> ;
+    earl:mode earl:automatic ;
+    earl:result [
+        a earl:TestResult ;
+        dc:date "2025-04-09T16:12:07.926208Z"^^xsd:dateTime ;
+        earl:outcome earl:passed
+    ] ;
+    earl:subject <https://hex.pm/packages/json_ld> ;
+    earl:test <https://w3c.github.io/json-ld-api/tests/#twf05>
+] .
+
+[
+    a earl:Assertion ;
+    earl:assertedBy <http://marcelotto.net/#me> ;
+    earl:mode earl:automatic ;
+    earl:result [
+        a earl:TestResult ;
+        dc:date "2025-04-09T16:12:07.926208Z"^^xsd:dateTime ;
+        earl:outcome earl:passed
+    ] ;
+    earl:subject <https://hex.pm/packages/json_ld> ;
+    earl:test <https://w3c.github.io/json-ld-api/tests/#twf07>
+] .
+
+[
+    a earl:Assertion ;
+    earl:assertedBy <http://marcelotto.net/#me> ;
+    earl:mode earl:automatic ;
+    earl:result [
+        a earl:TestResult ;
+        dc:date "2025-04-09T16:12:07.926208Z"^^xsd:dateTime ;
+        earl:outcome earl:passed
+    ] ;
+    earl:subject <https://hex.pm/packages/json_ld> ;
+    earl:test <https://w3c.github.io/json-ld-api/tests/#tc029>
+] .
+
+[
+    a earl:Assertion ;
+    earl:assertedBy <http://marcelotto.net/#me> ;
+    earl:mode earl:automatic ;
+    earl:result [
+        a earl:TestResult ;
+        dc:date "2025-04-09T16:12:07.926208Z"^^xsd:dateTime ;
+        earl:outcome earl:passed
+    ] ;
+    earl:subject <https://hex.pm/packages/json_ld> ;
+    earl:test <https://w3c.github.io/json-ld-api/tests/#tc030>
+] .
+
+[
+    a earl:Assertion ;
+    earl:assertedBy <http://marcelotto.net/#me> ;
+    earl:mode earl:automatic ;
+    earl:result [
+        a earl:TestResult ;
+        dc:date "2025-04-09T16:12:07.926208Z"^^xsd:dateTime ;
+        earl:outcome earl:passed
+    ] ;
+    earl:subject <https://hex.pm/packages/json_ld> ;
+    earl:test <https://w3c.github.io/json-ld-api/tests/#tc032>
+] .
+
+[
+    a earl:Assertion ;
+    earl:assertedBy <http://marcelotto.net/#me> ;
+    earl:mode earl:automatic ;
+    earl:result [
+        a earl:TestResult ;
+        dc:date "2025-04-09T16:12:07.926208Z"^^xsd:dateTime ;
+        earl:outcome earl:passed
+    ] ;
+    earl:subject <https://hex.pm/packages/json_ld> ;
+    earl:test <https://w3c.github.io/json-ld-api/tests/#tc033>
+] .
+
+[
+    a earl:Assertion ;
+    earl:assertedBy <http://marcelotto.net/#me> ;
+    earl:mode earl:automatic ;
+    earl:result [
+        a earl:TestResult ;
+        dc:date "2025-04-09T16:12:07.926208Z"^^xsd:dateTime ;
+        earl:outcome earl:passed
+    ] ;
+    earl:subject <https://hex.pm/packages/json_ld> ;
+    earl:test <https://w3c.github.io/json-ld-api/tests/#tdi08>
+] .
+
+[
+    a earl:Assertion ;
+    earl:assertedBy <http://marcelotto.net/#me> ;
+    earl:mode earl:automatic ;
+    earl:result [
+        a earl:TestResult ;
+        dc:date "2025-04-09T16:12:07.926208Z"^^xsd:dateTime ;
+        earl:outcome earl:passed
+    ] ;
+    earl:subject <https://hex.pm/packages/json_ld> ;
+    earl:test <https://w3c.github.io/json-ld-api/tests/#te123>
+] .
+
+[
+    a earl:Assertion ;
+    earl:assertedBy <http://marcelotto.net/#me> ;
+    earl:mode earl:automatic ;
+    earl:result [
+        a earl:TestResult ;
+        dc:date "2025-04-09T16:12:07.926208Z"^^xsd:dateTime ;
+        earl:outcome earl:passed
+    ] ;
+    earl:subject <https://hex.pm/packages/json_ld> ;
+    earl:test <https://w3c.github.io/json-ld-api/tests/#tec01>
+] .
+
+[
+    a earl:Assertion ;
+    earl:assertedBy <http://marcelotto.net/#me> ;
+    earl:mode earl:automatic ;
+    earl:result [
+        a earl:TestResult ;
+        dc:date "2025-04-09T16:12:07.926208Z"^^xsd:dateTime ;
+        earl:outcome earl:passed
+    ] ;
+    earl:subject <https://hex.pm/packages/json_ld> ;
+    earl:test <https://w3c.github.io/json-ld-api/tests/#tec02>
+] .
+
+[
+    a earl:Assertion ;
+    earl:assertedBy <http://marcelotto.net/#me> ;
+    earl:mode earl:automatic ;
+    earl:result [
+        a earl:TestResult ;
+        dc:date "2025-04-09T16:12:07.926208Z"^^xsd:dateTime ;
+        earl:outcome earl:passed
+    ] ;
+    earl:subject <https://hex.pm/packages/json_ld> ;
+    earl:test <https://w3c.github.io/json-ld-api/tests/#tem01>
+] .
+
+[
+    a earl:Assertion ;
+    earl:assertedBy <http://marcelotto.net/#me> ;
+    earl:mode earl:automatic ;
+    earl:result [
+        a earl:TestResult ;
+        dc:date "2025-04-09T16:12:07.926208Z"^^xsd:dateTime ;
+        earl:outcome earl:passed
+    ] ;
+    earl:subject <https://hex.pm/packages/json_ld> ;
+    earl:test <https://w3c.github.io/json-ld-api/tests/#ten01>
+] .
+
+[
+    a earl:Assertion ;
+    earl:assertedBy <http://marcelotto.net/#me> ;
+    earl:mode earl:automatic ;
+    earl:result [
+        a earl:TestResult ;
+        dc:date "2025-04-09T16:12:07.926208Z"^^xsd:dateTime ;
+        earl:outcome earl:passed
+    ] ;
+    earl:subject <https://hex.pm/packages/json_ld> ;
+    earl:test <https://w3c.github.io/json-ld-api/tests/#ten02>
+] .
+
+[
+    a earl:Assertion ;
+    earl:assertedBy <http://marcelotto.net/#me> ;
+    earl:mode earl:automatic ;
+    earl:result [
+        a earl:TestResult ;
+        dc:date "2025-04-09T16:12:07.926208Z"^^xsd:dateTime ;
+        earl:outcome earl:passed
+    ] ;
+    earl:subject <https://hex.pm/packages/json_ld> ;
+    earl:test <https://w3c.github.io/json-ld-api/tests/#ten03>
+] .
+
+[
+    a earl:Assertion ;
+    earl:assertedBy <http://marcelotto.net/#me> ;
+    earl:mode earl:automatic ;
+    earl:result [
+        a earl:TestResult ;
+        dc:date "2025-04-09T16:12:07.926208Z"^^xsd:dateTime ;
+        earl:outcome earl:passed
+    ] ;
+    earl:subject <https://hex.pm/packages/json_ld> ;
+    earl:test <https://w3c.github.io/json-ld-api/tests/#ten04>
+] .
+
+[
+    a earl:Assertion ;
+    earl:assertedBy <http://marcelotto.net/#me> ;
+    earl:mode earl:automatic ;
+    earl:result [
+        a earl:TestResult ;
+        dc:date "2025-04-09T16:12:07.926208Z"^^xsd:dateTime ;
+        earl:outcome earl:passed
+    ] ;
+    earl:subject <https://hex.pm/packages/json_ld> ;
+    earl:test <https://w3c.github.io/json-ld-api/tests/#ten05>
+] .
+
+[
+    a earl:Assertion ;
+    earl:assertedBy <http://marcelotto.net/#me> ;
+    earl:mode earl:automatic ;
+    earl:result [
+        a earl:TestResult ;
+        dc:date "2025-04-09T16:12:07.926208Z"^^xsd:dateTime ;
+        earl:outcome earl:passed
+    ] ;
+    earl:subject <https://hex.pm/packages/json_ld> ;
+    earl:test <https://w3c.github.io/json-ld-api/tests/#ten06>
+] .
+
+[
+    a earl:Assertion ;
+    earl:assertedBy <http://marcelotto.net/#me> ;
+    earl:mode earl:automatic ;
+    earl:result [
+        a earl:TestResult ;
+        dc:date "2025-04-09T16:12:07.926208Z"^^xsd:dateTime ;
+        earl:outcome earl:passed
+    ] ;
+    earl:subject <https://hex.pm/packages/json_ld> ;
+    earl:test <https://w3c.github.io/json-ld-api/tests/#tep02>
+] .
+
+[
+    a earl:Assertion ;
+    earl:assertedBy <http://marcelotto.net/#me> ;
+    earl:mode earl:automatic ;
+    earl:result [
+        a earl:TestResult ;
+        dc:date "2025-04-09T16:12:07.926208Z"^^xsd:dateTime ;
+        earl:outcome earl:passed
+    ] ;
+    earl:subject <https://hex.pm/packages/json_ld> ;
+    earl:test <https://w3c.github.io/json-ld-api/tests/#tep03>
+] .
+
+[
+    a earl:Assertion ;
+    earl:assertedBy <http://marcelotto.net/#me> ;
+    earl:mode earl:automatic ;
+    earl:result [
+        a earl:TestResult ;
+        dc:date "2025-04-09T16:12:07.926208Z"^^xsd:dateTime ;
+        earl:outcome earl:passed
+    ] ;
+    earl:subject <https://hex.pm/packages/json_ld> ;
+    earl:test <https://w3c.github.io/json-ld-api/tests/#ter01>
+] .
+
+[
+    a earl:Assertion ;
+    earl:assertedBy <http://marcelotto.net/#me> ;
+    earl:mode earl:automatic ;
+    earl:result [
+        a earl:TestResult ;
+        dc:date "2025-04-09T16:12:07.926208Z"^^xsd:dateTime ;
+        earl:outcome earl:passed
+    ] ;
+    earl:subject <https://hex.pm/packages/json_ld> ;
+    earl:test <https://w3c.github.io/json-ld-api/tests/#ter04>
+] .
+
+[
+    a earl:Assertion ;
+    earl:assertedBy <http://marcelotto.net/#me> ;
+    earl:mode earl:automatic ;
+    earl:result [
+        a earl:TestResult ;
+        dc:date "2025-04-09T16:12:07.926208Z"^^xsd:dateTime ;
+        earl:outcome earl:passed
+    ] ;
+    earl:subject <https://hex.pm/packages/json_ld> ;
+    earl:test <https://w3c.github.io/json-ld-api/tests/#ter05>
+] .
+
+[
+    a earl:Assertion ;
+    earl:assertedBy <http://marcelotto.net/#me> ;
+    earl:mode earl:automatic ;
+    earl:result [
+        a earl:TestResult ;
+        dc:date "2025-04-09T16:12:07.926208Z"^^xsd:dateTime ;
+        earl:outcome earl:passed
+    ] ;
+    earl:subject <https://hex.pm/packages/json_ld> ;
+    earl:test <https://w3c.github.io/json-ld-api/tests/#ter06>
+] .
+
+[
+    a earl:Assertion ;
+    earl:assertedBy <http://marcelotto.net/#me> ;
+    earl:mode earl:automatic ;
+    earl:result [
+        a earl:TestResult ;
+        dc:date "2025-04-09T16:12:07.926208Z"^^xsd:dateTime ;
+        earl:outcome earl:passed
+    ] ;
+    earl:subject <https://hex.pm/packages/json_ld> ;
+    earl:test <https://w3c.github.io/json-ld-api/tests/#ter07>
+] .
+
+[
+    a earl:Assertion ;
+    earl:assertedBy <http://marcelotto.net/#me> ;
+    earl:mode earl:automatic ;
+    earl:result [
+        a earl:TestResult ;
+        dc:date "2025-04-09T16:12:07.926208Z"^^xsd:dateTime ;
+        earl:outcome earl:passed
+    ] ;
+    earl:subject <https://hex.pm/packages/json_ld> ;
+    earl:test <https://w3c.github.io/json-ld-api/tests/#ter08>
+] .
+
+[
+    a earl:Assertion ;
+    earl:assertedBy <http://marcelotto.net/#me> ;
+    earl:mode earl:automatic ;
+    earl:result [
+        a earl:TestResult ;
+        dc:date "2025-04-09T16:12:07.926208Z"^^xsd:dateTime ;
+        earl:outcome earl:passed
+    ] ;
+    earl:subject <https://hex.pm/packages/json_ld> ;
+    earl:test <https://w3c.github.io/json-ld-api/tests/#ter09>
+] .
+
+[
+    a earl:Assertion ;
+    earl:assertedBy <http://marcelotto.net/#me> ;
+    earl:mode earl:automatic ;
+    earl:result [
+        a earl:TestResult ;
+        dc:date "2025-04-09T16:12:07.926208Z"^^xsd:dateTime ;
+        earl:outcome earl:passed
+    ] ;
+    earl:subject <https://hex.pm/packages/json_ld> ;
+    earl:test <https://w3c.github.io/json-ld-api/tests/#ter10>
+] .
+
+[
+    a earl:Assertion ;
+    earl:assertedBy <http://marcelotto.net/#me> ;
+    earl:mode earl:automatic ;
+    earl:result [
+        a earl:TestResult ;
+        dc:date "2025-04-09T16:12:07.926208Z"^^xsd:dateTime ;
+        earl:outcome earl:passed
+    ] ;
+    earl:subject <https://hex.pm/packages/json_ld> ;
+    earl:test <https://w3c.github.io/json-ld-api/tests/#ter11>
+] .
+
+[
+    a earl:Assertion ;
+    earl:assertedBy <http://marcelotto.net/#me> ;
+    earl:mode earl:automatic ;
+    earl:result [
+        a earl:TestResult ;
+        dc:date "2025-04-09T16:12:07.926208Z"^^xsd:dateTime ;
+        earl:outcome earl:passed
+    ] ;
+    earl:subject <https://hex.pm/packages/json_ld> ;
+    earl:test <https://w3c.github.io/json-ld-api/tests/#ter12>
+] .
+
+[
+    a earl:Assertion ;
+    earl:assertedBy <http://marcelotto.net/#me> ;
+    earl:mode earl:automatic ;
+    earl:result [
+        a earl:TestResult ;
+        dc:date "2025-04-09T16:12:07.926208Z"^^xsd:dateTime ;
+        earl:outcome earl:passed
+    ] ;
+    earl:subject <https://hex.pm/packages/json_ld> ;
+    earl:test <https://w3c.github.io/json-ld-api/tests/#ter13>
+] .
+
+[
+    a earl:Assertion ;
+    earl:assertedBy <http://marcelotto.net/#me> ;
+    earl:mode earl:automatic ;
+    earl:result [
+        a earl:TestResult ;
+        dc:date "2025-04-09T16:12:07.926208Z"^^xsd:dateTime ;
+        earl:outcome earl:passed
+    ] ;
+    earl:subject <https://hex.pm/packages/json_ld> ;
+    earl:test <https://w3c.github.io/json-ld-api/tests/#ter14>
+] .
+
+[
+    a earl:Assertion ;
+    earl:assertedBy <http://marcelotto.net/#me> ;
+    earl:mode earl:automatic ;
+    earl:result [
+        a earl:TestResult ;
+        dc:date "2025-04-09T16:12:07.926208Z"^^xsd:dateTime ;
+        earl:outcome earl:passed
+    ] ;
+    earl:subject <https://hex.pm/packages/json_ld> ;
+    earl:test <https://w3c.github.io/json-ld-api/tests/#ter15>
+] .
+
+[
+    a earl:Assertion ;
+    earl:assertedBy <http://marcelotto.net/#me> ;
+    earl:mode earl:automatic ;
+    earl:result [
+        a earl:TestResult ;
+        dc:date "2025-04-09T16:12:07.926208Z"^^xsd:dateTime ;
+        earl:outcome earl:passed
+    ] ;
+    earl:subject <https://hex.pm/packages/json_ld> ;
+    earl:test <https://w3c.github.io/json-ld-api/tests/#ter17>
+] .
+
+[
+    a earl:Assertion ;
+    earl:assertedBy <http://marcelotto.net/#me> ;
+    earl:mode earl:automatic ;
+    earl:result [
+        a earl:TestResult ;
+        dc:date "2025-04-09T16:12:07.926208Z"^^xsd:dateTime ;
+        earl:outcome earl:passed
+    ] ;
+    earl:subject <https://hex.pm/packages/json_ld> ;
+    earl:test <https://w3c.github.io/json-ld-api/tests/#ter18>
+] .
+
+[
+    a earl:Assertion ;
+    earl:assertedBy <http://marcelotto.net/#me> ;
+    earl:mode earl:automatic ;
+    earl:result [
+        a earl:TestResult ;
+        dc:date "2025-04-09T16:12:07.926208Z"^^xsd:dateTime ;
+        earl:outcome earl:passed
+    ] ;
+    earl:subject <https://hex.pm/packages/json_ld> ;
+    earl:test <https://w3c.github.io/json-ld-api/tests/#ter19>
+] .
+
+[
+    a earl:Assertion ;
+    earl:assertedBy <http://marcelotto.net/#me> ;
+    earl:mode earl:automatic ;
+    earl:result [
+        a earl:TestResult ;
+        dc:date "2025-04-09T16:12:07.926208Z"^^xsd:dateTime ;
+        earl:outcome earl:passed
+    ] ;
+    earl:subject <https://hex.pm/packages/json_ld> ;
+    earl:test <https://w3c.github.io/json-ld-api/tests/#ter20>
+] .
+
+[
+    a earl:Assertion ;
+    earl:assertedBy <http://marcelotto.net/#me> ;
+    earl:mode earl:automatic ;
+    earl:result [
+        a earl:TestResult ;
+        dc:date "2025-04-09T16:12:07.926208Z"^^xsd:dateTime ;
+        earl:outcome earl:passed
+    ] ;
+    earl:subject <https://hex.pm/packages/json_ld> ;
+    earl:test <https://w3c.github.io/json-ld-api/tests/#ter21>
+] .
+
+[
+    a earl:Assertion ;
+    earl:assertedBy <http://marcelotto.net/#me> ;
+    earl:mode earl:automatic ;
+    earl:result [
+        a earl:TestResult ;
+        dc:date "2025-04-09T16:12:07.926208Z"^^xsd:dateTime ;
+        earl:outcome earl:passed
+    ] ;
+    earl:subject <https://hex.pm/packages/json_ld> ;
+    earl:test <https://w3c.github.io/json-ld-api/tests/#ter22>
+] .
+
+[
+    a earl:Assertion ;
+    earl:assertedBy <http://marcelotto.net/#me> ;
+    earl:mode earl:automatic ;
+    earl:result [
+        a earl:TestResult ;
+        dc:date "2025-04-09T16:12:07.926208Z"^^xsd:dateTime ;
+        earl:outcome earl:passed
+    ] ;
+    earl:subject <https://hex.pm/packages/json_ld> ;
+    earl:test <https://w3c.github.io/json-ld-api/tests/#ter23>
+] .
+
+[
+    a earl:Assertion ;
+    earl:assertedBy <http://marcelotto.net/#me> ;
+    earl:mode earl:automatic ;
+    earl:result [
+        a earl:TestResult ;
+        dc:date "2025-04-09T16:12:07.926208Z"^^xsd:dateTime ;
+        earl:outcome earl:passed
+    ] ;
+    earl:subject <https://hex.pm/packages/json_ld> ;
+    earl:test <https://w3c.github.io/json-ld-api/tests/#ter25>
+] .
+
+[
+    a earl:Assertion ;
+    earl:assertedBy <http://marcelotto.net/#me> ;
+    earl:mode earl:automatic ;
+    earl:result [
+        a earl:TestResult ;
+        dc:date "2025-04-09T16:12:07.926208Z"^^xsd:dateTime ;
+        earl:outcome earl:passed
+    ] ;
+    earl:subject <https://hex.pm/packages/json_ld> ;
+    earl:test <https://w3c.github.io/json-ld-api/tests/#ter26>
+] .
+
+[
+    a earl:Assertion ;
+    earl:assertedBy <http://marcelotto.net/#me> ;
+    earl:mode earl:automatic ;
+    earl:result [
+        a earl:TestResult ;
+        dc:date "2025-04-09T16:12:07.926208Z"^^xsd:dateTime ;
+        earl:outcome earl:passed
+    ] ;
+    earl:subject <https://hex.pm/packages/json_ld> ;
+    earl:test <https://w3c.github.io/json-ld-api/tests/#ter27>
+] .
+
+[
+    a earl:Assertion ;
+    earl:assertedBy <http://marcelotto.net/#me> ;
+    earl:mode earl:automatic ;
+    earl:result [
+        a earl:TestResult ;
+        dc:date "2025-04-09T16:12:07.926208Z"^^xsd:dateTime ;
+        earl:outcome earl:passed
+    ] ;
+    earl:subject <https://hex.pm/packages/json_ld> ;
+    earl:test <https://w3c.github.io/json-ld-api/tests/#ter28>
+] .
+
+[
+    a earl:Assertion ;
+    earl:assertedBy <http://marcelotto.net/#me> ;
+    earl:mode earl:automatic ;
+    earl:result [
+        a earl:TestResult ;
+        dc:date "2025-04-09T16:12:07.926208Z"^^xsd:dateTime ;
+        earl:outcome earl:passed
+    ] ;
+    earl:subject <https://hex.pm/packages/json_ld> ;
+    earl:test <https://w3c.github.io/json-ld-api/tests/#ter29>
+] .
+
+[
+    a earl:Assertion ;
+    earl:assertedBy <http://marcelotto.net/#me> ;
+    earl:mode earl:automatic ;
+    earl:result [
+        a earl:TestResult ;
+        dc:date "2025-04-09T16:12:07.926208Z"^^xsd:dateTime ;
+        earl:outcome earl:passed
+    ] ;
+    earl:subject <https://hex.pm/packages/json_ld> ;
+    earl:test <https://w3c.github.io/json-ld-api/tests/#ter30>
+] .
+
+[
+    a earl:Assertion ;
+    earl:assertedBy <http://marcelotto.net/#me> ;
+    earl:mode earl:automatic ;
+    earl:result [
+        a earl:TestResult ;
+        dc:date "2025-04-09T16:12:07.926208Z"^^xsd:dateTime ;
+        earl:outcome earl:passed
+    ] ;
+    earl:subject <https://hex.pm/packages/json_ld> ;
+    earl:test <https://w3c.github.io/json-ld-api/tests/#ter31>
+] .
+
+[
+    a earl:Assertion ;
+    earl:assertedBy <http://marcelotto.net/#me> ;
+    earl:mode earl:automatic ;
+    earl:result [
+        a earl:TestResult ;
+        dc:date "2025-04-09T16:12:07.926208Z"^^xsd:dateTime ;
+        earl:outcome earl:passed
+    ] ;
+    earl:subject <https://hex.pm/packages/json_ld> ;
+    earl:test <https://w3c.github.io/json-ld-api/tests/#ter33>
+] .
+
+[
+    a earl:Assertion ;
+    earl:assertedBy <http://marcelotto.net/#me> ;
+    earl:mode earl:automatic ;
+    earl:result [
+        a earl:TestResult ;
+        dc:date "2025-04-09T16:12:07.926208Z"^^xsd:dateTime ;
+        earl:outcome earl:passed
+    ] ;
+    earl:subject <https://hex.pm/packages/json_ld> ;
+    earl:test <https://w3c.github.io/json-ld-api/tests/#ter34>
+] .
+
+[
+    a earl:Assertion ;
+    earl:assertedBy <http://marcelotto.net/#me> ;
+    earl:mode earl:automatic ;
+    earl:result [
+        a earl:TestResult ;
+        dc:date "2025-04-09T16:12:07.926208Z"^^xsd:dateTime ;
+        earl:outcome earl:passed
+    ] ;
+    earl:subject <https://hex.pm/packages/json_ld> ;
+    earl:test <https://w3c.github.io/json-ld-api/tests/#ter35>
+] .
+
+[
+    a earl:Assertion ;
+    earl:assertedBy <http://marcelotto.net/#me> ;
+    earl:mode earl:automatic ;
+    earl:result [
+        a earl:TestResult ;
+        dc:date "2025-04-09T16:12:07.926208Z"^^xsd:dateTime ;
+        earl:outcome earl:passed
+    ] ;
+    earl:subject <https://hex.pm/packages/json_ld> ;
+    earl:test <https://w3c.github.io/json-ld-api/tests/#ter36>
+] .
+
+[
+    a earl:Assertion ;
+    earl:assertedBy <http://marcelotto.net/#me> ;
+    earl:mode earl:automatic ;
+    earl:result [
+        a earl:TestResult ;
+        dc:date "2025-04-09T16:12:07.926208Z"^^xsd:dateTime ;
+        earl:outcome earl:passed
+    ] ;
+    earl:subject <https://hex.pm/packages/json_ld> ;
+    earl:test <https://w3c.github.io/json-ld-api/tests/#ter37>
+] .
+
+[
+    a earl:Assertion ;
+    earl:assertedBy <http://marcelotto.net/#me> ;
+    earl:mode earl:automatic ;
+    earl:result [
+        a earl:TestResult ;
+        dc:date "2025-04-09T16:12:07.926208Z"^^xsd:dateTime ;
+        earl:outcome earl:passed
+    ] ;
+    earl:subject <https://hex.pm/packages/json_ld> ;
+    earl:test <https://w3c.github.io/json-ld-api/tests/#ter38>
+] .
+
+[
+    a earl:Assertion ;
+    earl:assertedBy <http://marcelotto.net/#me> ;
+    earl:mode earl:automatic ;
+    earl:result [
+        a earl:TestResult ;
+        dc:date "2025-04-09T16:12:07.926208Z"^^xsd:dateTime ;
+        earl:outcome earl:passed
+    ] ;
+    earl:subject <https://hex.pm/packages/json_ld> ;
+    earl:test <https://w3c.github.io/json-ld-api/tests/#ter39>
+] .
+
+[
+    a earl:Assertion ;
+    earl:assertedBy <http://marcelotto.net/#me> ;
+    earl:mode earl:automatic ;
+    earl:result [
+        a earl:TestResult ;
+        dc:date "2025-04-09T16:12:07.926208Z"^^xsd:dateTime ;
+        earl:outcome earl:passed
+    ] ;
+    earl:subject <https://hex.pm/packages/json_ld> ;
+    earl:test <https://w3c.github.io/json-ld-api/tests/#ter40>
+] .
+
+[
+    a earl:Assertion ;
+    earl:assertedBy <http://marcelotto.net/#me> ;
+    earl:mode earl:automatic ;
+    earl:result [
+        a earl:TestResult ;
+        dc:date "2025-04-09T16:12:07.926208Z"^^xsd:dateTime ;
+        earl:outcome earl:passed
+    ] ;
+    earl:subject <https://hex.pm/packages/json_ld> ;
+    earl:test <https://w3c.github.io/json-ld-api/tests/#ter41>
+] .
+
+[
+    a earl:Assertion ;
+    earl:assertedBy <http://marcelotto.net/#me> ;
+    earl:mode earl:automatic ;
+    earl:result [
+        a earl:TestResult ;
+        dc:date "2025-04-09T16:12:07.926208Z"^^xsd:dateTime ;
+        earl:outcome earl:passed
+    ] ;
+    earl:subject <https://hex.pm/packages/json_ld> ;
+    earl:test <https://w3c.github.io/json-ld-api/tests/#ter42>
+] .
+
+[
+    a earl:Assertion ;
+    earl:assertedBy <http://marcelotto.net/#me> ;
+    earl:mode earl:automatic ;
+    earl:result [
+        a earl:TestResult ;
+        dc:date "2025-04-09T16:12:07.926208Z"^^xsd:dateTime ;
+        earl:outcome earl:passed
+    ] ;
+    earl:subject <https://hex.pm/packages/json_ld> ;
+    earl:test <https://w3c.github.io/json-ld-api/tests/#ter43>
+] .
+
+[
+    a earl:Assertion ;
+    earl:assertedBy <http://marcelotto.net/#me> ;
+    earl:mode earl:automatic ;
+    earl:result [
+        a earl:TestResult ;
+        dc:date "2025-04-09T16:12:07.926208Z"^^xsd:dateTime ;
+        earl:outcome earl:passed
+    ] ;
+    earl:subject <https://hex.pm/packages/json_ld> ;
+    earl:test <https://w3c.github.io/json-ld-api/tests/#ter44>
+] .
+
+[
+    a earl:Assertion ;
+    earl:assertedBy <http://marcelotto.net/#me> ;
+    earl:mode earl:automatic ;
+    earl:result [
+        a earl:TestResult ;
+        dc:date "2025-04-09T16:12:07.926208Z"^^xsd:dateTime ;
+        earl:outcome earl:passed
+    ] ;
+    earl:subject <https://hex.pm/packages/json_ld> ;
+    earl:test <https://w3c.github.io/json-ld-api/tests/#ter48>
+] .
+
+[
+    a earl:Assertion ;
+    earl:assertedBy <http://marcelotto.net/#me> ;
+    earl:mode earl:automatic ;
+    earl:result [
+        a earl:TestResult ;
+        dc:date "2025-04-09T16:12:07.926208Z"^^xsd:dateTime ;
+        earl:outcome earl:passed
+    ] ;
+    earl:subject <https://hex.pm/packages/json_ld> ;
+    earl:test <https://w3c.github.io/json-ld-api/tests/#ter49>
+] .
+
+[
+    a earl:Assertion ;
+    earl:assertedBy <http://marcelotto.net/#me> ;
+    earl:mode earl:automatic ;
+    earl:result [
+        a earl:TestResult ;
+        dc:date "2025-04-09T16:12:07.926208Z"^^xsd:dateTime ;
+        earl:outcome earl:passed
+    ] ;
+    earl:subject <https://hex.pm/packages/json_ld> ;
+    earl:test <https://w3c.github.io/json-ld-api/tests/#ter50>
+] .
+
+[
+    a earl:Assertion ;
+    earl:assertedBy <http://marcelotto.net/#me> ;
+    earl:mode earl:automatic ;
+    earl:result [
+        a earl:TestResult ;
+        dc:date "2025-04-09T16:12:07.926208Z"^^xsd:dateTime ;
+        earl:outcome earl:passed
+    ] ;
+    earl:subject <https://hex.pm/packages/json_ld> ;
+    earl:test <https://w3c.github.io/json-ld-api/tests/#ter51>
+] .
+
+[
+    a earl:Assertion ;
+    earl:assertedBy <http://marcelotto.net/#me> ;
+    earl:mode earl:automatic ;
+    earl:result [
+        a earl:TestResult ;
+        dc:date "2025-04-09T16:12:07.926208Z"^^xsd:dateTime ;
+        earl:outcome earl:passed
+    ] ;
+    earl:subject <https://hex.pm/packages/json_ld> ;
+    earl:test <https://w3c.github.io/json-ld-api/tests/#ter52>
+] .
+
+[
+    a earl:Assertion ;
+    earl:assertedBy <http://marcelotto.net/#me> ;
+    earl:mode earl:automatic ;
+    earl:result [
+        a earl:TestResult ;
+        dc:date "2025-04-09T16:12:07.926208Z"^^xsd:dateTime ;
+        earl:outcome earl:passed
+    ] ;
+    earl:subject <https://hex.pm/packages/json_ld> ;
+    earl:test <https://w3c.github.io/json-ld-api/tests/#ter53>
+] .
+
+[
+    a earl:Assertion ;
+    earl:assertedBy <http://marcelotto.net/#me> ;
+    earl:mode earl:automatic ;
+    earl:result [
+        a earl:TestResult ;
+        dc:date "2025-04-09T16:12:07.926208Z"^^xsd:dateTime ;
+        earl:outcome earl:passed
+    ] ;
+    earl:subject <https://hex.pm/packages/json_ld> ;
+    earl:test <https://w3c.github.io/json-ld-api/tests/#ter54>
+] .
+
+[
+    a earl:Assertion ;
+    earl:assertedBy <http://marcelotto.net/#me> ;
+    earl:mode earl:automatic ;
+    earl:result [
+        a earl:TestResult ;
+        dc:date "2025-04-09T16:12:07.926208Z"^^xsd:dateTime ;
+        earl:outcome earl:passed
+    ] ;
+    earl:subject <https://hex.pm/packages/json_ld> ;
+    earl:test <https://w3c.github.io/json-ld-api/tests/#ter55>
+] .
+
+[
+    a earl:Assertion ;
+    earl:assertedBy <http://marcelotto.net/#me> ;
+    earl:mode earl:automatic ;
+    earl:result [
+        a earl:TestResult ;
+        dc:date "2025-04-09T16:12:07.926208Z"^^xsd:dateTime ;
+        earl:outcome earl:passed
+    ] ;
+    earl:subject <https://hex.pm/packages/json_ld> ;
+    earl:test <https://w3c.github.io/json-ld-api/tests/#ter56>
+] .
+
+[
+    a earl:Assertion ;
+    earl:assertedBy <http://marcelotto.net/#me> ;
+    earl:mode earl:automatic ;
+    earl:result [
+        a earl:TestResult ;
+        dc:date "2025-04-09T16:12:07.926208Z"^^xsd:dateTime ;
+        earl:outcome earl:passed
+    ] ;
+    earl:subject <https://hex.pm/packages/json_ld> ;
+    earl:test <https://w3c.github.io/json-ld-api/tests/#tin07>
+] .
+
+[
+    a earl:Assertion ;
+    earl:assertedBy <http://marcelotto.net/#me> ;
+    earl:mode earl:automatic ;
+    earl:result [
+        a earl:TestResult ;
+        dc:date "2025-04-09T16:12:07.926208Z"^^xsd:dateTime ;
+        earl:outcome earl:passed
+    ] ;
+    earl:subject <https://hex.pm/packages/json_ld> ;
+    earl:test <https://w3c.github.io/json-ld-api/tests/#tin08>
+] .
+
+[
+    a earl:Assertion ;
+    earl:assertedBy <http://marcelotto.net/#me> ;
+    earl:mode earl:automatic ;
+    earl:result [
+        a earl:TestResult ;
+        dc:date "2025-04-09T16:12:07.926208Z"^^xsd:dateTime ;
+        earl:outcome earl:passed
+    ] ;
+    earl:subject <https://hex.pm/packages/json_ld> ;
+    earl:test <https://w3c.github.io/json-ld-api/tests/#tin09>
+] .
+
+[
+    a earl:Assertion ;
+    earl:assertedBy <http://marcelotto.net/#me> ;
+    earl:mode earl:automatic ;
+    earl:result [
+        a earl:TestResult ;
+        dc:date "2025-04-09T16:12:07.926208Z"^^xsd:dateTime ;
+        earl:outcome earl:passed
+    ] ;
+    earl:subject <https://hex.pm/packages/json_ld> ;
+    earl:test <https://w3c.github.io/json-ld-api/tests/#tm020>
+] .
+
+[
+    a earl:Assertion ;
+    earl:assertedBy <http://marcelotto.net/#me> ;
+    earl:mode earl:automatic ;
+    earl:result [
+        a earl:TestResult ;
+        dc:date "2025-04-09T16:12:07.926208Z"^^xsd:dateTime ;
+        earl:outcome earl:passed
+    ] ;
+    earl:subject <https://hex.pm/packages/json_ld> ;
+    earl:test <https://w3c.github.io/json-ld-api/tests/#tpi01>
+] .
+
+[
+    a earl:Assertion ;
+    earl:assertedBy <http://marcelotto.net/#me> ;
+    earl:mode earl:automatic ;
+    earl:result [
+        a earl:TestResult ;
+        dc:date "2025-04-09T16:12:07.926208Z"^^xsd:dateTime ;
+        earl:outcome earl:passed
+    ] ;
+    earl:subject <https://hex.pm/packages/json_ld> ;
+    earl:test <https://w3c.github.io/json-ld-api/tests/#tpi02>
+] .
+
+[
+    a earl:Assertion ;
+    earl:assertedBy <http://marcelotto.net/#me> ;
+    earl:mode earl:automatic ;
+    earl:result [
+        a earl:TestResult ;
+        dc:date "2025-04-09T16:12:07.926208Z"^^xsd:dateTime ;
+        earl:outcome earl:passed
+    ] ;
+    earl:subject <https://hex.pm/packages/json_ld> ;
+    earl:test <https://w3c.github.io/json-ld-api/tests/#tpi03>
+] .
+
+[
+    a earl:Assertion ;
+    earl:assertedBy <http://marcelotto.net/#me> ;
+    earl:mode earl:automatic ;
+    earl:result [
+        a earl:TestResult ;
+        dc:date "2025-04-09T16:12:07.926208Z"^^xsd:dateTime ;
+        earl:outcome earl:passed
+    ] ;
+    earl:subject <https://hex.pm/packages/json_ld> ;
+    earl:test <https://w3c.github.io/json-ld-api/tests/#tpi04>
+] .
+
+[
+    a earl:Assertion ;
+    earl:assertedBy <http://marcelotto.net/#me> ;
+    earl:mode earl:automatic ;
+    earl:result [
+        a earl:TestResult ;
+        dc:date "2025-04-09T16:12:07.926208Z"^^xsd:dateTime ;
+        earl:outcome earl:passed
+    ] ;
+    earl:subject <https://hex.pm/packages/json_ld> ;
+    earl:test <https://w3c.github.io/json-ld-api/tests/#tpi05>
+] .
+
+[
+    a earl:Assertion ;
+    earl:assertedBy <http://marcelotto.net/#me> ;
+    earl:mode earl:automatic ;
+    earl:result [
+        a earl:TestResult ;
+        dc:date "2025-04-09T16:12:07.926208Z"^^xsd:dateTime ;
+        earl:outcome earl:passed
+    ] ;
+    earl:subject <https://hex.pm/packages/json_ld> ;
+    earl:test <https://w3c.github.io/json-ld-api/tests/#tpr01>
+] .
+
+[
+    a earl:Assertion ;
+    earl:assertedBy <http://marcelotto.net/#me> ;
+    earl:mode earl:automatic ;
+    earl:result [
+        a earl:TestResult ;
+        dc:date "2025-04-09T16:12:07.926208Z"^^xsd:dateTime ;
+        earl:outcome earl:passed
+    ] ;
+    earl:subject <https://hex.pm/packages/json_ld> ;
+    earl:test <https://w3c.github.io/json-ld-api/tests/#tpr03>
+] .
+
+[
+    a earl:Assertion ;
+    earl:assertedBy <http://marcelotto.net/#me> ;
+    earl:mode earl:automatic ;
+    earl:result [
+        a earl:TestResult ;
+        dc:date "2025-04-09T16:12:07.926208Z"^^xsd:dateTime ;
+        earl:outcome earl:passed
+    ] ;
+    earl:subject <https://hex.pm/packages/json_ld> ;
+    earl:test <https://w3c.github.io/json-ld-api/tests/#tpr04>
+] .
+
+[
+    a earl:Assertion ;
+    earl:assertedBy <http://marcelotto.net/#me> ;
+    earl:mode earl:automatic ;
+    earl:result [
+        a earl:TestResult ;
+        dc:date "2025-04-09T16:12:07.926208Z"^^xsd:dateTime ;
+        earl:outcome earl:passed
+    ] ;
+    earl:subject <https://hex.pm/packages/json_ld> ;
+    earl:test <https://w3c.github.io/json-ld-api/tests/#tpr05>
+] .
+
+[
+    a earl:Assertion ;
+    earl:assertedBy <http://marcelotto.net/#me> ;
+    earl:mode earl:automatic ;
+    earl:result [
+        a earl:TestResult ;
+        dc:date "2025-04-09T16:12:07.926208Z"^^xsd:dateTime ;
+        earl:outcome earl:passed
+    ] ;
+    earl:subject <https://hex.pm/packages/json_ld> ;
+    earl:test <https://w3c.github.io/json-ld-api/tests/#tpr08>
+] .
+
+[
+    a earl:Assertion ;
+    earl:assertedBy <http://marcelotto.net/#me> ;
+    earl:mode earl:automatic ;
+    earl:result [
+        a earl:TestResult ;
+        dc:date "2025-04-09T16:12:07.926208Z"^^xsd:dateTime ;
+        earl:outcome earl:passed
+    ] ;
+    earl:subject <https://hex.pm/packages/json_ld> ;
+    earl:test <https://w3c.github.io/json-ld-api/tests/#tpr09>
+] .
+
+[
+    a earl:Assertion ;
+    earl:assertedBy <http://marcelotto.net/#me> ;
+    earl:mode earl:automatic ;
+    earl:result [
+        a earl:TestResult ;
+        dc:date "2025-04-09T16:12:07.926208Z"^^xsd:dateTime ;
+        earl:outcome earl:passed
+    ] ;
+    earl:subject <https://hex.pm/packages/json_ld> ;
+    earl:test <https://w3c.github.io/json-ld-api/tests/#tpr11>
+] .
+
+[
+    a earl:Assertion ;
+    earl:assertedBy <http://marcelotto.net/#me> ;
+    earl:mode earl:automatic ;
+    earl:result [
+        a earl:TestResult ;
+        dc:date "2025-04-09T16:12:07.926208Z"^^xsd:dateTime ;
+        earl:outcome earl:passed
+    ] ;
+    earl:subject <https://hex.pm/packages/json_ld> ;
+    earl:test <https://w3c.github.io/json-ld-api/tests/#tpr12>
+] .
+
+[
+    a earl:Assertion ;
+    earl:assertedBy <http://marcelotto.net/#me> ;
+    earl:mode earl:automatic ;
+    earl:result [
+        a earl:TestResult ;
+        dc:date "2025-04-09T16:12:07.926208Z"^^xsd:dateTime ;
+        earl:outcome earl:passed
+    ] ;
+    earl:subject <https://hex.pm/packages/json_ld> ;
+    earl:test <https://w3c.github.io/json-ld-api/tests/#tpr17>
+] .
+
+[
+    a earl:Assertion ;
+    earl:assertedBy <http://marcelotto.net/#me> ;
+    earl:mode earl:automatic ;
+    earl:result [
+        a earl:TestResult ;
+        dc:date "2025-04-09T16:12:07.926208Z"^^xsd:dateTime ;
+        earl:outcome earl:passed
+    ] ;
+    earl:subject <https://hex.pm/packages/json_ld> ;
+    earl:test <https://w3c.github.io/json-ld-api/tests/#tpr18>
+] .
+
+[
+    a earl:Assertion ;
+    earl:assertedBy <http://marcelotto.net/#me> ;
+    earl:mode earl:automatic ;
+    earl:result [
+        a earl:TestResult ;
+        dc:date "2025-04-09T16:12:07.926208Z"^^xsd:dateTime ;
+        earl:outcome earl:passed
+    ] ;
+    earl:subject <https://hex.pm/packages/json_ld> ;
+    earl:test <https://w3c.github.io/json-ld-api/tests/#tpr20>
+] .
+
+[
+    a earl:Assertion ;
+    earl:assertedBy <http://marcelotto.net/#me> ;
+    earl:mode earl:automatic ;
+    earl:result [
+        a earl:TestResult ;
+        dc:date "2025-04-09T16:12:07.926208Z"^^xsd:dateTime ;
+        earl:outcome earl:passed
+    ] ;
+    earl:subject <https://hex.pm/packages/json_ld> ;
+    earl:test <https://w3c.github.io/json-ld-api/tests/#tpr21>
+] .
+
+[
+    a earl:Assertion ;
+    earl:assertedBy <http://marcelotto.net/#me> ;
+    earl:mode earl:automatic ;
+    earl:result [
+        a earl:TestResult ;
+        dc:date "2025-04-09T16:12:07.926208Z"^^xsd:dateTime ;
+        earl:outcome earl:passed
+    ] ;
+    earl:subject <https://hex.pm/packages/json_ld> ;
+    earl:test <https://w3c.github.io/json-ld-api/tests/#tpr26>
+] .
+
+[
+    a earl:Assertion ;
+    earl:assertedBy <http://marcelotto.net/#me> ;
+    earl:mode earl:automatic ;
+    earl:result [
+        a earl:TestResult ;
+        dc:date "2025-04-09T16:12:07.926208Z"^^xsd:dateTime ;
+        earl:outcome earl:passed
+    ] ;
+    earl:subject <https://hex.pm/packages/json_ld> ;
+    earl:test <https://w3c.github.io/json-ld-api/tests/#tpr28>
+] .
+
+[
+    a earl:Assertion ;
+    earl:assertedBy <http://marcelotto.net/#me> ;
+    earl:mode earl:automatic ;
+    earl:result [
+        a earl:TestResult ;
+        dc:date "2025-04-09T16:12:07.926208Z"^^xsd:dateTime ;
+        earl:outcome earl:passed
+    ] ;
+    earl:subject <https://hex.pm/packages/json_ld> ;
+    earl:test <https://w3c.github.io/json-ld-api/tests/#tpr31>
+] .
+
+[
+    a earl:Assertion ;
+    earl:assertedBy <http://marcelotto.net/#me> ;
+    earl:mode earl:automatic ;
+    earl:result [
+        a earl:TestResult ;
+        dc:date "2025-04-09T16:12:07.926208Z"^^xsd:dateTime ;
+        earl:outcome earl:passed
+    ] ;
+    earl:subject <https://hex.pm/packages/json_ld> ;
+    earl:test <https://w3c.github.io/json-ld-api/tests/#tpr32>
+] .
+
+[
+    a earl:Assertion ;
+    earl:assertedBy <http://marcelotto.net/#me> ;
+    earl:mode earl:automatic ;
+    earl:result [
+        a earl:TestResult ;
+        dc:date "2025-04-09T16:12:07.926208Z"^^xsd:dateTime ;
+        earl:outcome earl:passed
+    ] ;
+    earl:subject <https://hex.pm/packages/json_ld> ;
+    earl:test <https://w3c.github.io/json-ld-api/tests/#tpr33>
+] .
+
+[
+    a earl:Assertion ;
+    earl:assertedBy <http://marcelotto.net/#me> ;
+    earl:mode earl:automatic ;
+    earl:result [
+        a earl:TestResult ;
+        dc:date "2025-04-09T16:12:07.926208Z"^^xsd:dateTime ;
+        earl:outcome earl:passed
+    ] ;
+    earl:subject <https://hex.pm/packages/json_ld> ;
+    earl:test <https://w3c.github.io/json-ld-api/tests/#tpr42>
+] .
+
+[
+    a earl:Assertion ;
+    earl:assertedBy <http://marcelotto.net/#me> ;
+    earl:mode earl:automatic ;
+    earl:result [
+        a earl:TestResult ;
+        dc:date "2025-04-09T16:12:07.926208Z"^^xsd:dateTime ;
+        earl:outcome earl:passed
+    ] ;
+    earl:subject <https://hex.pm/packages/json_ld> ;
+    earl:test <https://w3c.github.io/json-ld-api/tests/#tso01>
+] .
+
+[
+    a earl:Assertion ;
+    earl:assertedBy <http://marcelotto.net/#me> ;
+    earl:mode earl:automatic ;
+    earl:result [
+        a earl:TestResult ;
+        dc:date "2025-04-09T16:12:07.926208Z"^^xsd:dateTime ;
+        earl:outcome earl:passed
+    ] ;
+    earl:subject <https://hex.pm/packages/json_ld> ;
+    earl:test <https://w3c.github.io/json-ld-api/tests/#tso02>
+] .
+
+[
+    a earl:Assertion ;
+    earl:assertedBy <http://marcelotto.net/#me> ;
+    earl:mode earl:automatic ;
+    earl:result [
+        a earl:TestResult ;
+        dc:date "2025-04-09T16:12:07.926208Z"^^xsd:dateTime ;
+        earl:outcome earl:passed
+    ] ;
+    earl:subject <https://hex.pm/packages/json_ld> ;
+    earl:test <https://w3c.github.io/json-ld-api/tests/#tso03>
+] .
+
+[
+    a earl:Assertion ;
+    earl:assertedBy <http://marcelotto.net/#me> ;
+    earl:mode earl:automatic ;
+    earl:result [
+        a earl:TestResult ;
+        dc:date "2025-04-09T16:12:07.926208Z"^^xsd:dateTime ;
+        earl:outcome earl:passed
+    ] ;
+    earl:subject <https://hex.pm/packages/json_ld> ;
+    earl:test <https://w3c.github.io/json-ld-api/tests/#tso07>
+] .
+
+[
+    a earl:Assertion ;
+    earl:assertedBy <http://marcelotto.net/#me> ;
+    earl:mode earl:automatic ;
+    earl:result [
+        a earl:TestResult ;
+        dc:date "2025-04-09T16:12:07.926208Z"^^xsd:dateTime ;
+        earl:outcome earl:passed
+    ] ;
+    earl:subject <https://hex.pm/packages/json_ld> ;
+    earl:test <https://w3c.github.io/json-ld-api/tests/#tso10>
+] .
+
+[
+    a earl:Assertion ;
+    earl:assertedBy <http://marcelotto.net/#me> ;
+    earl:mode earl:automatic ;
+    earl:result [
+        a earl:TestResult ;
+        dc:date "2025-04-09T16:12:07.926208Z"^^xsd:dateTime ;
+        earl:outcome earl:passed
+    ] ;
+    earl:subject <https://hex.pm/packages/json_ld> ;
+    earl:test <https://w3c.github.io/json-ld-api/tests/#tso12>
+] .
+
+[
+    a earl:Assertion ;
+    earl:assertedBy <http://marcelotto.net/#me> ;
+    earl:mode earl:automatic ;
+    earl:result [
+        a earl:TestResult ;
+        dc:date "2025-04-09T16:12:07.926208Z"^^xsd:dateTime ;
+        earl:outcome earl:passed
+    ] ;
+    earl:subject <https://hex.pm/packages/json_ld> ;
+    earl:test <https://w3c.github.io/json-ld-api/tests/#tso13>
+] .
+
+[
+    a earl:Assertion ;
+    earl:assertedBy <http://marcelotto.net/#me> ;
+    earl:mode earl:automatic ;
+    earl:result [
+        a earl:TestResult ;
+        dc:date "2025-04-09T16:12:07.926208Z"^^xsd:dateTime ;
+        earl:outcome earl:passed
+    ] ;
+    earl:subject <https://hex.pm/packages/json_ld> ;
+    earl:test <https://w3c.github.io/json-ld-api/tests/#ttn01>
+] .
+
+[
+    a earl:Assertion ;
+    earl:assertedBy <http://marcelotto.net/#me> ;
+    earl:mode earl:automatic ;
+    earl:result [
+        a earl:TestResult ;
+        dc:date "2025-04-09T16:12:07.926208Z"^^xsd:dateTime ;
+        earl:outcome earl:passed
+    ] ;
+    earl:subject <https://hex.pm/packages/json_ld> ;
+    earl:test <https://w3c.github.io/json-ld-api/tests/#tnt01>
+] .
+
+[
+    a earl:Assertion ;
+    earl:assertedBy <http://marcelotto.net/#me> ;
+    earl:mode earl:automatic ;
+    earl:result [
+        a earl:TestResult ;
+        dc:date "2025-04-09T16:12:07.926208Z"^^xsd:dateTime ;
+        earl:outcome earl:passed
+    ] ;
+    earl:subject <https://hex.pm/packages/json_ld> ;
+    earl:test <https://w3c.github.io/json-ld-api/tests/#tnt02>
+] .
+
+[
+    a earl:Assertion ;
+    earl:assertedBy <http://marcelotto.net/#me> ;
+    earl:mode earl:automatic ;
+    earl:result [
+        a earl:TestResult ;
+        dc:date "2025-04-09T16:12:07.926208Z"^^xsd:dateTime ;
+        earl:outcome earl:passed
+    ] ;
+    earl:subject <https://hex.pm/packages/json_ld> ;
+    earl:test <https://w3c.github.io/json-ld-api/tests/#tnt03>
+] .
+
+[
+    a earl:Assertion ;
+    earl:assertedBy <http://marcelotto.net/#me> ;
+    earl:mode earl:automatic ;
+    earl:result [
+        a earl:TestResult ;
+        dc:date "2025-04-09T16:12:07.926208Z"^^xsd:dateTime ;
+        earl:outcome earl:passed
+    ] ;
+    earl:subject <https://hex.pm/packages/json_ld> ;
+    earl:test <https://w3c.github.io/json-ld-api/tests/#tnt04>
+] .
+
+[
+    a earl:Assertion ;
+    earl:assertedBy <http://marcelotto.net/#me> ;
+    earl:mode earl:automatic ;
+    earl:result [
+        a earl:TestResult ;
+        dc:date "2025-04-09T16:12:07.926208Z"^^xsd:dateTime ;
+        earl:outcome earl:passed
+    ] ;
+    earl:subject <https://hex.pm/packages/json_ld> ;
+    earl:test <https://w3c.github.io/json-ld-api/tests/#tnt05>
+] .
+
+[
+    a earl:Assertion ;
+    earl:assertedBy <http://marcelotto.net/#me> ;
+    earl:mode earl:automatic ;
+    earl:result [
+        a earl:TestResult ;
+        dc:date "2025-04-09T16:12:07.926208Z"^^xsd:dateTime ;
+        earl:outcome earl:passed
+    ] ;
+    earl:subject <https://hex.pm/packages/json_ld> ;
+    earl:test <https://w3c.github.io/json-ld-api/tests/#tnt06>
+] .
+
+[
+    a earl:Assertion ;
+    earl:assertedBy <http://marcelotto.net/#me> ;
+    earl:mode earl:automatic ;
+    earl:result [
+        a earl:TestResult ;
+        dc:date "2025-04-09T16:12:07.926208Z"^^xsd:dateTime ;
+        earl:outcome earl:passed
+    ] ;
+    earl:subject <https://hex.pm/packages/json_ld> ;
+    earl:test <https://w3c.github.io/json-ld-api/tests/#tnt07>
+] .
+
+[
+    a earl:Assertion ;
+    earl:assertedBy <http://marcelotto.net/#me> ;
+    earl:mode earl:automatic ;
+    earl:result [
+        a earl:TestResult ;
+        dc:date "2025-04-09T16:12:07.926208Z"^^xsd:dateTime ;
+        earl:outcome earl:passed
+    ] ;
+    earl:subject <https://hex.pm/packages/json_ld> ;
+    earl:test <https://w3c.github.io/json-ld-api/tests/#tnt08>
+] .
+
+[
+    a earl:Assertion ;
+    earl:assertedBy <http://marcelotto.net/#me> ;
+    earl:mode earl:automatic ;
+    earl:result [
+        a earl:TestResult ;
+        dc:date "2025-04-09T16:12:07.926208Z"^^xsd:dateTime ;
+        earl:outcome earl:passed
+    ] ;
+    earl:subject <https://hex.pm/packages/json_ld> ;
+    earl:test <https://w3c.github.io/json-ld-api/tests/#tnt09>
+] .
+
+[
+    a earl:Assertion ;
+    earl:assertedBy <http://marcelotto.net/#me> ;
+    earl:mode earl:automatic ;
+    earl:result [
+        a earl:TestResult ;
+        dc:date "2025-04-09T16:12:07.926208Z"^^xsd:dateTime ;
+        earl:outcome earl:passed
+    ] ;
+    earl:subject <https://hex.pm/packages/json_ld> ;
+    earl:test <https://w3c.github.io/json-ld-api/tests/#tnt10>
+] .
+
+[
+    a earl:Assertion ;
+    earl:assertedBy <http://marcelotto.net/#me> ;
+    earl:mode earl:automatic ;
+    earl:result [
+        a earl:TestResult ;
+        dc:date "2025-04-09T16:12:07.926208Z"^^xsd:dateTime ;
+        earl:outcome earl:passed
+    ] ;
+    earl:subject <https://hex.pm/packages/json_ld> ;
+    earl:test <https://w3c.github.io/json-ld-api/tests/#tnt11>
+] .
+
+[
+    a earl:Assertion ;
+    earl:assertedBy <http://marcelotto.net/#me> ;
+    earl:mode earl:automatic ;
+    earl:result [
+        a earl:TestResult ;
+        dc:date "2025-04-09T16:12:07.926208Z"^^xsd:dateTime ;
+        earl:outcome earl:passed
+    ] ;
+    earl:subject <https://hex.pm/packages/json_ld> ;
+    earl:test <https://w3c.github.io/json-ld-api/tests/#tnt12>
+] .
+
+[
+    a earl:Assertion ;
+    earl:assertedBy <http://marcelotto.net/#me> ;
+    earl:mode earl:automatic ;
+    earl:result [
+        a earl:TestResult ;
+        dc:date "2025-04-09T16:12:07.926208Z"^^xsd:dateTime ;
+        earl:outcome earl:passed
+    ] ;
+    earl:subject <https://hex.pm/packages/json_ld> ;
+    earl:test <https://w3c.github.io/json-ld-api/tests/#tnt13>
+] .
+
+[
+    a earl:Assertion ;
+    earl:assertedBy <http://marcelotto.net/#me> ;
+    earl:mode earl:automatic ;
+    earl:result [
+        a earl:TestResult ;
+        dc:date "2025-04-09T16:12:07.926208Z"^^xsd:dateTime ;
+        earl:outcome earl:passed
+    ] ;
+    earl:subject <https://hex.pm/packages/json_ld> ;
+    earl:test <https://w3c.github.io/json-ld-api/tests/#tnt14>
+] .
+
+[
+    a earl:Assertion ;
+    earl:assertedBy <http://marcelotto.net/#me> ;
+    earl:mode earl:automatic ;
+    earl:result [
+        a earl:TestResult ;
+        dc:date "2025-04-09T16:12:07.926208Z"^^xsd:dateTime ;
+        earl:outcome earl:passed
+    ] ;
+    earl:subject <https://hex.pm/packages/json_ld> ;
+    earl:test <https://w3c.github.io/json-ld-api/tests/#tnt15>
+] .
