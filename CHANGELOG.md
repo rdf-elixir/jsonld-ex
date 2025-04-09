@@ -5,7 +5,7 @@ This project adheres to [Semantic Versioning](http://semver.org/) and
 [Keep a CHANGELOG](http://keepachangelog.com).
 
 
-## Unreleased
+## 1.0.0 - 2025-04-09
 
 This version upgrades the implementation to support JSON-LD 1.1.
 
@@ -34,7 +34,7 @@ Elixir versions < 1.15 and OTP version < 25 are no longer supported
   creation functions for all error types from the JSON-LD spec, making it easier for users
   to catch and handle errors and being more close to the spec
 
-[Compare v0.3.9...HEAD](https://github.com/rdf-elixir/jsonld-ex/compare/v0.3.9...HEAD)
+[Compare v0.3.9...v1.0.0](https://github.com/rdf-elixir/jsonld-ex/compare/v0.3.9...v1.0.0)
 
 
 
