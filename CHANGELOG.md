@@ -17,6 +17,9 @@ Elixir versions < 1.15 and OTP version < 25 are no longer supported
 
 - Switched from HTTPoison to Tesla HTTP client, which means you should now configure 
   a respective adapter in your application config.
+- Unified error handling under a single `JSON.LD.Error` exception with dedicated error
+  creation functions for all error types from the JSON-LD spec, making it easier for users
+  to catch and handle errors and being more close to the spec
 
 [Compare v0.3.9...HEAD](https://github.com/rdf-elixir/jsonld-ex/compare/v0.3.9...HEAD)
 

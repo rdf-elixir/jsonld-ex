@@ -855,9 +855,9 @@ defmodule JSON.LD.FlatteningTest do
 
       url = "http://localhost:#{bypass.port}/document.jsonld"
 
-      assert_raise JSON.LD.LoadingDocumentFailedError,
-                   "HTTP request failed with status 404",
-                   fn -> JSON.LD.flatten(url) end
+      assert_raise_json_ld_error "loading document failed",
+                                 "HTTP request failed with status 404",
+                                 fn -> JSON.LD.flatten(url) end
     end
   end
 end

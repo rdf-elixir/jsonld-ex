@@ -63,7 +63,7 @@ defmodule JSON.LD.Context.TermDefinition do
     #    if is_map(value) and Enum.empty?(Map.keys(value) -- ~w[@container @protected]) do
     value
     #    else
-    #      raise JSON.LD.InvalidTermDefinitionError, message: "invalid term value: #{inspect(value)}"
+    #      raise JSON.LD.Error.invalid_term_definition("invalid term value: #{inspect(value)}")
     #    end
   end
 
@@ -76,8 +76,7 @@ defmodule JSON.LD.Context.TermDefinition do
 
   # 2)
   def create(_, _, "", _, _, _, _) do
-    raise JSON.LD.InvalidTermDefinitionError,
-      message: "the empty string is not a valid term definition"
+    raise JSON.LD.Error.invalid_term_definition("the empty string is not a valid term definition")
   end
 
   def create(active, local, term, value, defined, popts, opts) do
@@ -88,8 +87,9 @@ defmodule JSON.LD.Context.TermDefinition do
              not (is_map(value) and not Enum.empty?(value) and
                     Map.keys(value) -- ~w[@container @protected] == [] and
                       Map.get(value, "@container", "@set") == "@set")) ->
-        raise JSON.LD.KeywordRedefinitionError,
-          message: "#{inspect(term)} is a keyword and can not be defined in context"
+        raise JSON.LD.Error.keyword_redefinition(
+                "#{inspect(term)} is a keyword and can not be defined in context"
+              )
 
       keyword_form?(term) and term != "@type" ->
         warn("Terms beginning with '@' are reserved for future use and ignored: #{term}", popts)
@@ -102,8 +102,7 @@ defmodule JSON.LD.Context.TermDefinition do
             {active, defined}
 
           false ->
-            raise JSON.LD.CyclicIRIMappingError,
-              message: "Cyclical term dependency found: #{inspect(term)}"
+            raise JSON.LD.Error.cyclic_iri_mapping(term)
 
           nil ->
             # 6) Initialize previous definition to any existing term definition for term in active context,
@@ -136,8 +135,9 @@ defmodule JSON.LD.Context.TermDefinition do
          %Options{processing_mode: "json-ld-1.0"},
          _
        ) do
-    raise JSON.LD.KeywordRedefinitionError,
-      message: "@type is a keyword and can not be defined in context"
+    raise JSON.LD.Error.keyword_redefinition(
+            "@type is a keyword and can not be defined in context"
+          )
   end
 
   # 7) If value is null, convert it to a map consisting of a single entry whose key is @id and whose value is null.
@@ -244,8 +244,7 @@ defmodule JSON.LD.Context.TermDefinition do
         if !opts[:override_protected] && previous_definition && previous_definition.protected do
           # 27.1)
           if %{definition | protected: previous_definition.protected} != previous_definition do
-            raise JSON.LD.ProtectedTermRedefinitionError,
-              message: "Attempt to redefine protected term #{term}"
+            raise JSON.LD.Error.protected_term_redefinition(term)
           else
             # 27.2)
             previous_definition
@@ -270,14 +269,16 @@ defmodule JSON.LD.Context.TermDefinition do
 
   # 9)
   defp do_create(_, _, term, value, _, _, _, _) do
-    raise JSON.LD.InvalidTermDefinitionError,
-      message: "Term definition for #{term} is has invalid value #{inspect(value)}"
+    raise JSON.LD.Error.invalid_term_definition(
+            "Term definition for #{term} is has invalid value #{inspect(value)}"
+          )
   end
 
   # 11) If value has an @protected entry, set the protected flag in definition to the value of this entry. If the value of @protected is not a boolean, an invalid @protected value error has been detected and processing is aborted. If processing mode is json-ld-1.0, an invalid term definition has been detected and processing is aborted.
   defp protected_term_def?(%{"@protected" => _} = invalid, _, "json-ld-1.0") do
-    raise JSON.LD.InvalidTermDefinitionError,
-      message: "invalid value #{inspect(invalid)} in json-ld-1.0 processing mode"
+    raise JSON.LD.Error.invalid_term_definition(
+            "invalid value #{inspect(invalid)} in json-ld-1.0 processing mode"
+          )
   end
 
   defp protected_term_def?(%{"@protected" => protected}, _, _), do: protected
@@ -285,7 +286,7 @@ defmodule JSON.LD.Context.TermDefinition do
 
   # 12.1)
   defp handle_type_definition(_, _, _, %{"@type" => type}, _, _) when not is_binary(type) do
-    raise JSON.LD.InvalidTypeMappingError, message: "#{inspect(type)} is not a valid type mapping"
+    raise JSON.LD.Error.invalid_type_mapping("#{inspect(type)} is not a valid type mapping")
   end
 
   defp handle_type_definition(definition, active, local, %{"@type" => type}, defined, popts) do
@@ -297,16 +298,14 @@ defmodule JSON.LD.Context.TermDefinition do
     cond do
       # 12.3) If the expanded type is @json or @none, and processing mode is json-ld-1.0, an invalid type mapping error has been detected and processing is aborted.
       expanded_type in ~w[@json @none] and popts.processing_mode == "json-ld-1.0" ->
-        raise JSON.LD.InvalidTypeMappingError,
-          message: "#{inspect(type)} is not a valid type mapping"
+        raise JSON.LD.Error.invalid_type_mapping("#{inspect(type)} is not a valid type mapping")
 
       # 12.4 and 12.5)
       IRI.absolute?(expanded_type) or expanded_type in ~w[@id @vocab @json @none ] ->
         {%__MODULE__{definition | type_mapping: expanded_type}, active, defined}
 
       true ->
-        raise JSON.LD.InvalidTypeMappingError,
-          message: "#{inspect(type)} is not a valid type mapping"
+        raise JSON.LD.Error.invalid_type_mapping("#{inspect(type)} is not a valid type mapping")
     end
   end
 
@@ -325,13 +324,15 @@ defmodule JSON.LD.Context.TermDefinition do
     cond do
       # 13.1)
       Map.has_key?(value, "@id") or Map.has_key?(value, "@nest") ->
-        raise JSON.LD.InvalidReversePropertyError,
-          message: "#{inspect(reverse)} is not a valid reverse property"
+        raise JSON.LD.Error.invalid_reverse_property(
+                "#{inspect(reverse)} is not a valid reverse property"
+              )
 
       # 13.2)
       not is_binary(reverse) ->
-        raise JSON.LD.InvalidIRIMappingError,
-          message: "Expected string for @reverse value, but got #{inspect(reverse)}"
+        raise JSON.LD.Error.invalid_iri_mapping(
+                "Expected string for @reverse value, but got #{inspect(reverse)}"
+              )
 
       # 13.3)
       keyword_form?(reverse) ->
@@ -352,8 +353,9 @@ defmodule JSON.LD.Context.TermDefinition do
           if IRI.absolute?(expanded_reverse) or blank_node_id?(expanded_reverse) do
             %__MODULE__{definition | iri_mapping: expanded_reverse}
           else
-            raise JSON.LD.InvalidIRIMappingError,
-              message: "Non-absolute @reverse IRI: #{inspect(reverse)}"
+            raise JSON.LD.Error.invalid_iri_mapping(
+                    "Non-absolute @reverse IRI: #{inspect(reverse)}"
+                  )
           end
 
         # 13.5)
@@ -366,9 +368,9 @@ defmodule JSON.LD.Context.TermDefinition do
               %__MODULE__{definition | container_mapping: [container]}
 
             _ ->
-              raise JSON.LD.InvalidReversePropertyError,
-                message:
-                  "#{inspect(reverse)} is not a valid reverse property; reverse properties only support set- and index-containers"
+              raise JSON.LD.Error.invalid_reverse_property(
+                      "#{inspect(reverse)} is not a valid reverse property; reverse properties only support set- and index-containers"
+                    )
           end
 
         # 13.6) & 13.7)
@@ -400,8 +402,9 @@ defmodule JSON.LD.Context.TermDefinition do
     cond do
       # 14.2.1)
       not is_binary(id) ->
-        raise JSON.LD.InvalidIRIMappingError,
-          message: "expected value of @id to be a string, but got #{inspect(id)}"
+        raise JSON.LD.Error.invalid_iri_mapping(
+                "expected value of @id to be a string, but got #{inspect(id)}"
+              )
 
       # 14.2.2)
       not JSON.LD.keyword?(id) and keyword_form?(id) ->
@@ -416,13 +419,13 @@ defmodule JSON.LD.Context.TermDefinition do
 
         cond do
           expanded_id == "@context" ->
-            raise JSON.LD.InvalidKeywordAliasError, message: "cannot alias @context"
+            raise JSON.LD.Error.invalid_keyword_alias("cannot alias @context")
 
           not (JSON.LD.keyword?(expanded_id) or IRI.absolute?(expanded_id) or
                    blank_node_id?(expanded_id)) ->
-            raise JSON.LD.InvalidIRIMappingError,
-              message:
-                "#{inspect(id)} is not a valid IRI mapping; resulting IRI mapping should be a keyword, absolute IRI or blank node"
+            raise JSON.LD.Error.invalid_iri_mapping(
+                    "#{inspect(id)} is not a valid IRI mapping; resulting IRI mapping should be a keyword, absolute IRI or blank node"
+                  )
 
           true ->
             # 14.2.4)
@@ -441,8 +444,9 @@ defmodule JSON.LD.Context.TermDefinition do
                   )
 
                 if term_iri != expanded_id do
-                  raise JSON.LD.InvalidIRIMappingError,
-                    message: "term #{term} expands to #{expanded_id}, not #{term_iri}"
+                  raise JSON.LD.Error.invalid_iri_mapping(
+                          "term #{term} expands to #{expanded_id}, not #{term_iri}"
+                        )
                 end
 
                 {active, defined}
@@ -520,8 +524,9 @@ defmodule JSON.LD.Context.TermDefinition do
         if IRI.absolute?(term_iri) do
           {false, %__MODULE__{definition | iri_mapping: term_iri}, active, defined}
         else
-          raise JSON.LD.InvalidIRIMappingError,
-            message: "expected term #{inspect(term)} to expand to an absolute IRI"
+          raise JSON.LD.Error.invalid_iri_mapping(
+                  "expected term #{inspect(term)} to expand to an absolute IRI"
+                )
         end
 
       # 17)
@@ -534,9 +539,9 @@ defmodule JSON.LD.Context.TermDefinition do
           {false, %__MODULE__{definition | iri_mapping: active.vocabulary_mapping <> term},
            active, defined}
         else
-          raise JSON.LD.InvalidIRIMappingError,
-            message:
-              "#{inspect(term)} is not a valid IRI mapping; relative term definition without vocab mapping"
+          raise JSON.LD.Error.invalid_iri_mapping(
+                  "#{inspect(term)} is not a valid IRI mapping; relative term definition without vocab mapping"
+                )
         end
     end
   end
@@ -560,9 +565,10 @@ defmodule JSON.LD.Context.TermDefinition do
                 type_mapping
 
               invalid ->
-                raise JSON.LD.InvalidTypeMappingError,
-                  message:
-                    "@container: @type requires @type to be @id or @vocab; got #{inspect(invalid)}"
+                raise JSON.LD.Error.invalid_type_mapping(
+                        message:
+                          "@container: @type requires @type to be @id or @vocab; got #{inspect(invalid)}"
+                      )
             end
           else
             definition.type_mapping
@@ -580,9 +586,9 @@ defmodule JSON.LD.Context.TermDefinition do
     cond do
       processing_mode == "json-ld-1.0" and
           (container in ~w[@graph @id @type] or not is_binary(container)) ->
-        raise JSON.LD.InvalidContainerMappingError,
-          message:
-            "'@container' on term #{inspect(term)} has invalid value in 1.0 mode: #{inspect(container)}"
+        raise JSON.LD.Error.invalid_container_mapping(
+                "'@container' on term #{inspect(term)} has invalid value in 1.0 mode: #{inspect(container)}"
+              )
 
       # MUST be either @graph, @id, @index, @language, @list, @set, @type, or an array containing exactly any one of those keywords
       length(values) == 1 and hd(values) in @container_keywords ->
@@ -601,21 +607,23 @@ defmodule JSON.LD.Context.TermDefinition do
             :ok
 
           _ ->
-            raise JSON.LD.InvalidContainerMappingError,
-              message: "'@container' with @graph can only have @id or @index and optional @set"
+            raise JSON.LD.Error.invalid_container_mapping(
+                    "'@container' with @graph can only have @id or @index and optional @set"
+                  )
         end
 
       # an array containing a combination of @set and any of @index, @graph, @id, @type, @language in any order
       "@set" in values ->
         unless values -- ["@set", "@index", "@graph", "@id", "@type", "@language"] == [] do
-          raise JSON.LD.InvalidContainerMappingError,
-            message:
-              "'@container' with @set can only have @index, @graph, @id, @type, or @language"
+          raise JSON.LD.Error.invalid_container_mapping(
+                  "'@container' with @set can only have @index, @graph, @id, @type, or @language"
+                )
         end
 
       true ->
-        raise JSON.LD.InvalidContainerMappingError,
-          message: "Invalid @container value: #{inspect(container)}"
+        raise JSON.LD.Error.invalid_container_mapping(
+                "Invalid @container value: #{inspect(container)}"
+              )
     end
 
     values
@@ -634,13 +642,14 @@ defmodule JSON.LD.Context.TermDefinition do
     # 20.1)
     cond do
       popts.processing_mode == "json-ld-1.0" ->
-        raise JSON.LD.InvalidTermDefinitionError,
-          message: "invalid @index value in json-ld-1.0 processing mode"
+        raise JSON.LD.Error.invalid_term_definition(
+                "invalid @index value in json-ld-1.0 processing mode"
+              )
 
       "@index" not in List.wrap(definition.container_mapping) ->
-        raise JSON.LD.InvalidTermDefinitionError,
-          message:
-            "@index without @index in @container: #{inspect(index)} on term #{inspect(term)}"
+        raise JSON.LD.Error.invalid_term_definition(
+                "@index without @index in @container: #{inspect(index)} on term #{inspect(term)}"
+              )
 
       is_binary(index) ->
         # 20.2)
@@ -651,14 +660,15 @@ defmodule JSON.LD.Context.TermDefinition do
           # 20.3)
           %__MODULE__{definition | index_mapping: index}
         else
-          raise JSON.LD.InvalidTermDefinitionError,
-            message:
-              "@index without @index in @container: #{inspect(index)} on term #{inspect(term)}"
+          raise JSON.LD.Error.invalid_term_definition(
+                  "@index without @index in @container: #{inspect(index)} on term #{inspect(term)}"
+                )
         end
 
       true ->
-        raise JSON.LD.InvalidTermDefinitionError,
-          message: "invalid @index value: #{inspect(index)} on term #{inspect(term)}"
+        raise JSON.LD.Error.invalid_term_definition(
+                "invalid @index value: #{inspect(index)} on term #{inspect(term)}"
+              )
     end
   end
 
@@ -675,8 +685,9 @@ defmodule JSON.LD.Context.TermDefinition do
          },
          _
        ) do
-    raise JSON.LD.InvalidTermDefinitionError,
-      message: "invalid @context value in json-ld-1.0 processing mode"
+    raise JSON.LD.Error.invalid_term_definition(
+            "invalid @context value in json-ld-1.0 processing mode"
+          )
   end
 
   defp handle_context_definition(definition, active, term, %{"@context" => context}, popts, opts) do
@@ -693,11 +704,9 @@ defmodule JSON.LD.Context.TermDefinition do
         )
       rescue
         e ->
-          reraise JSON.LD.InvalidScopedContextError,
-                  [
-                    message:
-                      "Term definition for #{inspect(term)} contains illegal value for @context: #{Exception.message(e)}"
-                  ],
+          reraise JSON.LD.Error.invalid_scoped_context(
+                    "Term definition for #{inspect(term)} contains illegal value for @context: #{Exception.message(e)}"
+                  ),
                   __STACKTRACE__
       end
 
@@ -723,9 +732,7 @@ defmodule JSON.LD.Context.TermDefinition do
           %__MODULE__{definition | language_mapping: nil}
 
         _ ->
-          raise JSON.LD.InvalidLanguageMappingError,
-            message:
-              "#{inspect(language)} is not a valid language mapping; @language must be a string or null"
+          raise JSON.LD.Error.invalid_language_mapping(language)
       end
     else
       definition
@@ -742,8 +749,7 @@ defmodule JSON.LD.Context.TermDefinition do
       #        definition
 
       direction && direction not in ~w[ltr rtl] ->
-        raise JSON.LD.InvalidBaseDirectionError,
-          message: "invalid @direction value #{inspect(direction)}; must be null, 'ltr', or 'rtl'"
+        raise JSON.LD.Error.invalid_base_direction(direction)
 
       true ->
         %__MODULE__{definition | direction_mapping: direction && String.to_atom(direction)}
@@ -754,20 +760,21 @@ defmodule JSON.LD.Context.TermDefinition do
 
   # 24.1)
   defp handle_nest_definition(_, %{"@nest" => _}, %Options{processing_mode: "json-ld-1.0"}) do
-    raise JSON.LD.InvalidTermDefinitionError,
-      message: "invalid @nest value in json-ld-1.0 processing mode"
+    raise JSON.LD.Error.invalid_term_definition(
+            "invalid @nest value in json-ld-1.0 processing mode"
+          )
   end
 
   # 24.2)
   defp handle_nest_definition(definition, %{"@nest" => nest}, _) do
     cond do
       not is_binary(nest) ->
-        raise JSON.LD.InvalidNestValueError,
-          message: "nest must be a string, was #{inspect(nest)}"
+        raise JSON.LD.Error.invalid_nest_value("nest must be a string, was #{inspect(nest)}")
 
       nest != "@nest" and JSON.LD.keyword?(nest) ->
-        raise JSON.LD.InvalidNestValueError,
-          message: "nest must not be a keyword other than @nest, was #{inspect(nest)}"
+        raise JSON.LD.Error.invalid_nest_value(
+                "nest must not be a keyword other than @nest, was #{inspect(nest)}"
+              )
 
       true ->
         %__MODULE__{definition | nest_value: nest}
@@ -778,24 +785,25 @@ defmodule JSON.LD.Context.TermDefinition do
 
   # 25.1)
   defp handle_prefix_definition(_, %{"@prefix" => _}, _, %Options{processing_mode: "json-ld-1.0"}) do
-    raise JSON.LD.InvalidTermDefinitionError,
-      message: "invalid @prefix value in json-ld-1.0 processing mode"
+    raise JSON.LD.Error.invalid_term_definition(
+            "invalid @prefix value in json-ld-1.0 processing mode"
+          )
   end
 
   # 25.2)
   defp handle_prefix_definition(definition, %{"@prefix" => prefix}, term, _) do
     cond do
       String.contains?(term, [":", "/"]) ->
-        raise JSON.LD.InvalidTermDefinitionError,
-          message: "@prefix used on compact or relative IRI term"
+        raise JSON.LD.Error.invalid_term_definition(
+                "@prefix used on compact or relative IRI term"
+              )
 
       not is_boolean(prefix) ->
-        raise JSON.LD.InvalidPrefixValueError, value: prefix
+        raise JSON.LD.Error.invalid_prefix_value(prefix)
 
       # 25.3)
       prefix and JSON.LD.keyword?(definition.iri_mapping) ->
-        raise JSON.LD.InvalidTermDefinitionError,
-          message: "keywords may not be used as prefixes"
+        raise JSON.LD.Error.invalid_term_definition("keywords may not be used as prefixes")
 
       true ->
         %__MODULE__{definition | prefix_flag: prefix}

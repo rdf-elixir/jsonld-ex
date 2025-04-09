@@ -124,18 +124,6 @@ defmodule JSON.LD.TestSuite do
     |> Keyword.put_new(:base, base_iri <> test_case["input"])
   end
 
-  def exception(error) do
-    error =
-      error
-      |> String.replace(" ", "_")
-      |> String.replace("-", "_")
-      |> String.replace("@", "_")
-      |> Macro.camelize()
-      |> String.replace("_", "")
-
-    String.to_existing_atom("Elixir.JSON.LD.#{error}Error")
-  end
-
   def skip_map(skipped, mode \\ nil) do
     Enum.flat_map(skipped, fn
       {tests, message} -> Enum.map(tests, &{&1, message})

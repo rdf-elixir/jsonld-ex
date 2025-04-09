@@ -292,8 +292,7 @@ defmodule JSON.LD.Flattening do
             node_map =
               if node_index = get_in(node_map, [active_graph, id, "@index"]) do
                 if not deep_compare(node_index, element_index) do
-                  raise JSON.LD.ConflictingIndexesError,
-                    message: "Multiple conflicting indexes have been found for the same node."
+                  raise JSON.LD.Error.conflicting_indexes(node_index, element_index)
                 end
               else
                 update_in(node_map, [active_graph, id], fn node ->

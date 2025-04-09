@@ -319,9 +319,9 @@ defmodule JSON.LD.Compaction do
 
               if nest_term != "@nest" and
                    (is_nil(nest_term_def) or nest_term_def.iri_mapping != "@nest") do
-                raise JSON.LD.InvalidNestValueError,
-                  message:
-                    "Invalid @nest value: #{nest_term}. The value must be '@nest' or a term that expands to '@nest'"
+                raise JSON.LD.Error.invalid_nest_value(
+                        "Invalid @nest value: #{nest_term}. The value must be '@nest' or a term that expands to '@nest'"
+                      )
               end
 
               # 12.7.2.2 and 12.7.2.2) with 12.7.3 and 12.7.4) in nest case
@@ -356,9 +356,9 @@ defmodule JSON.LD.Compaction do
 
                   if nest_term != "@nest" and
                        (is_nil(nest_term_def) or nest_term_def.iri_mapping != "@nest") do
-                    raise JSON.LD.InvalidNestValueError,
-                      message:
-                        "Invalid @nest value: #{nest_term}. The value must be '@nest' or a term that expands to '@nest'"
+                    raise JSON.LD.Error.invalid_nest_value(
+                            "Invalid @nest value: #{nest_term}. The value must be '@nest' or a term that expands to '@nest'"
+                          )
                   end
 
                   # 12.8.2.2 and 12.8.2.3)
@@ -1150,8 +1150,7 @@ defmodule JSON.LD.Compaction do
       # 9) To ensure that the IRI var is not confused with a compact IRI, if the IRI scheme of var matches any term in active context with prefix flag set to true, and var has no IRI authority (preceded by double-forward-slash (//), an IRI confused with prefix error has been detected, and processing is aborted.
       Enum.each(active_context.term_defs, fn {term, term_def} ->
         if (term_def && term_def.prefix_flag) and String.starts_with?(var, "#{term}:") do
-          raise JSON.LD.IRIConfusedWithPrefixError,
-            message: "Absolute IRI '#{var}' confused with prefix '#{term}'"
+          raise JSON.LD.Error.iri_confused_with_prefix(var, term)
         end
       end)
 

@@ -9,6 +9,7 @@ defmodule JSON.LD.W3C.ExpandTest do
   use RDF.EarlFormatter, test_suite: :expand
 
   import JSON.LD.TestSuite
+  import JSON.LD.Case
   import ExUnit.CaptureLog
 
   @manifest manifest("expand")
@@ -112,7 +113,7 @@ defmodule JSON.LD.W3C.ExpandTest do
           if test_case["@id"] in @cases_with_warnings do
             log =
               capture_log(fn ->
-                assert_raise exception(error), fn ->
+                assert_raise_json_ld_error error, fn ->
                   JSON.LD.expand(j(input), test_case_options(test_case, @base))
                 end
               end)
@@ -120,7 +121,7 @@ defmodule JSON.LD.W3C.ExpandTest do
             assert log =~
                      ~r/\[warning\] \w+ beginning with '@' are reserved for future use and ignored/
           else
-            assert_raise exception(error), fn ->
+            assert_raise_json_ld_error error, fn ->
               JSON.LD.expand(j(input), test_case_options(test_case, @base))
             end
           end

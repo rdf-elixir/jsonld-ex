@@ -350,7 +350,7 @@ defmodule JSON.LD.DocumentLoader.DefaultTest do
       |> Plug.Conn.resp(200, Jason.encode!(document))
     end)
 
-    assert {:error, %JSON.LD.MultipleContextLinkHeadersError{}} =
+    assert {:error, %JSON.LD.Error{code: "multiple context link headers"}} =
              JSON.LD.DocumentLoader.Default.load("http://localhost:#{bypass.port}/test-context")
   end
 

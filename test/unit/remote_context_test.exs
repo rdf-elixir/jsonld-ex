@@ -1,7 +1,7 @@
 defmodule JSON.LD.RemoteContextTest do
   use JSON.LD.Case, async: false
 
-  alias JSON.LD.{DocumentLoader, LoadingRemoteContextFailedError, Options}
+  alias JSON.LD.{DocumentLoader, Options}
 
   setup_all do
     local =
@@ -50,7 +50,7 @@ defmodule JSON.LD.RemoteContextTest do
         }
       """)
 
-    assert_raise LoadingRemoteContextFailedError, fn ->
+    assert_raise_json_ld_error "loading remote context failed", fn ->
       JSON.LD.flatten(remote, nil, %Options{document_loader: DocumentLoader.Test})
     end
   end
@@ -121,7 +121,7 @@ defmodule JSON.LD.RemoteContextTest do
     end
 
     test "rejects non-string @import value" do
-      assert_raise JSON.LD.InvalidImportValueError, fn ->
+      assert_raise_json_ld_error "invalid @import value", fn ->
         JSON.LD.context(%{
           "@version": 1.1,
           "@import": true

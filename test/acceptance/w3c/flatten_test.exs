@@ -9,6 +9,7 @@ defmodule JSON.LD.W3C.FlattenTest do
   use RDF.EarlFormatter, test_suite: :flatten
 
   import JSON.LD.TestSuite
+  import JSON.LD.Case
   import ExUnit.CaptureLog
 
   @manifest manifest("flatten")
@@ -102,7 +103,7 @@ defmodule JSON.LD.W3C.FlattenTest do
         } do
           context = if context = test_case["context"], do: j(context)
 
-          assert_raise exception(error), fn ->
+          assert_raise_json_ld_error error, fn ->
             JSON.LD.flatten(j(input), context, test_case_options(test_case, @base))
           end
         end

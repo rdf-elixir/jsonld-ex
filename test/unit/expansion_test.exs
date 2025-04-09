@@ -1078,14 +1078,14 @@ defmodule JSON.LD.ExpansionTest do
             "@direction" => "rtl"
           }
         },
-        exception: JSON.LD.InvalidValueObjectError
+        error_code: "invalid value object"
       }
     }
     |> Enum.each(fn {title, data} ->
       @tag data: data
       test title, %{data: data} do
-        if Map.has_key?(data, :exception) do
-          assert_raise data.exception, fn ->
+        if Map.has_key?(data, :error_code) do
+          assert_raise_json_ld_error data.error_code, fn ->
             JSON.LD.expand(data.input)
           end
         else
@@ -1894,7 +1894,7 @@ defmodule JSON.LD.ExpansionTest do
           "@context" => %{"@vocab" => "http://example.org/"},
           "@nest" => "This should generate an error"
         },
-        exception: JSON.LD.InvalidNestValueError
+        error_code: "invalid @nest value"
       },
       "Nested @container: @list" => %{
         input: %{
@@ -1946,8 +1946,8 @@ defmodule JSON.LD.ExpansionTest do
     |> Enum.each(fn {title, data} ->
       @tag data: data
       test title, %{data: data} do
-        if Map.has_key?(data, :exception) do
-          assert_raise data.exception, fn ->
+        if Map.has_key?(data, :error_code) do
+          assert_raise_json_ld_error data.error_code, fn ->
             JSON.LD.expand(data.input)
           end
         else
@@ -2091,7 +2091,7 @@ defmodule JSON.LD.ExpansionTest do
           },
           "@included" => "string"
         },
-        exception: JSON.LD.InvalidIncludedValueError
+        error_code: "invalid @included value"
       },
       "Error if @included value is a value object" => %{
         input: %{
@@ -2101,7 +2101,7 @@ defmodule JSON.LD.ExpansionTest do
           },
           "@included" => %{"@value" => "value"}
         },
-        exception: JSON.LD.InvalidIncludedValueError
+        error_code: "invalid @included value"
       },
       "Error if @included value is a list object" => %{
         input: %{
@@ -2111,14 +2111,14 @@ defmodule JSON.LD.ExpansionTest do
           },
           "@included" => %{"@list" => ["value"]}
         },
-        exception: JSON.LD.InvalidIncludedValueError
+        error_code: "invalid @included value"
       }
     }
     |> Enum.each(fn {title, data} ->
       @tag data: data
       test title, %{data: data} do
-        if Map.has_key?(data, :exception) do
-          assert_raise data.exception, fn ->
+        if Map.has_key?(data, :error_code) do
+          assert_raise_json_ld_error data.error_code, fn ->
             JSON.LD.expand(data.input)
           end
         else
@@ -2517,7 +2517,7 @@ defmodule JSON.LD.ExpansionTest do
           },
           "foo" => "bar"
         },
-        exception: JSON.LD.InvalidVersionValueError
+        error_code: "invalid @version value"
       },
       "Reject version 1.0" => %{
         input: %{
@@ -2527,7 +2527,7 @@ defmodule JSON.LD.ExpansionTest do
           },
           "foo" => "bar"
         },
-        exception: JSON.LD.InvalidVersionValueError
+        error_code: "invalid @version value"
       },
       "Rejects unsupported version" => %{
         input: %{
@@ -2537,14 +2537,16 @@ defmodule JSON.LD.ExpansionTest do
           },
           "foo" => "bar"
         },
-        exception: JSON.LD.InvalidVersionValueError
+        error_code: "invalid @version value"
       }
     }
     |> Enum.each(fn {title, data} ->
       @tag data: data
       test title, %{data: data} do
-        if Map.has_key?(data, :exception) do
-          assert_raise data.exception, fn -> JSON.LD.expand(data.input) end
+        if Map.has_key?(data, :error_code) do
+          assert_raise_json_ld_error data.error_code, fn ->
+            JSON.LD.expand(data.input)
+          end
         else
           assert JSON.LD.expand(data.input) == data.output
         end
@@ -2628,11 +2630,9 @@ defmodule JSON.LD.ExpansionTest do
 
       url = "http://localhost:#{bypass.port}/not-found.jsonld"
 
-      assert_raise JSON.LD.LoadingDocumentFailedError,
-                   "HTTP request failed with status 404",
-                   fn ->
-                     JSON.LD.expand(url)
-                   end
+      assert_raise_json_ld_error "loading document failed",
+                                 "HTTP request failed with status 404",
+                                 fn -> JSON.LD.expand(url) end
     end
 
     test "expands a remote document with base IRI", %{bypass: bypass} do
@@ -2691,22 +2691,22 @@ defmodule JSON.LD.ExpansionTest do
     %{
       "non-null @value and null @type" => %{
         input: %{"http://example.com/foo" => %{"@value" => "foo", "@type" => nil}},
-        exception: JSON.LD.InvalidTypeValueError
+        error_code: "invalid type value"
       },
       "non-null @value and blank node @type" => %{
         input: %{"http://example.com/foo" => %{"@value" => "foo", "@type" => "_:foo"}},
-        exception: JSON.LD.InvalidTypedValueError
+        error_code: "invalid typed value"
       },
       "non-null @value and null @language" => %{
         input: %{"http://example.com/foo" => %{"@value" => "foo", "@language" => nil}},
-        exception: JSON.LD.InvalidLanguageTaggedStringError
+        error_code: "invalid language-tagged string"
       },
       "value with null language" => %{
         input: %{
           "@context" => %{"@language" => "en"},
           "http://example.org/nolang" => %{"@value" => "no language", "@language" => nil}
         },
-        exception: JSON.LD.InvalidLanguageTaggedStringError
+        error_code: "invalid language-tagged string"
       },
       "@reverse object with an @id property" => %{
         input: Jason.decode!(~s({
@@ -2715,7 +2715,7 @@ defmodule JSON.LD.ExpansionTest do
             "@id": "http://example/bar"
           }
         })),
-        exception: JSON.LD.InvalidReversePropertyMapError
+        error_code: "invalid reverse property map"
       },
       "colliding keywords" => %{
         input: Jason.decode!(~s({
@@ -2726,7 +2726,7 @@ defmodule JSON.LD.ExpansionTest do
           "id": "http://example/foo",
           "ID": "http://example/bar"
         })),
-        exception: JSON.LD.CollidingKeywordsError
+        error_code: "colliding keywords"
       },
       "Error if @index is a keyword" => %{
         input: %{
@@ -2739,7 +2739,7 @@ defmodule JSON.LD.ExpansionTest do
             }
           }
         },
-        exception: JSON.LD.InvalidTermDefinitionError
+        error_code: "invalid term definition"
       },
       "Error if processing mode 1.0 with 1.1 features" => %{
         input: %{
@@ -2750,13 +2750,13 @@ defmodule JSON.LD.ExpansionTest do
           "a" => %{"@type" => "Foo", "bar" => "baz"}
         },
         processingMode: "json-ld-1.0",
-        exception: JSON.LD.InvalidTermDefinitionError
+        error_code: "invalid term definition"
       }
     }
     |> Enum.each(fn {title, data} ->
       @tag data: data
       test title, %{data: data} do
-        assert_raise data.exception, fn ->
+        assert_raise_json_ld_error data.error_code, fn ->
           JSON.LD.expand(data.input, processing_mode: data[:processingMode] || [])
         end
       end

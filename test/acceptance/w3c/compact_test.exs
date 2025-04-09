@@ -9,6 +9,7 @@ defmodule JSON.LD.W3C.CompactTest do
   use RDF.EarlFormatter, test_suite: :compact
 
   import JSON.LD.TestSuite
+  import JSON.LD.Case
 
   @manifest manifest("compact")
   @base expanded_base_iri(@manifest)
@@ -64,7 +65,7 @@ defmodule JSON.LD.W3C.CompactTest do
         test "compact#{id}: #{name}", %{
           data: %{"input" => input, "expectErrorCode" => error, "context" => context} = test_case
         } do
-          assert_raise exception(error), fn ->
+          assert_raise_json_ld_error error, fn ->
             JSON.LD.compact(j(input), j(context), test_case_options(test_case, @base))
           end
         end

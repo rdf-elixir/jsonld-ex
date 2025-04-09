@@ -46,7 +46,7 @@ defmodule JSON.LD.DocumentLoader.RemoteDocument do
           profile: String.t() | nil
         }
 
-  alias JSON.LD.{Options, LoadingDocumentFailedError, MultipleContextLinkHeadersError}
+  alias JSON.LD.Options
   alias JSON.LD.DocumentLoader.DefaultClient
   alias RDF.IRI
 
@@ -67,9 +67,7 @@ defmodule JSON.LD.DocumentLoader.RemoteDocument do
   defp do_load(url, http_client, options, visited_urls \\ []) do
     if url in visited_urls do
       {:error,
-       %LoadingDocumentFailedError{
-         message: "Circular reference detected in document loading"
-       }}
+       JSON.LD.Error.loading_document_failed("Circular reference detected in document loading")}
     else
       case http_get(http_client, url, options) do
         {:ok, %Tesla.Env{status: status} = response} when status in 200..299 ->
@@ -133,16 +131,15 @@ defmodule JSON.LD.DocumentLoader.RemoteDocument do
               else
                 # 6)
                 {:error,
-                 %LoadingDocumentFailedError{
-                   message:
-                     "Retrieved resource's Content-Type is not JSON-compatible: #{content_type}"
-                 }}
+                 JSON.LD.Error.loading_document_failed(
+                   "Retrieved resource's Content-Type is not JSON-compatible: #{content_type}"
+                 )}
               end
           end
 
         {:ok, %{status: status}} ->
           {:error,
-           %LoadingDocumentFailedError{message: "HTTP request failed with status #{status}"}}
+           JSON.LD.Error.loading_document_failed("HTTP request failed with status #{status}")}
 
         {:error, _} = error ->
           error
@@ -164,7 +161,7 @@ defmodule JSON.LD.DocumentLoader.RemoteDocument do
     |> http_client.client(url, options)
     |> Tesla.get(url)
   rescue
-    e -> {:error, %LoadingDocumentFailedError{message: "HTTP request failed: #{inspect(e)}"}}
+    e -> {:error, JSON.LD.Error.loading_document_failed("HTTP request failed: #{inspect(e)}")}
   end
 
   defp build_headers(request_profile) do
@@ -211,23 +208,12 @@ defmodule JSON.LD.DocumentLoader.RemoteDocument do
     |> Enum.flat_map(fn {_, value} ->
       value
       |> parse_link_headers()
-      |> Enum.filter(fn {_, props} ->
-        props["rel"] == "http://www.w3.org/ns/json-ld#context"
-      end)
+      |> Enum.filter(fn {_, props} -> props["rel"] == "http://www.w3.org/ns/json-ld#context" end)
     end)
     |> case do
-      [] ->
-        {:ok, nil}
-
-      [{url, _}] ->
-        {:ok, url}
-
-      _ ->
-        {:error,
-         %MultipleContextLinkHeadersError{
-           message:
-             "Multiple HTTP Link Headers using http://www.w3.org/ns/json-ld#context relation found"
-         }}
+      [] -> {:ok, nil}
+      [{url, _}] -> {:ok, url}
+      _ -> {:error, JSON.LD.Error.multiple_context_link_headers()}
     end
   end
 
@@ -284,9 +270,7 @@ defmodule JSON.LD.DocumentLoader.RemoteDocument do
 
       {:error, %Jason.DecodeError{} = error} ->
         {:error,
-         %LoadingDocumentFailedError{
-           message: "JSON parsing failed: #{Exception.message(error)}"
-         }}
+         JSON.LD.Error.loading_document_failed("JSON parsing failed: #{Exception.message(error)}")}
     end
   end
 end

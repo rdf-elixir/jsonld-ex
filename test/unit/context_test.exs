@@ -620,7 +620,7 @@ defmodule JSON.LD.ContextTest do
           "protected" => %{"@id" => "http://example.com/protected", "@protected" => true}
         })
 
-      assert_raise JSON.LD.ProtectedTermRedefinitionError, fn ->
+      assert_raise_json_ld_error "protected term redefinition", fn ->
         JSON.LD.Context.update(ctx, %{"protected" => "http://example.com/different"})
       end
     end
@@ -631,7 +631,7 @@ defmodule JSON.LD.ContextTest do
           "protected" => %{"@id" => "http://example.com/protected", "@protected" => true}
         })
 
-      assert_raise JSON.LD.InvalidContextNullificationError, fn ->
+      assert_raise_json_ld_error "invalid context nullification", fn ->
         JSON.LD.Context.update(ctx, nil)
       end
     end
@@ -664,7 +664,7 @@ defmodule JSON.LD.ContextTest do
     end
 
     test "rejects a keyword other than @nest for the value of @nest" do
-      assert_raise JSON.LD.InvalidNestValueError, fn ->
+      assert_raise_json_ld_error "invalid @nest value", fn ->
         JSON.LD.context(%{
           "no-keyword-nest" => %{"@id" => "http://example/f", "@nest" => "@id"}
         })
@@ -672,7 +672,7 @@ defmodule JSON.LD.ContextTest do
     end
 
     test "rejects @nest with @reverse" do
-      assert_raise JSON.LD.InvalidReversePropertyError, fn ->
+      assert_raise_json_ld_error "invalid reverse property", fn ->
         JSON.LD.context(%{
           "no-reverse-nest" => %{"@reverse" => "http://example/f", "@nest" => "@nest"}
         })
@@ -879,11 +879,13 @@ defmodule JSON.LD.ContextTest do
         Plug.Conn.resp(conn, 404, "Not Found")
       end)
 
-      assert_raise JSON.LD.LoadingRemoteContextFailedError,
-                   ~r/http:\/\/localhost:#{bypass.port}\/context/,
-                   fn ->
-                     JSON.LD.context("http://localhost:#{bypass.port}/context")
-                   end
+      assert_raise_json_ld_error(
+        "loading remote context failed",
+        ~r/http:\/\/localhost:#{bypass.port}\/context/,
+        fn ->
+          JSON.LD.context("http://localhost:#{bypass.port}/context")
+        end
+      )
     end
   end
 
@@ -946,91 +948,91 @@ defmodule JSON.LD.ContextTest do
     %{
       "no @id, @type, or @container" => %{
         input: %{"foo" => %{}},
-        exception: JSON.LD.InvalidIRIMappingError
+        error_code: "invalid IRI mapping"
       },
       "value as array" => %{
         input: %{"foo" => []},
-        exception: JSON.LD.InvalidTermDefinitionError
+        error_code: "invalid term definition"
       },
       "@id as object" => %{
         input: %{"foo" => %{"@id" => %{}}},
-        exception: JSON.LD.InvalidIRIMappingError
+        error_code: "invalid IRI mapping"
       },
       "@id as array of object" => %{
         input: %{"foo" => %{"@id" => [{}]}},
-        exception: JSON.LD.InvalidIRIMappingError
+        error_code: "invalid IRI mapping"
       },
       "@id as array of null" => %{
         input: %{"foo" => %{"@id" => [nil]}},
-        exception: JSON.LD.InvalidIRIMappingError
+        error_code: "invalid IRI mapping"
       },
       "@type as object" => %{
         input: %{"foo" => %{"@type" => %{}}},
-        exception: JSON.LD.InvalidTypeMappingError
+        error_code: "invalid type mapping"
       },
       "@type as array" => %{
         input: %{"foo" => %{"@type" => []}},
-        exception: JSON.LD.InvalidTypeMappingError
+        error_code: "invalid type mapping"
       },
       "@type as @list" => %{
         input: %{"foo" => %{"@type" => "@list"}},
-        exception: JSON.LD.InvalidTypeMappingError
+        error_code: "invalid type mapping"
       },
       "@type as @set" => %{
         input: %{"foo" => %{"@type" => "@set"}},
-        exception: JSON.LD.InvalidTypeMappingError
+        error_code: "invalid type mapping"
       },
       "@container as object" => %{
         input: %{"foo" => %{"@container" => %{}}},
-        exception: JSON.LD.InvalidIRIMappingError
+        error_code: "invalid IRI mapping"
       },
       "@container as empty array" => %{
         input: %{"foo" => %{"@container" => []}},
-        exception: JSON.LD.InvalidIRIMappingError
+        error_code: "invalid IRI mapping"
       },
       "@container as string" => %{
         input: %{"foo" => %{"@container" => "true"}},
-        exception: JSON.LD.InvalidIRIMappingError
+        error_code: "invalid IRI mapping"
       },
       "@language as @id" => %{
         input: %{"@language" => %{"@id" => "http://example.com/"}},
-        exception: JSON.LD.InvalidDefaultLanguageError
+        error_code: "invalid default language"
       },
       "@direction as non-string" => %{
         input: %{"@direction" => %{"@id" => "http://example.com/"}},
-        exception: JSON.LD.InvalidBaseDirectionError
+        error_code: "invalid base direction"
       },
       "@direction as invalid value" => %{
         input: %{"@direction" => "invalid"},
-        exception: JSON.LD.InvalidBaseDirectionError
+        error_code: "invalid base direction"
       },
       "@vocab as @id" => %{
         input: %{"@vocab" => %{"@id" => "http://example.com/"}},
-        exception: JSON.LD.InvalidVocabMappingError
+        error_code: "invalid vocab mapping"
       },
       "@context which is invalid" => %{
         input: %{"foo" => %{"@context" => %{"bar" => []}}},
-        exception: JSON.LD.InvalidIRIMappingError
+        error_code: "invalid IRI mapping"
       },
       "@prefix is not a boolean" => %{
         input: %{"foo" => %{"@id" => "http://example.org/", "@prefix" => "string"}},
-        exception: JSON.LD.InvalidPrefixValueError
+        error_code: "invalid @prefix value"
       },
       "@import is not a string" => %{
         input: %{"@import" => true},
-        exception: JSON.LD.InvalidImportValueError
+        error_code: "invalid @import value"
       },
       "@propagate is not a boolean" => %{
         input: %{"@propagate" => "String"},
-        exception: JSON.LD.InvalidPropagateValueError
+        error_code: "invalid @propagate value"
       },
       "@nest is not a valid value" => %{
         input: %{"foo" => %{"@id" => "http://example.org/", "@nest" => "@id"}},
-        exception: JSON.LD.InvalidNestValueError
+        error_code: "invalid @nest value"
       },
       "@nest with @reverse" => %{
         input: %{"foo" => %{"@reverse" => "http://example.org/", "@nest" => "@nest"}},
-        exception: JSON.LD.InvalidReversePropertyError
+        error_code: "invalid reverse property"
       },
       "IRI term expands to different IRI" => %{
         input: %{
@@ -1038,13 +1040,13 @@ defmodule JSON.LD.ContextTest do
           "ex2" => "http://example.com/2/",
           "ex:foo" => "ex2:foo"
         },
-        exception: JSON.LD.InvalidIRIMappingError
+        error_code: "invalid IRI mapping"
       }
     }
     |> Enum.each(fn {title, data} ->
       @tag data: data
       test title, %{data: data} do
-        assert_raise data.exception, fn ->
+        assert_raise_json_ld_error data.error_code, fn ->
           JSON.LD.context(data.input)
         end
       end
@@ -1055,14 +1057,14 @@ defmodule JSON.LD.ContextTest do
     |> Enum.each(fn keyword ->
       @tag keyword: keyword
       test "does not redefine #{keyword} as a string", %{keyword: keyword} do
-        assert_raise JSON.LD.KeywordRedefinitionError, fn ->
+        assert_raise_json_ld_error "keyword redefinition", fn ->
           JSON.LD.context(%{"@context" => %{keyword => "http://example.com/"}})
         end
       end
 
       @tag keyword: keyword
       test "does not redefine #{keyword} with an @id", %{keyword: keyword} do
-        assert_raise JSON.LD.KeywordRedefinitionError, fn ->
+        assert_raise_json_ld_error "keyword redefinition", fn ->
           JSON.LD.context(%{"@context" => %{keyword => %{"@id" => "http://example.com/"}}})
         end
       end
@@ -1070,7 +1072,7 @@ defmodule JSON.LD.ContextTest do
       unless keyword == "@type" do
         @tag keyword: keyword
         test "does not redefine #{keyword} with an @container", %{keyword: keyword} do
-          assert_raise JSON.LD.KeywordRedefinitionError, fn ->
+          assert_raise_json_ld_error "keyword redefinition", fn ->
             JSON.LD.context(%{"@context" => %{keyword => %{"@container" => "@set"}}})
           end
         end
@@ -1079,11 +1081,11 @@ defmodule JSON.LD.ContextTest do
   end
 
   test "an empty string is not a valid term" do
-    assert_raise JSON.LD.InvalidTermDefinitionError, fn ->
+    assert_raise_json_ld_error "invalid term definition", fn ->
       JSON.LD.context(%{"@context" => %{"" => "http://example.org/"}})
     end
 
-    assert_raise JSON.LD.InvalidTermDefinitionError, fn ->
+    assert_raise_json_ld_error "invalid term definition", fn ->
       JSON.LD.context(%{"@context" => %{"" => %{"@id" => "http://example.org/"}}})
     end
   end

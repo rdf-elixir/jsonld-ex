@@ -987,11 +987,11 @@ defmodule JSON.LD.DecoderTest do
         Plug.Conn.resp(conn, 404, "Not Found")
       end)
 
-      assert_raise JSON.LD.LoadingDocumentFailedError,
-                   "HTTP request failed with status 404",
-                   fn ->
-                     JSON.LD.to_rdf("http://localhost:#{bypass.port}/not-found")
-                   end
+      assert_raise_json_ld_error "loading document failed",
+                                 "HTTP request failed with status 404",
+                                 fn ->
+                                   JSON.LD.to_rdf("http://localhost:#{bypass.port}/not-found")
+                                 end
     end
 
     test "fails when remote document is not valid JSON-LD", %{bypass: bypass} do
@@ -1001,7 +1001,7 @@ defmodule JSON.LD.DecoderTest do
         |> Plug.Conn.resp(200, "invalid json")
       end)
 
-      assert_raise JSON.LD.LoadingDocumentFailedError, fn ->
+      assert_raise_json_ld_error "loading document failed", fn ->
         JSON.LD.to_rdf("http://localhost:#{bypass.port}/invalid")
       end
     end

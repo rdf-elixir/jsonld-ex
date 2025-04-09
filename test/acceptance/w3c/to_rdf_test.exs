@@ -9,6 +9,7 @@ defmodule JSON.LD.W3C.ToRdfTest do
   use RDF.EarlFormatter, test_suite: :toRdf
 
   import JSON.LD.TestSuite
+  import JSON.LD.Case
   import ExUnit.CaptureLog
   import RDF.Test.Assertions
 
@@ -97,7 +98,7 @@ defmodule JSON.LD.W3C.ToRdfTest do
         test "toRdf#{id}: #{name}", %{
           data: %{"input" => input, "expectErrorCode" => error} = test_case
         } do
-          assert_raise exception(error), fn ->
+          assert_raise_json_ld_error error, fn ->
             to_rdf(input, test_case)
           end
         end

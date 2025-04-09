@@ -322,7 +322,7 @@ defmodule JSON.LD.Encoder do
                       case cl_node[@rdf_language] do
                         [%{"@value" => language} | _] ->
                           if not valid_language?(language) do
-                            raise JSON.LD.InvalidLanguageTaggedStringError, value: language
+                            raise JSON.LD.Error.invalid_language_tagged_string(language)
                           end
 
                           Map.put(cl_reference, "@language", language)
@@ -336,9 +336,7 @@ defmodule JSON.LD.Encoder do
                       case cl_node[@rdf_direction] do
                         [%{"@value" => direction} | _] ->
                           if direction not in ~w[ltr rtl] do
-                            raise JSON.LD.InvalidBaseDirectionError,
-                              message:
-                                "invalid @direction value #{inspect(direction)}; must be 'ltr' or 'rtl'"
+                            raise JSON.LD.Error.invalid_base_direction(direction)
                           end
 
                           Map.put(cl_reference, "@direction", direction)
@@ -549,7 +547,7 @@ defmodule JSON.LD.Encoder do
           if RDF.JSON.valid?(literal) do
             {value, "@json", result}
           else
-            raise JSON.LD.InvalidJSONLiteralError, value: literal
+            raise JSON.LD.Error.invalid_json_literal(literal)
           end
 
         (i18n_datatype_parts = i18n_datatype_parts(literal)) &&

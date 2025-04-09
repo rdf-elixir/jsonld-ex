@@ -14,6 +14,7 @@ else
     use RDF.EarlFormatter, test_suite: :"remote-doc"
 
     import JSON.LD.TestSuite
+    import JSON.LD.Case
     import Tesla.Test
 
     @manifest manifest("remote-doc")
@@ -71,7 +72,7 @@ else
 
             input = absolute_url(input)
 
-            assert_raise exception(error), fn ->
+            assert_raise_json_ld_error error, fn ->
               JSON.LD.expand(input, test_case_options(test_case, @base))
             end
           end

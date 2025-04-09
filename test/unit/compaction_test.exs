@@ -2952,7 +2952,7 @@ defmodule JSON.LD.CompactionTest do
         Plug.Conn.resp(conn, 404, "Not Found")
       end)
 
-      assert_raise JSON.LD.LoadingDocumentFailedError, fn ->
+      assert_raise_json_ld_error "loading document failed", fn ->
         JSON.LD.compact("http://localhost:#{bypass.port}/non-existent.jsonld", %{})
       end
     end

@@ -134,18 +134,10 @@ defmodule JSON.LD do
       if processor_options.expand_context do
         context =
           case processor_options.expand_context do
-            %{"@context" => context} ->
-              context
-
-            %{} = context ->
-              context
-
-            context when is_binary(context) ->
-              context
-
-            invalid ->
-              raise JSON.LD.InvalidContextEntryError,
-                message: "Invalid expand context value: #{inspect(invalid)}"
+            %{"@context" => context} -> context
+            %{} = context -> context
+            context when is_binary(context) -> context
+            invalid -> raise ArgumentError, "Invalid expand context value: #{inspect(invalid)}"
           end
 
         Context.update(

@@ -114,7 +114,7 @@ defmodule JSON.LD.Context do
 
   # 2) If local context has a @propagate entry, its value MUST be boolean true or false, set propagate to that value
   def update(%__MODULE__{}, %{"@propagate" => propagate}, _, _) when not is_boolean(propagate) do
-    raise JSON.LD.InvalidPropagateValueError, value: propagate
+    raise JSON.LD.Error.invalid_propagate_value(propagate)
   end
 
   def update(%__MODULE__{} = active, %{"@propagate" => propagate} = local, options, popts) do
@@ -133,7 +133,7 @@ defmodule JSON.LD.Context do
 
     if not options[:override_protected] and
          active.term_defs |> Map.values() |> Enum.any?(& &1.protected) do
-      raise JSON.LD.InvalidContextNullificationError, message: "invalid context nullification"
+      raise JSON.LD.Error.invalid_context_nullification()
     else
       # 5.1.2) Initialize result as a newly-initialized active context, setting both base IRI and original base URL to the value of original base URL in active context, and, if propagate is false, previous context in result to the previous value of result.
       %{
@@ -158,11 +158,11 @@ defmodule JSON.LD.Context do
           if IRI.valid?(context) do
             context
           else
-            raise JSON.LD.LoadingDocumentFailedError, message: "Invalid context IRI: #{context}"
+            raise JSON.LD.Error.loading_document_failed("Invalid context IRI: #{context}")
           end
 
         not IRI.valid?(base) ->
-          raise JSON.LD.LoadingDocumentFailedError, message: "Invalid base IRI: #{base || "nil"}"
+          raise JSON.LD.Error.loading_document_failed("Invalid base IRI: #{base || "nil"}")
 
         true ->
           absolute_iri(context, base)
@@ -174,7 +174,7 @@ defmodule JSON.LD.Context do
     else
       # 5.2.3) If the number of entries in the remote contexts array exceeds a processor defined limit, a context overflow error has been detected and processing is aborted;
       if length(remote) > @max_contexts_loaded do
-        raise JSON.LD.ContextOverflowError, message: "context overflow: #{context}"
+        raise JSON.LD.Error.context_overflow(context)
       end
 
       # 5.2.3) otherwise, add context to remote contexts.
@@ -230,8 +230,7 @@ defmodule JSON.LD.Context do
 
   # 5.3) If context is not a map, an invalid local context error has been detected and processing is aborted.
   defp do_update(_, context, _, _, _) do
-    raise JSON.LD.InvalidLocalContextError,
-      message: "#{inspect(context)} is not a valid @context value"
+    raise JSON.LD.Error.invalid_local_context(context)
   end
 
   defp dereference_import(url, options) do
@@ -241,8 +240,9 @@ defmodule JSON.LD.Context do
     case document do
       # 5.6.7)
       %{"@import" => _} ->
-        raise JSON.LD.InvalidContextEntryError,
-          message: "#{inspect(document)} must not include @import entry"
+        raise JSON.LD.Error.invalid_context_entry(
+                "#{inspect(document)} must not include @import entry"
+              )
 
       document ->
         document
@@ -260,13 +260,13 @@ defmodule JSON.LD.Context do
           {result.document, result.document_url}
 
         {:error, %{__exception__: true} = exception} ->
-          raise JSON.LD.LoadingRemoteContextFailedError,
-            message:
-              "Could not load remote context (#{context_url}): #{Exception.message(exception)}"
+          raise JSON.LD.Error.loading_remote_context_failed(
+                  context_url,
+                  Exception.message(exception)
+                )
 
         {:error, reason} ->
-          raise JSON.LD.LoadingRemoteContextFailedError,
-            message: "Could not load remote context (#{context_url}): #{inspect(reason)}"
+          raise JSON.LD.Error.loading_remote_context_failed(context_url, reason)
       end
 
     document =
@@ -281,20 +281,16 @@ defmodule JSON.LD.Context do
               result
 
             {:error, reason} ->
-              raise JSON.LD.InvalidRemoteContextError,
-                message: "Context is not a valid JSON document: #{inspect(reason)}"
+              raise JSON.LD.Error.invalid_remote_context(invalid: reason)
           end
 
         true ->
-          raise JSON.LD.InvalidRemoteContextError,
-            message: "Context is not a valid JSON object: #{inspect(document)}"
+          raise JSON.LD.Error.invalid_remote_context(invalid: document)
       end
 
     {
       document["@context"] ||
-        raise(JSON.LD.InvalidRemoteContextError,
-          message: "Invalid remote context: No @context key in #{inspect(document)}"
-        ),
+        raise(JSON.LD.Error.invalid_remote_context("No @context key in #{inspect(document)}")),
       url
     }
   end
@@ -303,27 +299,26 @@ defmodule JSON.LD.Context do
 
   # 5.5.2) If processing mode is set to json-ld-1.0, a processing mode conflict error has been detected and processing is aborted.
   defp check_version(_, 1.1, "json-ld-1.0") do
-    raise JSON.LD.ProcessingModeConflictError, message: "processing mode conflict"
+    raise JSON.LD.Error.processing_mode_conflict()
   end
 
   defp check_version(active, 1.1, _), do: active
 
   # 5.5.1) If the associated value is not 1.1, an invalid @version value has been detected, and processing is aborted.
   defp check_version(_, invalid, _) do
-    raise JSON.LD.InvalidVersionValueError.exception(value: invalid)
+    raise JSON.LD.Error.invalid_version_value(invalid)
   end
 
   defp process_import(:not_present, context, _, _), do: context
 
   # 5.6.1) If processing mode is json-ld-1.0, an invalid context entry error has been detected and processing is aborted.
   defp process_import(import, _, _, %Options{processing_mode: "json-ld-1.0"}) do
-    raise JSON.LD.InvalidContextEntryError,
-      message: "invalid context entry: @import with value #{inspect(import)}"
+    raise JSON.LD.Error.invalid_context_entry("@import with value #{inspect(import)}")
   end
 
   # 5.6.2) Otherwise, if the value of @import is not a string, an invalid @import value error has been detected and processing is aborted.
   defp process_import(import, _, _, _) when not is_binary(import) do
-    raise JSON.LD.InvalidImportValueError, value: import
+    raise JSON.LD.Error.invalid_import_value(import)
   end
 
   defp process_import(import, context, active, options) do
@@ -338,8 +333,7 @@ defmodule JSON.LD.Context do
         Map.merge(import_context, context)
 
       invalid ->
-        raise JSON.LD.InvalidRemoteContextError,
-          message: "Context is not a valid JSON document: #{inspect(invalid)}"
+        raise JSON.LD.Error.invalid_remote_context(invalid: invalid)
     end
   end
 
@@ -360,13 +354,12 @@ defmodule JSON.LD.Context do
         %__MODULE__{active | base_iri: absolute_iri(base, active_base)}
 
       true ->
-        raise JSON.LD.InvalidBaseIRIError,
-          message: "#{inspect(base)} is a relative IRI, but no active base IRI defined"
+        raise JSON.LD.Error.invalid_base_iri(base, :relative_without_active_base)
     end
   end
 
   defp set_base(_, invalid, _) do
-    raise JSON.LD.InvalidBaseIRIError, message: "#{inspect(invalid)} is not a valid base IRI"
+    raise JSON.LD.Error.invalid_base_iri(invalid)
   end
 
   defp set_vocab(active, :not_present, _), do: active
@@ -382,16 +375,16 @@ defmodule JSON.LD.Context do
         %__MODULE__{active | vocabulary_mapping: vocab}
 
       not IRI.absolute?(vocab) and options.processing_mode == "json-ld-1.0" ->
-        raise JSON.LD.InvalidVocabMappingError,
-          message: "@vocab must be an absolute IRI in 1.0 mode: #{inspect(vocab)}"
+        raise JSON.LD.Error.invalid_vocab_mapping(
+                message: "@vocab must be an absolute IRI in 1.0 mode: #{inspect(vocab)}"
+              )
 
       is_binary(vocab) ->
         # SPEC ISSUE: vocab must be set to true
         %__MODULE__{active | vocabulary_mapping: expand_iri(vocab, active, options, true, true)}
 
       true ->
-        raise JSON.LD.InvalidVocabMappingError,
-          message: "#{inspect(vocab)} is not a valid vocabulary mapping"
+        raise JSON.LD.Error.invalid_vocab_mapping(vocab)
     end
   end
 
@@ -407,16 +400,14 @@ defmodule JSON.LD.Context do
 
   # 5.9.3) If it is not a string, an invalid default language error has been detected and processing is aborted.
   defp set_language(_, language, _) do
-    raise JSON.LD.InvalidDefaultLanguageError,
-      message: "#{inspect(language)} is not a valid language"
+    raise JSON.LD.Error.invalid_default_language(language)
   end
 
   defp set_direction(active, :not_present, _), do: active
 
   # 5.10.1) If processing mode is json-ld-1.0, an invalid context entry error has been detected and processing is aborted.
   defp set_direction(_, direction, "json-ld-1.0") do
-    raise JSON.LD.InvalidContextEntryError,
-      message: "invalid context entry: @direction with value #{inspect(direction)}"
+    raise JSON.LD.Error.invalid_context_entry("@direction with value #{inspect(direction)}")
   end
 
   # 5.10.3) If value is null, remove any default language from result.
@@ -428,21 +419,19 @@ defmodule JSON.LD.Context do
 
   # 5.9.3) If it is not a string, an invalid default language error has been detected and processing is aborted.
   defp set_direction(_, direction, _) do
-    raise JSON.LD.InvalidBaseDirectionError,
-      message: "invalid @direction value #{inspect(direction)}; must be 'ltr' or 'rtl'"
+    raise JSON.LD.Error.invalid_base_direction(direction)
   end
 
   defp validate_propagate(active, :not_present, _), do: active
 
   # 5.11.1) If processing mode is json-ld-1.0, an invalid context entry error has been detected and processing is aborted.
   defp validate_propagate(_, propagate, "json-ld-1.0") do
-    raise JSON.LD.InvalidContextEntryError,
-      message: "invalid context entry: @propagate with value #{inspect(propagate)}"
+    raise JSON.LD.Error.invalid_context_entry("@propagate with value #{inspect(propagate)}")
   end
 
   # 5.11.2) Otherwise, if the value of @propagate is not boolean true or false, an invalid @propagate value error has been detected and processing is aborted.
   defp validate_propagate(_, propagate, _) when not is_boolean(propagate) do
-    raise JSON.LD.InvalidPropagateValueError.exception(value: propagate)
+    raise JSON.LD.Error.invalid_propagate_value(propagate)
   end
 
   # Note: The previous context is actually set earlier in this algorithm (step 2 and 3)

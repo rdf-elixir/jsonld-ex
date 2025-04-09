@@ -194,8 +194,7 @@ defmodule JSON.LD.Expansion do
 
           if keys -- ~w[@direction @index @language @type @value] != [] ||
                (("@language" in keys or "@direction" in keys) and "@type" in keys) do
-            raise JSON.LD.InvalidValueObjectError,
-              message: "value object with disallowed members"
+            raise JSON.LD.Error.invalid_value_object("value object with disallowed members")
           end
 
           cond do
@@ -209,13 +208,13 @@ defmodule JSON.LD.Expansion do
 
             # 15.4)
             !is_binary(value) and Map.has_key?(result, "@language") ->
-              raise JSON.LD.InvalidLanguageTaggedValueError,
-                message: "@value '#{inspect(value)}' is tagged with a language"
+              raise JSON.LD.Error.invalid_language_tagged_value(
+                      "@value '#{inspect(value)}' is tagged with a language"
+                    )
 
             # 15.5)
             (type = result["@type"]) && !(is_binary(type) and valid_uri?(type)) ->
-              raise JSON.LD.InvalidTypedValueError,
-                message: "@value '#{inspect(value)}' has invalid type #{inspect(type)}"
+              raise JSON.LD.Error.invalid_typed_value(value, type)
 
             true ->
               result
@@ -285,18 +284,14 @@ defmodule JSON.LD.Expansion do
             if keyword? do
               # 13.4.1)
               if active_property == "@reverse" do
-                raise JSON.LD.InvalidReversePropertyMapError,
-                  message:
-                    "An invalid reverse property map has been detected. No keywords apart from @context are allowed in reverse property maps."
+                raise JSON.LD.Error.invalid_reverse_property_map()
               end
 
               # 13.4.2)
               if Map.has_key?(result, expanded_property) and
                    (processing_mode == "json-ld-1.0" or
                       expanded_property not in ["@included", "@type"]) do
-                raise JSON.LD.CollidingKeywordsError,
-                  message:
-                    "Two properties which expand to the same keyword have been detected. This might occur if a keyword and an alias thereof are used at the same time."
+                raise JSON.LD.Error.colliding_keywords(expanded_property)
               end
 
               expanded_value =
@@ -308,8 +303,7 @@ defmodule JSON.LD.Expansion do
                         expand_iri(value, active_context, processor_options, true, false)
 
                       true ->
-                        raise JSON.LD.InvalidIdValueError,
-                          message: "#{inspect(value)} is not a valid @id value"
+                        raise JSON.LD.Error.invalid_id_value(value)
                     end
 
                   # 13.4.4)
@@ -325,8 +319,7 @@ defmodule JSON.LD.Expansion do
                           end)
 
                         true ->
-                          raise JSON.LD.InvalidTypeValueError,
-                            message: "#{inspect(value)} is not a valid @type value"
+                          raise JSON.LD.Error.invalid_type_value(value)
                       end
 
                     if existing = result["@type"] do
@@ -349,8 +342,7 @@ defmodule JSON.LD.Expansion do
                       |> to_list()
 
                     unless Enum.all?(expanded_value, &node?/1) do
-                      raise JSON.LD.InvalidIncludedValueError,
-                        message: "values of @included must expand to node objects"
+                      raise JSON.LD.Error.invalid_included_value(expanded_value)
                     end
 
                     expanded_value ++ List.wrap(result["@included"])
@@ -368,9 +360,7 @@ defmodule JSON.LD.Expansion do
                         [value]
 
                       not (scalar?(value) or is_nil(value)) ->
-                        raise JSON.LD.InvalidValueObjectValueError,
-                          message:
-                            "#{inspect(value)} is not a valid value for the @value member of a value object; neither a scalar nor null"
+                        raise JSON.LD.Error.invalid_value_object_value(value)
 
                       true ->
                         if is_nil(value) do
@@ -399,7 +389,7 @@ defmodule JSON.LD.Expansion do
                         end
 
                       true ->
-                        raise JSON.LD.InvalidLanguageTaggedStringError, value: value
+                        raise JSON.LD.Error.invalid_language_tagged_string(value)
                     end
 
                   # 13.4.9)
@@ -420,8 +410,7 @@ defmodule JSON.LD.Expansion do
                         [value]
 
                       true ->
-                        raise JSON.LD.InvalidBaseDirectionError,
-                          message: "#{inspect(value)} is not a valid @index value"
+                        raise JSON.LD.Error.invalid_base_direction(value)
                     end
 
                   # 13.4.10)
@@ -429,8 +418,7 @@ defmodule JSON.LD.Expansion do
                     if is_binary(value) do
                       value
                     else
-                      raise JSON.LD.InvalidIndexValueError,
-                        message: "#{inspect(value)} is not a valid @index value"
+                      raise JSON.LD.Error.invalid_index_value(value)
                     end
 
                   # 13.4.11)
@@ -451,8 +439,7 @@ defmodule JSON.LD.Expansion do
                   "@reverse" ->
                     # 13.4.13.1)
                     unless is_map(value) do
-                      raise JSON.LD.InvalidReverseValueError,
-                        message: "#{inspect(value)} is not a valid @reverse value"
+                      raise JSON.LD.Error.invalid_reverse_value(value)
                     end
 
                     # 13.4.13.2)
@@ -485,9 +472,7 @@ defmodule JSON.LD.Expansion do
                             {property, items}, reverse_map ->
                               Enum.each(items, fn item ->
                                 if value?(item) or list?(item) do
-                                  raise JSON.LD.InvalidReversePropertyValueError,
-                                    message:
-                                      "invalid value for a reverse property in #{inspect(item)}"
+                                  raise JSON.LD.Error.invalid_reverse_property_value(item)
                                 end
                               end)
 
@@ -574,8 +559,7 @@ defmodule JSON.LD.Expansion do
                           |> List.wrap()
 
                         item ->
-                          raise JSON.LD.InvalidLanguageMapValueError,
-                            message: "#{inspect(item)} is not a valid language map value"
+                          raise JSON.LD.Error.invalid_language_map_value(item)
                       end)
                     end)
 
@@ -662,9 +646,9 @@ defmodule JSON.LD.Expansion do
                               )
 
                             if value?(item) and map_size(Map.delete(item, "@value")) > 0 do
-                              raise JSON.LD.InvalidValueObjectError,
-                                message:
-                                  "Attempt to add illegal key to value object: #{inspect(item)}"
+                              raise JSON.LD.Error.invalid_value_object(
+                                      "Attempt to add illegal key to value object: #{inspect(item)}"
+                                    )
                             else
                               item
                             end
@@ -734,8 +718,7 @@ defmodule JSON.LD.Expansion do
                     |> List.wrap()
                     |> Enum.reduce(reverse_map, fn item, reverse_map ->
                       if Map.has_key?(item, "@value") or Map.has_key?(item, "@list") do
-                        raise JSON.LD.InvalidReversePropertyValueError,
-                          message: "invalid value for a reverse property in #{inspect(item)}"
+                        raise JSON.LD.Error.invalid_reverse_property_value(item)
                       end
 
                       Map.update(reverse_map, expanded_property, [item], fn members ->
@@ -797,8 +780,7 @@ defmodule JSON.LD.Expansion do
              Enum.any?(nested_value, fn {k, _} ->
                expand_iri(k, nest_context, processor_options, false, true) == "@value"
              end) do
-          raise JSON.LD.InvalidNestValueError,
-            message: "invalid @nest value: #{inspect(nested_value)}"
+          raise JSON.LD.Error.invalid_nest_value(invalid: nested_value)
         end
 
         deep_merge(
@@ -823,8 +805,7 @@ defmodule JSON.LD.Expansion do
   defp validate_set_or_list_object(%{"@index" => _} = object) when map_size(object) == 2, do: true
 
   defp validate_set_or_list_object(object) do
-    raise JSON.LD.InvalidSetOrListObjectError,
-      message: "set or list object with disallowed members: #{inspect(object)}"
+    raise JSON.LD.Error.invalid_set_or_list_object(object)
   end
 
   @doc """
