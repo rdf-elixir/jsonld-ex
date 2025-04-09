@@ -13,37 +13,26 @@
 [![Quality Checks](https://github.com/rdf-elixir/jsonld-ex/actions/workflows/elixir-quality-checks.yml/badge.svg)](https://github.com/rdf-elixir/jsonld-ex/actions/workflows/elixir-quality-checks.yml)
 
 
-An implementation of the [JSON-LD] standard for Elixir and [RDF.ex].
+An implementation of the [JSON-LD 1.1] standard for Elixir and [RDF.ex].
 
 The API documentation can be found [here](https://hexdocs.pm/json_ld/). For a guide and more information about RDF.ex and it's related projects, go to <https://rdf-elixir.dev>.
 
 
 ## Features
 
-- fully conforming JSON-LD 1.0 API processor
+- fully conforming JSON-LD 1.1 API processor
 - JSON-LD reader/writer for [RDF.ex]
-- tests of the [JSON-LD test suite][] (see [here](https://github.com/rdf-elixir/jsonld-ex/wiki/JSON-LD.ex-implementation-report) for a detailed status report)
+- customizable HTTP client for remote document loading
+- tests of the [JSON-LD test suite] (see [here](https://github.com/rdf-elixir/jsonld-ex/tree/master/earl_reports) for the EARL reports)
 
 
 ## TODO
 
 - [JSON-LD Framing]
-- [JSON-LD 1.1] support
-
-
-## Installation
-
-The [JSON-LD.ex](https://hex.pm/packages/json_ld) Hex package can be installed as usual, by adding `json_ld` to your list of dependencies in `mix.exs`:
-
-```elixir
-def deps do
-  [{:json_ld, "~> 0.3"}]
-end
-```
+- [JSON-LD HTML Content Algorithms]
 
 
 ## Usage
-
 
 ### Expand a document
 
@@ -160,11 +149,11 @@ If you need help with your Elixir and Linked Data projects, just contact [NinjaC
 
 
 [RDF.ex]:             https://hex.pm/packages/rdf
-[JSON-LD]:            http://www.w3.org/TR/json-ld/ "JSON-LD 1.0"
-[JSON-LD 1.1]:        https://json-ld.org/spec/latest/json-ld/ "JSON-LD 1.1"
-[JSON-LD API]:        http://www.w3.org/TR/json-ld-api/ "JSON-LD 1.0 Processing Algorithms and API"
+[JSON-LD 1.1]:        https://www.w3.org/TR/json-ld11/ "JSON-LD 1.1"
+[JSON-LD API]:        https://www.w3.org/TR/json-ld11-api/ "JSON-LD 1.1 Processing Algorithms and API"
 [JSON-LD Framing]:    http://json-ld.org/spec/latest/json-ld-framing/
 [JSON-LD test suite]: http://json-ld.org/test-suite/
+[JSON-LD HTML Content Algorithms]:    https://www.w3.org/TR/json-ld11-api/#html-content-algorithms
 
 
 
