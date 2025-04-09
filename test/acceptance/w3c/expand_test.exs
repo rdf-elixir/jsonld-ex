@@ -26,7 +26,12 @@ defmodule JSON.LD.W3C.ExpandTest do
        "#tdi03",
        "#tn004"
      ],
-     "JSON-LD Object comparison - Actually correct values are expanded, but the ordering is different."},
+     %{
+       message:
+         "JSON-LD Object comparison - Actually correct values are expanded, but the ordering is different.",
+       earl_result: :passed,
+       earl_mode: :semi_auto
+     }},
     {:ordered,
      [
        "#t0034",
@@ -34,7 +39,12 @@ defmodule JSON.LD.W3C.ExpandTest do
        "#tin03",
        "#tdi03"
      ],
-     "JSON-LD Object comparison - Actually correct values are expanded, but the ordering is different."}
+     %{
+       message:
+         "JSON-LD Object comparison - Actually correct values are expanded, but the ordering is different.",
+       earl_result: :passed,
+       earl_mode: :semi_auto
+     }}
   ]
   @skipped_ordered skip_map(@skipped, :ordered)
   @skipped_unordered skip_map(@skipped, :unordered)
@@ -49,6 +59,7 @@ defmodule JSON.LD.W3C.ExpandTest do
         skip_test(id, @skipped_ordered)
         @tag :test_suite
         @tag :expand_test_suite
+        @tag ordered: true
         @tag test_case: RDF.iri(@base <> id)
         @tag data: test_case
         test "expand#{id}: #{name} (ordered)", %{
@@ -79,6 +90,7 @@ defmodule JSON.LD.W3C.ExpandTest do
         skip_test(id, @skipped_unordered)
         @tag :test_suite
         @tag :expand_test_suite
+        @tag ordered: false
         @tag test_case: RDF.iri(@base <> id)
         @tag data: test_case
         test "expand#{id}: #{name} (unordered)", %{

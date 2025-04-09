@@ -135,8 +135,23 @@ defmodule JSON.LD.TestSuite do
 
   defmacro skip_test(id, skipped) do
     quote do
-      if message = unquote(skipped)[unquote(id)] do
-        @tag skip: message
+      case unquote(skipped)[unquote(id)] do
+        %{message: message} = options ->
+          if earl_result = options[:earl_result] do
+            @tag earl_result: earl_result
+          end
+
+          if earl_mode = options[:earl_mode] do
+            @tag earl_mode: earl_mode
+          end
+
+          @tag skip: message
+
+        message when is_binary(message) ->
+          @tag skip: message
+
+        _ ->
+          nil
       end
     end
   end
@@ -145,6 +160,7 @@ defmodule JSON.LD.TestSuite do
     quote do
       if get_in(unquote(test_case), ["option", "specVersion"]) == "json-ld-1.0" do
         @tag skip: "JSON-LD 1.0 test"
+        @tag earl_result: :untested
       end
     end
   end

@@ -21,7 +21,12 @@ defmodule JSON.LD.W3C.FlattenTest do
                 "#t0035",
                 "#tin03"
               ],
-              "JSON-LD Object comparison - Actually correct values are expanded, but the ordering is different."}
+              %{
+                message:
+                  "JSON-LD Object comparison - Actually correct values are expanded, but the ordering is different.",
+                earl_result: :passed,
+                earl_mode: :semi_auto
+              }}
            ])
 
   @manifest
@@ -34,6 +39,7 @@ defmodule JSON.LD.W3C.FlattenTest do
         skip_json_ld_1_0_test(test_case)
         @tag :test_suite
         @tag :flatten_test_suite
+        @tag ordered: true
         @tag test_case: RDF.iri(@base <> id)
         @tag data: test_case
         test "flatten#{id}: #{name} (ordered)", %{
@@ -68,6 +74,7 @@ defmodule JSON.LD.W3C.FlattenTest do
         skip_json_ld_1_0_test(test_case)
         @tag :test_suite
         @tag :flatten_test_suite
+        @tag ordered: false
         @tag test_case: RDF.iri(@base <> id)
         @tag data: test_case
         test "flatten#{id}: #{name} (unordered)", %{

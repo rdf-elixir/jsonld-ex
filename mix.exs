@@ -36,6 +36,7 @@ defmodule JSON.LD.Mixfile do
       test_coverage: [tool: ExCoveralls],
       preferred_cli_env: [
         check: :test,
+        earl_reports: :test,
         coveralls: :test,
         "coveralls.detail": :test,
         "coveralls.post": :test,
@@ -90,6 +91,7 @@ defmodule JSON.LD.Mixfile do
 
   defp aliases do
     [
+      earl_reports: &earl_reports/1,
       check: [
         "clean",
         "deps.unlock --check-unused",
@@ -99,6 +101,23 @@ defmodule JSON.LD.Mixfile do
         "credo"
       ]
     ]
+  end
+
+  defp earl_reports(_) do
+    files = [
+      "test/acceptance/w3c/compact_test.exs",
+      "test/acceptance/w3c/expand_test.exs",
+      "test/acceptance/w3c/flatten_test.exs",
+      "test/acceptance/w3c/from_rdf_test.exs",
+      "test/acceptance/w3c/to_rdf_test.exs",
+      "test/acceptance/w3c/remote_doc_test.exs"
+    ]
+
+    Mix.Task.run(
+      "test",
+      ["--formatter", "RDF.Test.EarlFormatter", "--exclude", "ordered:false", "--seed", "0"] ++
+        files
+    )
   end
 
   defp elixirc_paths(:test), do: ["lib", "test/support"]

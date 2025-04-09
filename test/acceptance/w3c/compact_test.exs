@@ -28,6 +28,7 @@ defmodule JSON.LD.W3C.CompactTest do
         skip_json_ld_1_0_test(test_case)
         @tag :test_suite
         @tag :compact_test_suite
+        @tag ordered: true
         @tag test_case: RDF.iri(@base <> id)
         @tag data: test_case
         test "compact#{id}: #{name} (ordered)", %{
@@ -45,6 +46,7 @@ defmodule JSON.LD.W3C.CompactTest do
         skip_json_ld_1_0_test(test_case)
         @tag :test_suite
         @tag :compact_test_suite
+        @tag ordered: false
         @tag test_case: RDF.iri(@base <> id)
         @tag data: test_case
         test "compact#{id}: #{name} (unordered)", %{

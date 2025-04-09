@@ -22,7 +22,12 @@ defmodule JSON.LD.W3C.FromRdfTest do
                 "#t0018",
                 "#t0019"
               ],
-              "JSON-LD Object comparison - Actually correct values are produced, but the ordering is different."},
+              %{
+                message:
+                  "JSON-LD Object comparison - Actually correct values are produced, but the ordering is different.",
+                earl_result: :passed,
+                earl_mode: :semi_auto
+              }},
              {["#t0027"],
               "TODO: apply change from https://github.com/w3c/json-ld-api/pull/625 fixing https://github.com/w3c/json-ld-api/issues/555"}
            ])
@@ -37,6 +42,7 @@ defmodule JSON.LD.W3C.FromRdfTest do
         skip_json_ld_1_0_test(test_case)
         @tag :test_suite
         @tag :from_rdf_test_suite
+        @tag ordered: true
         @tag test_case: RDF.iri(@base <> id)
         @tag data: test_case
         test "fromRdf#{id}: #{name} (ordered)", %{
@@ -52,6 +58,7 @@ defmodule JSON.LD.W3C.FromRdfTest do
         skip_json_ld_1_0_test(test_case)
         @tag :test_suite
         @tag :from_rdf_test_suite
+        @tag ordered: false
         @tag test_case: RDF.iri(@base <> id)
         @tag data: test_case
         test "fromRdf#{id}: #{name} (unordered)", %{
