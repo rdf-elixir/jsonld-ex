@@ -22,12 +22,7 @@ defmodule JSON.LD.Mixfile do
 
       # Docs
       name: "JSON-LD.ex",
-      docs: [
-        main: "JSON.LD",
-        source_url: @repo_url,
-        source_ref: "v#{@version}",
-        extras: ["README.md", "CHANGELOG.md"]
-      ],
+      docs: docs(),
 
       # Dialyzer
       dialyzer: dialyzer(),
@@ -86,6 +81,22 @@ defmodule JSON.LD.Mixfile do
   defp dialyzer do
     [
       plt_file: {:no_warn, "priv/plts/dialyzer.plt"}
+    ]
+  end
+
+  defp docs do
+    [
+      main: "JSON.LD",
+      source_url: @repo_url,
+      source_ref: "v#{@version}",
+      extras: ["README.md", "CHANGELOG.md"],
+      skip_undefined_reference_warnings_on: ["CHANGELOG.md"],
+      extras: [
+        {:"README.md", [title: "About"]},
+        {:"CHANGELOG.md", [title: "CHANGELOG"]},
+        {:"CONTRIBUTING.md", [title: "CONTRIBUTING"]},
+        {:"LICENSE.md", [title: "License"]}
+      ]
     ]
   end
 
