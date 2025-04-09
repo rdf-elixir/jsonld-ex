@@ -6,7 +6,7 @@ defmodule JSON.LD.W3C.FlattenTest do
   """
 
   use ExUnit.Case, async: false
-  use RDF.EarlFormatter, test_suite: :flatten
+  use RDF.Test.EarlFormatter, test_suite: :flatten
 
   import JSON.LD.TestSuite
   import JSON.LD.Case

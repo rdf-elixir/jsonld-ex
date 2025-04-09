@@ -6,7 +6,7 @@ defmodule JSON.LD.W3C.FromRdfTest do
   """
 
   use ExUnit.Case, async: false
-  use RDF.EarlFormatter, test_suite: :fromRdf
+  use RDF.Test.EarlFormatter, test_suite: :fromRdf
 
   import JSON.LD.TestSuite
   import JSON.LD.Case
