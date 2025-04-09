@@ -7,16 +7,29 @@ This project adheres to [Semantic Versioning](http://semver.org/) and
 
 ## Unreleased
 
+This version upgrades the implementation to support JSON-LD 1.1.
+
+The functions on the top level `JSON.LD` module now behave fully-conformant with the API 
+functions of the JsonLdProcessor interface as specified in the spec by supporting also
+references to remote documents and contexts to be used as input. 
+
+Note: This also adapts the more strict remote document handling to reject results 
+with invalid content-types as specified with an error.  
+
 Elixir versions < 1.15 and OTP version < 25 are no longer supported
 
 ### Added
 
+- `JSON.LD.to_rdf/2` and `JSON.LD.from_rdf/2` delegator functions to complete the 
+  JsonLdProcessor API interface
 - Support for custom Tesla-based HTTP clients
 
 ### Changed
 
 - Switched from HTTPoison to Tesla HTTP client, which means you should now configure 
   a respective adapter in your application config.
+- Extracted the default remote document loading into general `JSON.LD.DocumentLoader.RemoteDocument.load/3` 
+  function for better reuse in a custom `JSON.LD.DocumentLoader` implementations
 - Unified error handling under a single `JSON.LD.Error` exception with dedicated error
   creation functions for all error types from the JSON-LD spec, making it easier for users
   to catch and handle errors and being more close to the spec
