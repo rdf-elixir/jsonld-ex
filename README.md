@@ -143,6 +143,21 @@ see [CONTRIBUTING](CONTRIBUTING.md) for details.
 If you need help with your Elixir and Linked Data projects, just contact [NinjaConcept](https://www.ninjaconcept.com/) via <contact@ninjaconcept.com>.
 
 
+## Acknowledgements
+
+<table style="border: 0;">
+<tr>
+<td><a href="https://nlnet.nl/"><img src="https://nlnet.nl/logo/banner.svg" alt="NLnet Foundation Logo" width="150"></a></td>
+<td><a href="https://nlnet.nl/commonsfund/" ><img src="https://nlnet.nl/logo/NGI/NGIZero-green.hex.svg" alt="NGI0 Logo" height="150"></a></td>  
+<td><a href="https://www.jetbrains.com/?from=RDF.ex"><img src="https://resources.jetbrains.com/storage/products/company/brand/logos/jb_beam.svg" alt="JetBrains Logo" height="150"></a></td>
+</tr>
+</table>
+
+This project is partly funded through [NGI0 Commons Fund](https://nlnet.nl/commonsfund/), a fund established by [NLnet](https://nlnet.nl/) with financial support from the European Commission's [Next Generation Internet](https://ngi.eu/) program.
+
+[JetBrains](https://www.jetbrains.com/?from=RDF.ex) supports the project with complimentary access to its development environments.
+
+
 ## License and Copyright
 
 (c) 2017-present Marcel Otto. MIT Licensed, see [LICENSE](LICENSE.md) for details.
