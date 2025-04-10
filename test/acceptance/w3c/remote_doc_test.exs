@@ -11,7 +11,7 @@ else
     """
 
     use ExUnit.Case, async: false
-    use RDF.Test.EarlFormatter, test_suite: :"remote-doc"
+    use RDF.Test.EarlFormatter, test_suite: :"json-ld-api"
 
     import JSON.LD.TestSuite
     import JSON.LD.Case
