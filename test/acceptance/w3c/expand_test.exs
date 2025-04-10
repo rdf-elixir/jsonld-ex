@@ -12,7 +12,8 @@ defmodule JSON.LD.W3C.ExpandTest do
   import JSON.LD.Case
   import ExUnit.CaptureLog
 
-  @manifest manifest("expand")
+  @test_suite_name "expand"
+  @manifest manifest(@test_suite_name)
   @base expanded_base_iri(@manifest)
 
   @cases_with_warnings ~w[#t0005 #tpr34 #tpr35 #tpr36 #tpr37 #tpr38 #tpr39 #t0119 #t0120]
@@ -60,7 +61,7 @@ defmodule JSON.LD.W3C.ExpandTest do
         @tag :test_suite
         @tag :expand_test_suite
         @tag ordered: true
-        @tag test_case: RDF.iri(@base <> id)
+        @tag test_case: RDF.iri(@base <> @test_suite_name <> "-manifest" <> id)
         @tag data: test_case
         test "expand#{id}: #{name} (ordered)", %{
           data: %{"input" => input, "expect" => expected} = test_case
@@ -91,7 +92,7 @@ defmodule JSON.LD.W3C.ExpandTest do
         @tag :test_suite
         @tag :expand_test_suite
         @tag ordered: false
-        @tag test_case: RDF.iri(@base <> id)
+        @tag test_case: RDF.iri(@base <> @test_suite_name <> "-manifest" <> id)
         @tag data: test_case
         test "expand#{id}: #{name} (unordered)", %{
           data: %{"input" => input, "expect" => expected} = test_case
@@ -117,7 +118,7 @@ defmodule JSON.LD.W3C.ExpandTest do
         skip_json_ld_1_0_test(test_case)
         @tag :test_suite
         @tag :expand_test_suite
-        @tag test_case: RDF.iri(@base <> id)
+        @tag test_case: RDF.iri(@base <> @test_suite_name <> "-manifest" <> id)
         @tag data: test_case
         test "expand#{id}: #{name}", %{
           data: %{"input" => input, "expectErrorCode" => error} = test_case

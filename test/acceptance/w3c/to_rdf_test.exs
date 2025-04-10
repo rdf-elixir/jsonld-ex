@@ -13,7 +13,8 @@ defmodule JSON.LD.W3C.ToRdfTest do
   import ExUnit.CaptureLog
   import RDF.Test.Assertions
 
-  @manifest manifest("toRdf")
+  @test_suite_name "toRdf"
+  @manifest manifest(@test_suite_name)
   @base expanded_base_iri(@manifest)
 
   @warnings %{
@@ -63,7 +64,7 @@ defmodule JSON.LD.W3C.ToRdfTest do
 
         @tag :test_suite
         @tag :to_rdf_test_suite
-        @tag test_case: RDF.iri(@base <> id)
+        @tag test_case: RDF.iri(@base <> @test_suite_name <> "-manifest" <> id)
         @tag data: test_case
         test "toRdf#{id}: #{name}", %{data: %{"input" => input, "expect" => expected} = test_case} do
           dataset = parse_nquads(expected)
@@ -93,7 +94,7 @@ defmodule JSON.LD.W3C.ToRdfTest do
 
         @tag :test_suite
         @tag :to_rdf_test_suite
-        @tag test_case: RDF.iri(@base <> id)
+        @tag test_case: RDF.iri(@base <> @test_suite_name <> "-manifest" <> id)
         @tag data: test_case
         test "toRdf#{id}: #{name}", %{
           data: %{"input" => input, "expectErrorCode" => error} = test_case
@@ -110,7 +111,7 @@ defmodule JSON.LD.W3C.ToRdfTest do
 
         @tag :test_suite
         @tag :to_rdf_test_suite
-        @tag test_case: RDF.iri(@base <> id)
+        @tag test_case: RDF.iri(@base <> @test_suite_name <> "-manifest" <> id)
         @tag data: test_case
         test "toRdf#{id}: #{name}", %{data: %{"input" => input} = test_case} do
           assert %RDF.Dataset{} = to_rdf(input, test_case)

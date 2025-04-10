@@ -12,7 +12,8 @@ defmodule JSON.LD.W3C.FlattenTest do
   import JSON.LD.Case
   import ExUnit.CaptureLog
 
-  @manifest manifest("flatten")
+  @test_suite_name "flatten"
+  @manifest manifest(@test_suite_name)
   @base expanded_base_iri(@manifest)
 
   @skipped skip_map([
@@ -40,7 +41,7 @@ defmodule JSON.LD.W3C.FlattenTest do
         @tag :test_suite
         @tag :flatten_test_suite
         @tag ordered: true
-        @tag test_case: RDF.iri(@base <> id)
+        @tag test_case: RDF.iri(@base <> @test_suite_name <> "-manifest" <> id)
         @tag data: test_case
         test "flatten#{id}: #{name} (ordered)", %{
           data: %{"input" => input, "expect" => expected} = test_case
@@ -75,7 +76,7 @@ defmodule JSON.LD.W3C.FlattenTest do
         @tag :test_suite
         @tag :flatten_test_suite
         @tag ordered: false
-        @tag test_case: RDF.iri(@base <> id)
+        @tag test_case: RDF.iri(@base <> @test_suite_name <> "-manifest" <> id)
         @tag data: test_case
         test "flatten#{id}: #{name} (unordered)", %{
           data: %{"input" => input, "expect" => expected} = test_case
@@ -103,7 +104,7 @@ defmodule JSON.LD.W3C.FlattenTest do
         skip_json_ld_1_0_test(test_case)
         @tag :test_suite
         @tag :flatten_test_suite
-        @tag test_case: RDF.iri(@base <> id)
+        @tag test_case: RDF.iri(@base <> @test_suite_name <> "-manifest" <> id)
         @tag data: test_case
         test "flatten#{id}: #{name}", %{
           data: %{"input" => input, "expectErrorCode" => error} = test_case

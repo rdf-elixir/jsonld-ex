@@ -11,7 +11,8 @@ defmodule JSON.LD.W3C.FromRdfTest do
   import JSON.LD.TestSuite
   import JSON.LD.Case
 
-  @manifest manifest("fromRdf")
+  @test_suite_name "fromRdf"
+  @manifest manifest(@test_suite_name)
   @base expanded_base_iri(@manifest)
 
   @skipped skip_map([
@@ -43,7 +44,7 @@ defmodule JSON.LD.W3C.FromRdfTest do
         @tag :test_suite
         @tag :from_rdf_test_suite
         @tag ordered: true
-        @tag test_case: RDF.iri(@base <> id)
+        @tag test_case: RDF.iri(@base <> @test_suite_name <> "-manifest" <> id)
         @tag data: test_case
         test "fromRdf#{id}: #{name} (ordered)", %{
           data: %{"input" => input, "expect" => expected} = test_case
@@ -59,7 +60,7 @@ defmodule JSON.LD.W3C.FromRdfTest do
         @tag :test_suite
         @tag :from_rdf_test_suite
         @tag ordered: false
-        @tag test_case: RDF.iri(@base <> id)
+        @tag test_case: RDF.iri(@base <> @test_suite_name <> "-manifest" <> id)
         @tag data: test_case
         test "fromRdf#{id}: #{name} (unordered)", %{
           data: %{"input" => input, "expect" => expected} = test_case
@@ -74,7 +75,7 @@ defmodule JSON.LD.W3C.FromRdfTest do
 
         @tag :test_suite
         @tag :from_rdf_test_suite
-        @tag test_case: RDF.iri(@base <> id)
+        @tag test_case: RDF.iri(@base <> @test_suite_name <> "-manifest" <> id)
         @tag data: test_case
         test "fromRdf#{id}: #{name}", %{
           data: %{"input" => input, "expectErrorCode" => error} = test_case

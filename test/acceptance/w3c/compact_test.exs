@@ -11,7 +11,8 @@ defmodule JSON.LD.W3C.CompactTest do
   import JSON.LD.TestSuite
   import JSON.LD.Case
 
-  @manifest manifest("compact")
+  @test_suite_name "compact"
+  @manifest manifest(@test_suite_name)
   @base expanded_base_iri(@manifest)
 
   @skipped skip_map([
@@ -29,7 +30,7 @@ defmodule JSON.LD.W3C.CompactTest do
         @tag :test_suite
         @tag :compact_test_suite
         @tag ordered: true
-        @tag test_case: RDF.iri(@base <> id)
+        @tag test_case: RDF.iri(@base <> @test_suite_name <> "-manifest" <> id)
         @tag data: test_case
         test "compact#{id}: #{name} (ordered)", %{
           data: %{"input" => input, "expect" => expected, "context" => context} = test_case
@@ -47,7 +48,7 @@ defmodule JSON.LD.W3C.CompactTest do
         @tag :test_suite
         @tag :compact_test_suite
         @tag ordered: false
-        @tag test_case: RDF.iri(@base <> id)
+        @tag test_case: RDF.iri(@base <> @test_suite_name <> "-manifest" <> id)
         @tag data: test_case
         test "compact#{id}: #{name} (unordered)", %{
           data: %{"input" => input, "expect" => expected, "context" => context} = test_case
@@ -62,7 +63,7 @@ defmodule JSON.LD.W3C.CompactTest do
         skip_json_ld_1_0_test(test_case)
         @tag :test_suite
         @tag :compact_test_suite
-        @tag test_case: RDF.iri(@base <> id)
+        @tag test_case: RDF.iri(@base <> @test_suite_name <> "-manifest" <> id)
         @tag data: test_case
         test "compact#{id}: #{name}", %{
           data: %{"input" => input, "expectErrorCode" => error, "context" => context} = test_case

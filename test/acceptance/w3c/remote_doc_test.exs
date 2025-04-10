@@ -17,7 +17,8 @@ else
     import JSON.LD.Case
     import Tesla.Test
 
-    @manifest manifest("remote-doc")
+    @test_suite_name "remote-doc"
+    @manifest manifest(@test_suite_name)
     @base expanded_base_iri(@manifest)
 
     setup do
@@ -46,7 +47,7 @@ else
           skip_json_ld_1_0_test(test_case)
           @tag :test_suite
           @tag :remote_doc_test_suite
-          @tag test_case: RDF.iri(@base <> id)
+          @tag test_case: RDF.iri(@base <> @test_suite_name <> "-manifest" <> id)
           @tag data: test_case
           test "remote-doc#{id}: #{name}", %{
             data: %{"input" => input, "expect" => expected} = test_case
@@ -63,7 +64,7 @@ else
           skip_json_ld_1_0_test(test_case)
           @tag :test_suite
           @tag :remote_doc_test_suite
-          @tag test_case: RDF.iri(@base <> id)
+          @tag test_case: RDF.iri(@base <> @test_suite_name <> "-manifest" <> id)
           @tag data: test_case
           test "remote-doc#{id}: #{name}", %{
             data: %{"input" => input, "expectErrorCode" => error} = test_case
