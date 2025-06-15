@@ -18,8 +18,6 @@ defmodule JSON.LD.DocumentLoader.RemoteDocument do
   that implements a `client/3` function:
 
       defmodule MyCustomClient do
-        use Tesla
-
         def client(headers, url, options) do
           [
             {Tesla.Middleware.Headers, headers},

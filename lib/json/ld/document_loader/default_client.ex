@@ -15,8 +15,6 @@ defmodule JSON.LD.DocumentLoader.DefaultClient do
   If not configured, it defaults to #{@default_max_redirects}.
   """
 
-  use Tesla, docs: false
-
   @doc """
   Returns the configured maximum number of redirects to follow.
   """
