@@ -340,7 +340,7 @@ defmodule JSON.LD.Context do
   # 5.7)
   defp set_base(active, :not_present, _), do: active
 
-  defp set_base(active, _, remote) when is_list(remote) and length(remote) > 0,
+  defp set_base(active, _, remote) when is_list(remote) and remote != [],
     do: active
 
   defp set_base(active, nil, _), do: %{active | base_iri: nil}
