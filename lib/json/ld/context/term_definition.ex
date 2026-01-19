@@ -79,7 +79,7 @@ defmodule JSON.LD.Context.TermDefinition do
     raise JSON.LD.Error.invalid_term_definition("the empty string is not a valid term definition")
   end
 
-  def create(active, local, term, value, defined, popts, opts) do
+  def create(%Context{} = active, local, term, value, defined, popts, opts) do
     cond do
       # 5)
       term in (JSON.LD.keywords() -- ["@type"]) or
@@ -108,7 +108,7 @@ defmodule JSON.LD.Context.TermDefinition do
             # 6) Initialize previous definition to any existing term definition for term in active context,
             {previous_definition, term_defs} = Map.pop(active.term_defs, term)
             #    removing that term definition from active context.
-            active = %Context{active | term_defs: term_defs}
+            active = %{active | term_defs: term_defs}
 
             # 2)
             do_create(
@@ -259,7 +259,7 @@ defmodule JSON.LD.Context.TermDefinition do
     # 28) Set the term definition of term in active context to definition and set the value associated with defined's key term to true.
     if definition do
       {
-        %Context{active | term_defs: Map.put(active.term_defs, term, definition)},
+        %{active | term_defs: Map.put(active.term_defs, term, definition)},
         Map.put(defined, term, true)
       }
     else
@@ -302,7 +302,7 @@ defmodule JSON.LD.Context.TermDefinition do
 
       # 12.4 and 12.5)
       IRI.absolute?(expanded_type) or expanded_type in ~w[@id @vocab @json @none ] ->
-        {%__MODULE__{definition | type_mapping: expanded_type}, active, defined}
+        {%{definition | type_mapping: expanded_type}, active, defined}
 
       true ->
         raise JSON.LD.Error.invalid_type_mapping("#{inspect(type)} is not a valid type mapping")
@@ -351,7 +351,7 @@ defmodule JSON.LD.Context.TermDefinition do
 
         definition =
           if IRI.absolute?(expanded_reverse) or blank_node_id?(expanded_reverse) do
-            %__MODULE__{definition | iri_mapping: expanded_reverse}
+            %{definition | iri_mapping: expanded_reverse}
           else
             raise JSON.LD.Error.invalid_iri_mapping(
                     "Non-absolute @reverse IRI: #{inspect(reverse)}"
@@ -365,7 +365,7 @@ defmodule JSON.LD.Context.TermDefinition do
               definition
 
             container when is_nil(container) or container in ~w[@set @index] ->
-              %__MODULE__{definition | container_mapping: [container]}
+              %{definition | container_mapping: [container]}
 
             _ ->
               raise JSON.LD.Error.invalid_reverse_property(
@@ -374,7 +374,7 @@ defmodule JSON.LD.Context.TermDefinition do
           end
 
         # 13.6) & 13.7)
-        {false, %__MODULE__{definition | reverse_property: true}, active, defined}
+        {false, %{definition | reverse_property: true}, active, defined}
     end
   end
 
@@ -455,7 +455,7 @@ defmodule JSON.LD.Context.TermDefinition do
               end
 
             {false,
-             %__MODULE__{
+             %{
                definition
                | iri_mapping: expanded_id,
                  # 14.2.5)
@@ -507,14 +507,14 @@ defmodule JSON.LD.Context.TermDefinition do
               end
 
             if prefix_def = active.term_defs[prefix] do
-              {false, %__MODULE__{definition | iri_mapping: prefix_def.iri_mapping <> suffix},
-               active, defined}
+              {false, %{definition | iri_mapping: prefix_def.iri_mapping <> suffix}, active,
+               defined}
             else
-              {false, %__MODULE__{definition | iri_mapping: term}, active, defined}
+              {false, %{definition | iri_mapping: term}, active, defined}
             end
 
           nil ->
-            {false, %__MODULE__{definition | iri_mapping: term}, active, defined}
+            {false, %{definition | iri_mapping: term}, active, defined}
         end
 
       # 16) Otherwise if the term contains a slash (/): Term is a relative IRI reference
@@ -522,7 +522,7 @@ defmodule JSON.LD.Context.TermDefinition do
         term_iri = expand_iri(term, active, popts, false, true)
 
         if IRI.absolute?(term_iri) do
-          {false, %__MODULE__{definition | iri_mapping: term_iri}, active, defined}
+          {false, %{definition | iri_mapping: term_iri}, active, defined}
         else
           raise JSON.LD.Error.invalid_iri_mapping(
                   "expected term #{inspect(term)} to expand to an absolute IRI"
@@ -531,13 +531,12 @@ defmodule JSON.LD.Context.TermDefinition do
 
       # 17)
       term == "@type" ->
-        {false, %__MODULE__{definition | iri_mapping: "@type"}, active, defined}
+        {false, %{definition | iri_mapping: "@type"}, active, defined}
 
       # 18)
       true ->
         if active.vocabulary_mapping do
-          {false, %__MODULE__{definition | iri_mapping: active.vocabulary_mapping <> term},
-           active, defined}
+          {false, %{definition | iri_mapping: active.vocabulary_mapping <> term}, active, defined}
         else
           raise JSON.LD.Error.invalid_iri_mapping(
                   "#{inspect(term)} is not a valid IRI mapping; relative term definition without vocab mapping"
@@ -550,7 +549,7 @@ defmodule JSON.LD.Context.TermDefinition do
     # 19.1) and 19.2)
     container_mapping = valid_container_mapping(container, container, popts.processing_mode)
 
-    %__MODULE__{
+    %{
       definition
       | # 19.3)
         container_mapping: container_mapping,
@@ -658,7 +657,7 @@ defmodule JSON.LD.Context.TermDefinition do
 
         if IRI.absolute?(expanded_index) do
           # 20.3)
-          %__MODULE__{definition | index_mapping: index}
+          %{definition | index_mapping: index}
         else
           raise JSON.LD.Error.invalid_term_definition(
                   "@index without @index in @container: #{inspect(index)} on term #{inspect(term)}"
@@ -712,7 +711,7 @@ defmodule JSON.LD.Context.TermDefinition do
 
     # 21.4)
     # SPEC ISSUE: "Record null context in array form" from JSON-LD.rb was needed
-    %__MODULE__{definition | local_context: if(is_nil(context), do: [nil], else: context)}
+    %{definition | local_context: if(is_nil(context), do: [nil], else: context)}
   end
 
   defp handle_context_definition(definition, _, _, _, _, _),
@@ -723,13 +722,13 @@ defmodule JSON.LD.Context.TermDefinition do
     unless Map.has_key?(value, "@type") do
       case language do
         language when is_binary(language) ->
-          %__MODULE__{
+          %{
             definition
             | language_mapping: validate_and_normalize_language(language, popts)
           }
 
         language when is_nil(language) ->
-          %__MODULE__{definition | language_mapping: nil}
+          %{definition | language_mapping: nil}
 
         _ ->
           raise JSON.LD.Error.invalid_language_mapping(language)
@@ -752,7 +751,7 @@ defmodule JSON.LD.Context.TermDefinition do
         raise JSON.LD.Error.invalid_base_direction(direction)
 
       true ->
-        %__MODULE__{definition | direction_mapping: direction && String.to_atom(direction)}
+        %{definition | direction_mapping: direction && String.to_atom(direction)}
     end
   end
 
@@ -777,7 +776,7 @@ defmodule JSON.LD.Context.TermDefinition do
               )
 
       true ->
-        %__MODULE__{definition | nest_value: nest}
+        %{definition | nest_value: nest}
     end
   end
 
@@ -806,7 +805,7 @@ defmodule JSON.LD.Context.TermDefinition do
         raise JSON.LD.Error.invalid_term_definition("keywords may not be used as prefixes")
 
       true ->
-        %__MODULE__{definition | prefix_flag: prefix}
+        %{definition | prefix_flag: prefix}
     end
   end
 

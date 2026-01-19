@@ -343,18 +343,13 @@ defmodule JSON.LD.Context do
   defp set_base(active, _, remote) when is_list(remote) and length(remote) > 0,
     do: active
 
-  defp set_base(active, nil, _), do: %__MODULE__{active | base_iri: nil}
+  defp set_base(active, nil, _), do: %{active | base_iri: nil}
 
   defp set_base(active, base, _) when is_binary(base) do
     cond do
-      IRI.absolute?(base) ->
-        %__MODULE__{active | base_iri: base}
-
-      active_base = base(active) ->
-        %__MODULE__{active | base_iri: absolute_iri(base, active_base)}
-
-      true ->
-        raise JSON.LD.Error.invalid_base_iri(base, :relative_without_active_base)
+      IRI.absolute?(base) -> %{active | base_iri: base}
+      active_base = base(active) -> %{active | base_iri: absolute_iri(base, active_base)}
+      true -> raise JSON.LD.Error.invalid_base_iri(base, :relative_without_active_base)
     end
   end
 
@@ -365,14 +360,14 @@ defmodule JSON.LD.Context do
   defp set_vocab(active, :not_present, _), do: active
 
   # 5.8.2) If value is null, remove any vocabulary mapping from result.
-  defp set_vocab(active, nil, _), do: %__MODULE__{active | vocabulary_mapping: nil}
+  defp set_vocab(active, nil, _), do: %{active | vocabulary_mapping: nil}
 
   # 5.8.3) Otherwise, if value is an IRI or blank node identifier, the vocabulary mapping of result is set to the result of IRI expanding value using true for document relative.
   defp set_vocab(active, vocab, options) do
     cond do
       # Note: The use of blank node identifiers to value for @vocab is obsolete, and may be removed in a future version of JSON-LD.
       blank_node_id?(vocab) ->
-        %__MODULE__{active | vocabulary_mapping: vocab}
+        %{active | vocabulary_mapping: vocab}
 
       not IRI.absolute?(vocab) and options.processing_mode == "json-ld-1.0" ->
         raise JSON.LD.Error.invalid_vocab_mapping(
@@ -381,7 +376,7 @@ defmodule JSON.LD.Context do
 
       is_binary(vocab) ->
         # SPEC ISSUE: vocab must be set to true
-        %__MODULE__{active | vocabulary_mapping: expand_iri(vocab, active, options, true, true)}
+        %{active | vocabulary_mapping: expand_iri(vocab, active, options, true, true)}
 
       true ->
         raise JSON.LD.Error.invalid_vocab_mapping(vocab)
@@ -391,11 +386,11 @@ defmodule JSON.LD.Context do
   defp set_language(active, :not_present, _), do: active
 
   # 5.9.2) If value is null, remove any default language from result.
-  defp set_language(active, nil, _), do: %__MODULE__{active | default_language: nil}
+  defp set_language(active, nil, _), do: %{active | default_language: nil}
 
   # 5.9.3) Otherwise, if value is a string, the default language of result is set to value.
   defp set_language(active, language, popts) when is_binary(language) do
-    %__MODULE__{active | default_language: validate_and_normalize_language(language, popts)}
+    %{active | default_language: validate_and_normalize_language(language, popts)}
   end
 
   # 5.9.3) If it is not a string, an invalid default language error has been detected and processing is aborted.
@@ -411,11 +406,11 @@ defmodule JSON.LD.Context do
   end
 
   # 5.10.3) If value is null, remove any default language from result.
-  defp set_direction(active, nil, _), do: %__MODULE__{active | base_direction: nil}
+  defp set_direction(active, nil, _), do: %{active | base_direction: nil}
 
   # 5.10.4) Otherwise, if value is a string, the base direction of result is set to value. If it is not null, "ltr", or "rtl", an invalid base direction error has been detected and processing is aborted.
   defp set_direction(active, direction, _) when direction in ~w[ltr rtl],
-    do: %__MODULE__{active | base_direction: String.to_atom(direction)}
+    do: %{active | base_direction: String.to_atom(direction)}
 
   # 5.9.3) If it is not a string, an invalid default language error has been detected and processing is aborted.
   defp set_direction(_, direction, _) do

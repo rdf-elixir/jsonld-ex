@@ -28,8 +28,13 @@ defmodule JSON.LD.Mixfile do
       dialyzer: dialyzer(),
 
       # ExCoveralls
-      test_coverage: [tool: ExCoveralls],
-      preferred_cli_env: [
+      test_coverage: [tool: ExCoveralls]
+    ]
+  end
+
+  def cli do
+    [
+      preferred_envs: [
         check: :test,
         earl_reports: :test,
         coveralls: :test,

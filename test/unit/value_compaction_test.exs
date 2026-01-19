@@ -103,7 +103,7 @@ defmodule JSON.LD.ValueCompactionTest do
   describe "@language" do
     setup %{example_context: ld_context} = context do
       ld_context =
-        %JSON.LD.Context{ld_context | default_language: "en"}
+        %{ld_context | default_language: "en"}
         |> JSON.LD.Context.set_inverse()
 
       %{context | example_context: ld_context}
@@ -164,7 +164,7 @@ defmodule JSON.LD.ValueCompactionTest do
   describe "@direction" do
     setup %{example_context: ld_context} = context do
       ld_context =
-        %JSON.LD.Context{ld_context | base_direction: :rtl}
+        %{ld_context | base_direction: :rtl}
         |> JSON.LD.Context.set_inverse()
 
       %{context | example_context: ld_context}

@@ -1208,7 +1208,7 @@ defmodule JSON.LD.Compaction do
   end
 
   @spec do_remove_base(String.t(), URI.t(), non_neg_integer) :: String.t()
-  defp do_remove_base(iri, base, index) do
+  defp do_remove_base(iri, %URI{} = base, index) do
     base_str = URI.to_string(base)
 
     cond do
