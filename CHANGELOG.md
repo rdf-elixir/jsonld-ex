@@ -5,6 +5,14 @@ This project adheres to [Semantic Versioning](http://semver.org/) and
 [Keep a CHANGELOG](http://keepachangelog.com).
 
 
+## 1.0.1 - 2026-03-19
+
+This version only upgrades to RDF.ex v3.0 and fixes warnings under Elixir v1.19
+
+[Compare v1.0.0...v1.0.1](https://github.com/rdf-elixir/jsonld-ex/compare/v1.0.0...v1.0.1)
+
+
+
 ## 1.0.0 - 2025-04-09
 
 This version upgrades the implementation to support JSON-LD 1.1.
