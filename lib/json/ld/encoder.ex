@@ -59,7 +59,7 @@ defmodule JSON.LD.Encoder do
   @rdf_language RDF.__base_iri__() <> "language"
 
   @impl RDF.Serialization.Encoder
-  @spec encode(RDF.Data.t(), keyword) :: {:ok, String.t()} | {:error, any}
+  @spec encode(RDF.Data.Source.t(), keyword) :: {:ok, String.t()} | {:error, any}
   def encode(data, opts \\ []) do
     opts = set_base_iri(data, opts)
 
@@ -89,7 +89,7 @@ defmodule JSON.LD.Encoder do
     end
   end
 
-  @spec from_rdf(RDF.Data.t(), Options.t() | Enum.t()) :: {:ok, [map]} | {:error, any}
+  @spec from_rdf(RDF.Data.Source.t(), Options.t() | Enum.t()) :: {:ok, [map]} | {:error, any}
   def from_rdf(dataset, options \\ %Options{}) do
     {:ok, from_rdf!(dataset, options)}
   rescue
@@ -97,7 +97,7 @@ defmodule JSON.LD.Encoder do
       {:error, Exception.message(exception)}
   end
 
-  @spec from_rdf!(RDF.Data.t(), Options.t() | Enum.t()) :: [map]
+  @spec from_rdf!(RDF.Data.Source.t(), Options.t() | Enum.t()) :: [map]
   def from_rdf!(rdf_data, options \\ %Options{})
 
   def from_rdf!(%Dataset{} = dataset, options) do

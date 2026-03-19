@@ -66,7 +66,7 @@ defmodule JSON.LD.Mixfile do
 
   defp deps do
     [
-      rdf_ex_dep(:rdf, "~> 2.1"),
+      rdf_ex_dep(:rdf, "~> 3.0"),
       {:jason, "~> 1.2"},
       {:tesla, "~> 1.2"},
       {:hackney, "~> 1.21", only: [:dev, :test]},
@@ -74,8 +74,8 @@ defmodule JSON.LD.Mixfile do
       {:mint, "~> 1.6", only: [:dev, :test]},
       {:castore, "~> 1.0", only: [:dev, :test], runtime: false},
       {:dialyxir, "~> 1.2", only: :dev, runtime: false},
-      {:credo, "~> 1.6", only: [:dev, :test], runtime: false},
-      {:ex_doc, "~> 0.37", only: :dev, runtime: false},
+      {:credo, "~> 1.7", only: [:dev, :test], runtime: false},
+      {:ex_doc, "~> 0.40", only: :dev, runtime: false},
       {:bypass, "~> 2.1", only: :test},
       {:mox, "~> 1.2", only: :test},
       {:excoveralls, "~> 0.15", only: :test}
