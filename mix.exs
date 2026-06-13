@@ -69,7 +69,7 @@ defmodule JSON.LD.Mixfile do
       rdf_ex_dep(:rdf, "~> 3.0"),
       {:jason, "~> 1.2"},
       {:tesla, "~> 1.2"},
-      {:hackney, "~> 1.21", only: [:dev, :test]},
+      {:hackney, "~> 4.3", only: [:dev, :test]},
       {:gun, "~> 2.1", only: [:dev, :test]},
       {:mint, "~> 1.6", only: [:dev, :test]},
       {:castore, "~> 1.0", only: [:dev, :test], runtime: false},
