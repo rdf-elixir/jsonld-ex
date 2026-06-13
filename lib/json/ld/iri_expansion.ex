@@ -64,7 +64,7 @@ defmodule JSON.LD.IRIExpansion do
           cond do
             # 4) If active context has a term definition for value, and the associated IRI mapping is a keyword, return that keyword.
             (term_def = active_context.term_defs[value]) && JSON.LD.keyword?(term_def.iri_mapping) ->
-              {term_def.iri_mapping || :halt, active_context, defined}
+              {term_def.iri_mapping, active_context, defined}
 
             # 5) If vocab is true and the active context has a term definition for value, return the associated IRI mapping.
             vocab && Map.has_key?(active_context.term_defs, value) ->
